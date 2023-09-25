@@ -16,7 +16,7 @@ router.get(
   "/get_contracts",
   [check("role"), check("id")],
   (req: express.Request) => {
-    wrapAsync(contractController.getContractsHandler);
+    wrapAsync(contractController.getUserContracts);
   }
 );
 

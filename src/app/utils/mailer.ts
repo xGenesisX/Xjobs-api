@@ -5,9 +5,9 @@ export default class Email {
   to: string;
   firstName: string;
   from: string;
-  constructor(user: { email: string; name: string }) {
-    this.to = user.email;
-    this.firstName = user.name.split(" ")[0];
+  constructor(email: string, name: string) {
+    this.to = email;
+    this.firstName = name.split(" ")[0];
     this.from = `xjobs <${process.env.EMAIL_FROM}>`;
   }
 
@@ -72,48 +72,22 @@ export default class Email {
       "Generic Freelancer Notification"
     );
   }
-
-  // profile notification
-  // gig notification
-  // new message notification
-  // proposal nnotification
+  async FreelancerOnboardingNotification() {
+    await this.send(
+      "Welcome to XJobs!",
+      "Welcome to XJobs! Our platform connects you with skilled freelancers and clients in the Web3 community. We offer an easy-to-use interface and smart contract-based escrow to ensure secure and seamless transactions.If you have any questions or concerns, please contact us at support@xjobs.io.Best regards,The XJobs team"
+    );
+  }
+  async NewMessageNotification() {
+    await this.send(
+      "you have a new message!",
+      "Hey there! You have got a new message waiting for you. Log in to your account to check it out"
+    );
+  }
+  async ProfileUpdateNotification() {
+    await this.send(
+      "Details updated!",
+      "Great news! Your profile has been updated successfully. "
+    );
+  }
 }
-
-// TODO
-
-// new Email().send({
-//   from: "support@xjobs.io",
-//   to: userExists.email_address,
-//   subject: "Details updated!",
-//   text: "Great news! Your profile has been updated successfully. ",
-// });
-
-// new Email().send({
-//   from: "support@xjobs.io",
-//   to: newUser.email_address,
-//   subject: "Welcome to XJobs!",
-//   text: `Dear ${newUser.name},
-
-//   Welcome to XJobs! Our platform connects you with skilled freelancers and clients in the Web3 community. We offer an easy-to-use interface and smart contract-based escrow to ensure secure and seamless transactions.
-
-//   If you have any questions or concerns, please contact us at support@xjobs.io.
-
-//   Best regards,
-//   The XJobs team`,
-// }),
-
-// new Email().send({
-//   from: "support@xjobs.io",
-//   to: userExists.email_address,
-//   subject: "Details updated!",
-//   text: "Great news! Your profile has been updated successfully. ",
-// }),
-
-// new Email().send({
-//   from: "support@xjobs.io",
-//   to: user.email_address,
-//   subject: "you have a new message!",
-//   text:
-//     "Hey there! You have got a new message waiting for you. Log in to your account to check it out",
-// });
-// new Email().send("a subject", "a title");
