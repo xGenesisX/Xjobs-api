@@ -5,6 +5,7 @@ import proposalController from "./proposal.controller";
 import Contract from "../models/Contract";
 
 class contractController {
+  // @notice accepts a contract
   acceptContract = async (req: Request) => {
     const { gigId, freelancerId, proposalId, conversationID } = req.body;
     try {
@@ -27,6 +28,7 @@ class contractController {
     }
   };
 
+  // @notice approve a refund
   approveRefund = async (req: Request) => {
     const {
       userId,
@@ -63,7 +65,8 @@ class contractController {
       });
   };
 
-  getContractsHandler = async (req: Request) => {
+  // @notice gets a users contracts
+  getUserContracts = async (req: Request) => {
     const { role, id } = req.query;
     let contract;
     switch (role) {

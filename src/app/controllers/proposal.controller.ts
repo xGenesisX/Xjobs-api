@@ -6,6 +6,7 @@ import User from "../models/User";
 class proposalController {
   constructor() {}
 
+  // @notice create a new proposal
   createNewProposal = async (req: Request) => {
     const { gigId, freelancerId, coverLetter } = req.body;
     try {
@@ -42,6 +43,7 @@ class proposalController {
     }
   };
 
+  // @notice get a proposal with a given id
   getAProposal = async (req: Request) => {
     const { gigId } = req.body;
     try {
@@ -54,6 +56,7 @@ class proposalController {
     }
   };
 
+  // @notice get a job proposal with a given id
   getJobProposal = async (req: Request) => {
     const { gigId } = req.body;
     try {
@@ -69,6 +72,7 @@ class proposalController {
     }
   };
 
+  // @notice accept a proposal with a given id
   acceptProposal = async (req: Request) => {
     const { id } = req.body;
     try {
@@ -83,9 +87,12 @@ class proposalController {
           new: true,
         }
       );
-    } catch (error) {}
+    } catch (error) {
+      return { message: "error accepting proposal" };
+    }
   };
 
+  // @notice check if a proposal exists
   checkIfProposalExists = async (req: Request) => {
     const { freelancerId, gigID } = req.body;
 
@@ -114,6 +121,7 @@ class proposalController {
       });
   };
 
+  // @notice update a proposal with a given id
   updateProposalConversationID = async (req: Request) => {
     const { id, conversationID } = req.body;
 
@@ -127,10 +135,11 @@ class proposalController {
       );
       return proposal;
     } catch (error) {
-      return { message: "error updating proposal conversation id" };
+      return { message: `error updating proposal conversation id ${id}` };
     }
   };
 
+  // @notice get a proposal with a given id
   getProposalById = async (req: Request) => {
     const { id } = req.query;
     const proposals = await Proposal.find({
@@ -142,6 +151,7 @@ class proposalController {
     return proposals;
   };
 
+  // @notice get proposal for a gig
   getProposalsForGig = async (req: Request) => {
     const { gigId } = req.body;
     try {

@@ -13,7 +13,7 @@ import {
 import Message from "../models/Message";
 import expressValidator from "express-validator";
 
-const validator = expressValidator.check();
+// const validator = expressValidator.check();
 
 dotenv.config({ path: "../../.env" });
 

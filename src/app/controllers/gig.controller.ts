@@ -9,6 +9,8 @@ import Joi from "@hapi/joi";
 
 class gigController {
   constructor() {}
+
+  // @notice get a gig by its id
   getGigById = async (req: Request) => {
     const { id } = req.body;
     const filter = ["listed", "Pending"]; // Define filter for gig status
@@ -21,6 +23,7 @@ class gigController {
     });
   };
 
+  // @notice get a gig owner by its id
   getOwnerGigById = async (req: Request) => {
     const { id, address } = req.body;
     // Find and return gig object that matches the given ID and owner address
@@ -30,6 +33,7 @@ class gigController {
     });
   };
 
+  // @notice get a users gigs
   getMyJobs = async (req: Request) => {
     const { id, status } = req.body; // Extract required data from request body
 
@@ -42,6 +46,7 @@ class gigController {
     });
   };
 
+  // @notice get a gig by its owner
   getGigByOwner = async (req: Request) => {
     const { address } = req.body;
     // Find and return array of gig objects that are owned by the given owner
@@ -50,7 +55,8 @@ class gigController {
     }).sort({ $natural: -1 });
   };
 
-  putHandler = async (req: Request) => {
+  // @notice update a gigs details
+  updateGigDetails = async (req: Request) => {
     const { id } = req.body;
     const gig = await Gig.findOneAndUpdate(
       { _id: id },
@@ -69,6 +75,7 @@ class gigController {
     }
   };
 
+  // @notice awards a gig to a freelancer
   awardFreelancer = async (req: Request) => {
     const { id, freelancerId, status } = req.body;
     try {
@@ -108,6 +115,7 @@ class gigController {
     }
   };
 
+  // @notice update a gig status
   updateGigStatus = async (req: Request) => {
     const { id, status } = req.body;
 
@@ -130,6 +138,7 @@ class gigController {
       });
   };
 
+  // @notice bookmark a gig
   bookmarkGig = async (req: Request) => {
     const { id, GigId } = req.body;
 
@@ -149,6 +158,7 @@ class gigController {
     return updatedUser;
   };
 
+  // @notice create a new gig
   createGig = async (req: Request) => {
     const { title } = req.body;
 
@@ -172,6 +182,7 @@ class gigController {
     return gig;
   };
 
+  // @notice list gigs by its owner
   listGigByOwner = async (req: Request) => {
     const { address } = req.body;
     let gig = await Gig.find({
@@ -180,6 +191,7 @@ class gigController {
     return gig;
   };
 
+  // @notice unbookmark a gig
   removeBookmark = async (req: Request) => {
     const { id, GigId } = req.body;
 
@@ -198,6 +210,7 @@ class gigController {
     return updatedUser;
   };
 
+  // @notice gets all gigs in the system
   getAllGigs = async (req: Request) => {
     let pageVar;
     const { page = 1, filter = [] } = req.body; // Set default values for page and filter
@@ -228,6 +241,7 @@ class gigController {
     return { gigs };
   };
 
+  // @notice cancel a gig
   cancelGig = async (req: Request) => {
     const {
       clientId,

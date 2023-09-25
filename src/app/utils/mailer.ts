@@ -4,12 +4,10 @@ import nodemailer from "nodemailer";
 export default class Email {
   to: string;
   firstName: string;
-  url: string;
   from: string;
-  constructor(user: { email: string; name: string }, url: string) {
+  constructor(user: { email: string; name: string }) {
     this.to = user.email;
     this.firstName = user.name.split(" ")[0];
-    this.url = url;
     this.from = `xjobs <${process.env.EMAIL_FROM}>`;
   }
 
@@ -36,18 +34,13 @@ export default class Email {
     });
   }
 
-  // Send the actual email
-  async send(template: string, subject: string) {
-    // 1) Render HTML based on a pug template
-    let html;
-
+  async send(text: string, subject: string) {
     // 2) Define email options
     const mailOptions = {
       from: this.from,
       to: this.to,
-      subject,
-      html,
-      // text: htmlToText.fromString(html),
+      subject: subject,
+      text: `Dear ${this.firstName}, ${text}`,
     };
 
     // 3) Create a transport and send email
@@ -58,17 +51,35 @@ export default class Email {
     await this.send("welcome", "Welcome to the XJobs Family!");
   }
 
-  async sendPasswordReset() {
+  async sendVerificationMail() {
     await this.send(
-      "passwordReset",
-      "Your password reset token (valid for only 10 minutes)"
+      "verificationMail",
+      "Verify that you own this email address"
     );
   }
-  async sendVerificationMail() {}
-  async gigProcessing() {}
-  async clientNotification() {}
-  async FreelancerNotification() {}
+
+  async gigProcessing() {
+    await this.send("gigProcessing", "this gig is currently processing");
+  }
+
+  async clientNotification() {
+    await this.send("clientNotification", "Welcome to Xjobs");
+  }
+
+  async FreelancerNotification() {
+    await this.send(
+      "FreelancerNotification",
+      "Generic Freelancer Notification"
+    );
+  }
+
+  // profile notification
+  // gig notification
+  // new message notification
+  // proposal nnotification
 }
+
+// TODO
 
 // new Email().send({
 //   from: "support@xjobs.io",

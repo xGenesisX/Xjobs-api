@@ -12,7 +12,7 @@ import profileRoutes from "./app/routes/profile.route";
 import proposalRoutes from "./app/routes/proposal.route";
 import contractRoutes from "./app/routes/contract.route";
 
-dotenv.config();
+dotenv.config({ path: __dirname + "/.env" });
 
 const PORT = process.env.PORT || 4000;
 const app: Express = express();
@@ -36,6 +36,10 @@ app.get("/health_check", (req: Request, res: Response) => {
   );
 });
 
-app.listen(PORT, () => console.log(`Getting Schwifty on ${PORT} ⚡`));
+app.get("*", (req: Request, res: Response) => {
+  return res.status(404).redirect("/404");
+});
+
+app.listen(PORT, () => console.log(`Getting Schwifty on PORT ${PORT} ⚡`));
 
 export { app };

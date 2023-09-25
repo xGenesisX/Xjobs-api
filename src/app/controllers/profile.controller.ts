@@ -62,13 +62,13 @@ class profileController {
 
   // @notice create a new user profile
   createUserProfile = async (req: Request) => {
-    // const schema = Joi.object().keys({
-    //   name: Joi.string().required(),
-    // });
+    const schema = Joi.object().keys({
+      name: Joi.string().required(),
+    });
 
-    // if (!schema.validate(req.body)) {
-    //   return { error: "Validation fails" };
-    // }
+    if (!schema.validate(req.body)) {
+      return { error: "Validation fails" };
+    }
 
     // add validation for the user input here
 
@@ -122,6 +122,7 @@ class profileController {
   updateUserProfile = async (req: Request) => {
     const { id } = req.body;
     // add other user fields to be updated
+    // add validaton here as well...
 
     const userExists = await User.findOneAndUpdate(
       { _id: id },
