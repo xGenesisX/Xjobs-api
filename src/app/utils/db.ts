@@ -15,12 +15,10 @@ async function db() {
     return cachedConnection;
   }
   try {
-    // TODO
-    // run yarn i to downgrade mongoose
     await mongoose.connect(MONGODB_URI, {
-      //   useNewUrlParser: true,
-      //   useUnifiedTopology: true,
-    });
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    } as any);
     console.log("MongoDB Connected");
     cachedConnection = mongoose.connection;
     return cachedConnection;
