@@ -4,8 +4,6 @@ import Proposal from "../models/Proposal";
 import User from "../models/User";
 
 class proposalController {
-  constructor() {}
-
   // @notice create a new proposal
   createNewProposal = async (req: Request) => {
     const { gigId, freelancerId, coverLetter } = req.body;

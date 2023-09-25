@@ -19,6 +19,7 @@ router.get(
     wrapAsync(gigController.getOwnerGigById);
   }
 );
+
 router.get(
   "/update_gig_status",
   [check("id").not().isEmpty(), check("status") /*sanitizeBody("id")*/],
@@ -26,6 +27,7 @@ router.get(
     wrapAsync(gigController.updateGigStatus);
   }
 );
+
 router.get(
   "/award_freelancer",
   [check("id").not().isEmpty(), check("freelancerId"), check("status")],
@@ -63,6 +65,7 @@ router.get(
     wrapAsync(gigController.updateGigDetails);
   }
 );
+
 router.get(
   "/get_my_jobs",
   [check("id"), check("status")],

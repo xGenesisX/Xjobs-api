@@ -19,6 +19,7 @@ router.get(
     wrapAsync(profileController.getUserProfileWithAddress);
   }
 );
+
 router.get(
   "/get_profile_exist",
   [check("id").not().isEmpty()],
@@ -26,6 +27,7 @@ router.get(
     wrapAsync(profileController.getUserProfileWithId);
   }
 );
+
 router.get(
   "/get_specific_user",
   [check("addr").not().isEmpty()],
@@ -33,6 +35,7 @@ router.get(
     wrapAsync(profileController.getUserProfileWithAddress);
   }
 );
+
 router.get(
   "/get_user_with_id",
   [check("id").not().isEmpty()],

@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import ChatController from "./chat.controller";
 import User from "../models/User";
@@ -9,7 +9,7 @@ class profileController {
   constructor() {}
 
   // @notice update a user profile, adds feedback
-  addFeedbackToUserProfile = async (req: Request) => {
+  addFeedbackToUserProfile = async (req: Request, res: Response) => {
     const { title, description, rate, gigId, userId } = req.body;
 
     const feedback = {
@@ -33,7 +33,7 @@ class profileController {
       );
       return user;
     } catch (error) {
-      return { message: "error updating profile" };
+      return res.status(400).json("error updating profile");
     }
   };
 
@@ -44,24 +44,24 @@ class profileController {
       const user = await User.findOne({ _id: userId });
       return user;
     } catch (error) {
-      return error;
+      return "error getting user";
     }
   };
 
   // @notice get a specific user by its registered address
-  getUserProfileWithAddress = async (req: Request) => {
+  getUserProfileWithAddress = async (req: Request, res: Response) => {
     const { userAddress } = req.body;
 
     try {
       const user = await User.findOne({ userAddress });
       return user;
     } catch (error) {
-      return error;
+      return res.status(400).json("error getting user");
     }
   };
 
   // @notice create a new user profile
-  createUserProfile = async (req: Request) => {
+  createUserProfile = async (req: Request, res: Response) => {
     const schema = Joi.object().keys({
       name: Joi.string().required(),
     });
@@ -74,12 +74,11 @@ class profileController {
 
     const verificationToken = uuidv4().toString();
 
-    const newUser = new User({
-      ...req.body,
-      emailVerificationToken: verificationToken,
-    });
-
     try {
+      const newUser = new User({
+        ...req.body,
+        emailVerificationToken: verificationToken,
+      });
       // Use Promise.allSettled to execute multiple async operations in parallel
       //   const [user, conversation, email] = await Promise.all([
       //     newUser.save(),
@@ -111,7 +110,7 @@ class profileController {
         // If any operation fails, delete the user and return an error
         // will likely fail if the user already exists
         await User.deleteOne({ _id: newUser._id });
-        return { message: "error parsing request!" };
+        return res.status(400).json("error parsing request");
       }
     } catch (error) {
       return { message: "internal server error" };
@@ -119,7 +118,7 @@ class profileController {
   };
 
   // @notice updates a user profile
-  updateUserProfile = async (req: Request) => {
+  updateUserProfile = async (req: Request, res: Response) => {
     const { id } = req.body;
     // add other user fields to be updated
     // add validaton here as well...
@@ -135,7 +134,7 @@ class profileController {
     );
 
     if (!userExists) {
-      return { message: "user not found" };
+      return res.status(400).json("user not found");
     } else {
       Promise.all([userExists()]);
       // send a mail to ther user confirming thier profile has been updated

@@ -31,6 +31,7 @@ router.post(
     wrapAsync(ChatController.conversationPutHandler);
   }
 );
+
 router.post(
   "/get_conversation",
   [check("id").not().isEmpty()],
@@ -38,6 +39,7 @@ router.post(
     wrapAsync(ChatController.getConversationHandler);
   }
 );
+
 router.post(
   "/summary_post",
   [
@@ -49,6 +51,7 @@ router.post(
     wrapAsync(ChatController.summaryPostHandler);
   }
 );
+
 router.post(
   "/convo_post",
   [
@@ -64,6 +67,7 @@ router.post(
     wrapAsync(ChatController.convoPostHandler);
   }
 );
+
 router.post(
   "/chat_post",
   [
@@ -76,6 +80,7 @@ router.post(
     wrapAsync(ChatController.chatPostHandler);
   }
 );
+
 router.post(
   "/get_chat",
   [check("id").not().isEmpty()],
@@ -83,6 +88,7 @@ router.post(
     wrapAsync(ChatController.getChatHandler);
   }
 );
+
 router.post(
   "/mark_as_read",
   [check("id").not().isEmpty()],
@@ -90,6 +96,7 @@ router.post(
     wrapAsync(ChatController.markAsRead);
   }
 );
+
 router.post(
   "/get_convo_by_id",
   [check("id").not().isEmpty()],

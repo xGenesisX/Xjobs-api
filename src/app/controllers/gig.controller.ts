@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { Request, Response } from "express";
 import slugify from "slugify";
 import CancelGig from "../models/CancelGig";
 import Gig from "../models/Gig";
@@ -8,70 +8,88 @@ import { Query } from "../interfaces/Query";
 import Joi from "@hapi/joi";
 
 class gigController {
-  constructor() {}
-
   // @notice get a gig by its id
-  getGigById = async (req: Request) => {
+  getGigById = async (req: Request, res: Response) => {
     const { id } = req.body;
     const filter = ["listed", "Pending"]; // Define filter for gig status
 
     // Find and return gig object that matches the given ID and satisfies the filter criteria
-    return await Gig.findOne({
-      _id: id,
-      approvedForMenu: true,
-      status: { $in: filter },
-    });
+    try {
+      const gig = await Gig.findOne({
+        _id: id,
+        approvedForMenu: true,
+        status: { $in: filter },
+      });
+      return gig;
+    } catch (error) {
+      return res.status(400).json("error getting gig by id");
+    }
   };
 
   // @notice get a gig owner by its id
-  getOwnerGigById = async (req: Request) => {
+  getOwnerGigById = async (req: Request, res: Response) => {
     const { id, address } = req.body;
     // Find and return gig object that matches the given ID and owner address
-    return await Gig.findOne({
-      _id: id,
-      ownerAddress: address,
-    });
+    try {
+      const gig = await Gig.findOne({
+        _id: id,
+        ownerAddress: address,
+      });
+      return gig;
+    } catch (error) {
+      return res.status(400).json("error getting gig by id");
+    }
   };
 
   // @notice get a users gigs
-  getMyJobs = async (req: Request) => {
+  getMyJobs = async (req: Request, res: Response) => {
     const { id, status } = req.body; // Extract required data from request body
 
     // Find and return array of gig objects that are awarded to the given freelancer and match the given status
-    return await Gig.find({
-      awardedFreelancer: id,
-      status: status,
-    }).sort({
-      $natural: -1,
-    });
+    try {
+      const gig = await Gig.find({
+        awardedFreelancer: id,
+        status: status,
+      }).sort({
+        $natural: -1,
+      });
+      return gig;
+    } catch (error) {
+      return res.status(400).json("error getting my jobs");
+    }
   };
 
   // @notice get a gig by its owner
-  getGigByOwner = async (req: Request) => {
+  getGigByOwner = async (req: Request, res: Response) => {
     const { address } = req.body;
     // Find and return array of gig objects that are owned by the given owner
-    return await Gig.find({
-      ownerAddress: address,
-    }).sort({ $natural: -1 });
+    try {
+      const gig = await Gig.find({
+        ownerAddress: address,
+      }).sort({ $natural: -1 });
+      return gig;
+    } catch (error) {
+      return res.status(400).json("error getting gigs by owner");
+    }
   };
 
   // @notice update a gigs details
-  updateGigDetails = async (req: Request) => {
+  updateGigDetails = async (req: Request, res: Response) => {
     const { id } = req.body;
-    const gig = await Gig.findOneAndUpdate(
-      { _id: id },
-      {
-        ...req.body,
-        approvedForMenu: false,
-      },
-      {
-        new: true,
-      }
-    );
-    if (!gig) {
-      return { message: "gig not found" };
-    } else {
-      return { message: "gig updated success" };
+    try {
+      const gig = await Gig.findOneAndUpdate(
+        { _id: id },
+        {
+          ...req.body,
+          approvedForMenu: false,
+        },
+        {
+          new: true,
+        }
+      );
+      return gig;
+    } catch (error) {
+      return res.status(400).json("error updating gig");
     }
   };
 
@@ -111,7 +129,7 @@ class gigController {
         return gig;
       }
     } catch (e) {
-      return e;
+      return "error awarding freelancer gig";
     }
   };
 
@@ -119,48 +137,60 @@ class gigController {
   updateGigStatus = async (req: Request) => {
     const { id, status } = req.body;
 
-    await Gig.findOneAndUpdate(
-      { _id: id },
-      {
-        $set: {
-          status: status,
+    try {
+      await Gig.findOneAndUpdate(
+        { _id: id },
+        {
+          $set: {
+            status: status,
+          },
         },
-      },
-      {
-        new: true,
-      }
-    )
-      .then((gig) => {
-        return gig;
-      })
-      .catch((error) => {
-        return error;
-      });
+        {
+          new: true,
+        }
+      )
+        .then((gig) => {
+          return gig;
+        })
+        .catch((error) => {
+          return error;
+        });
+    } catch (error) {
+      return "error updating gig status";
+      // return res.status(400).json("error updating gig status");
+    }
   };
 
   // @notice bookmark a gig
-  bookmarkGig = async (req: Request) => {
+  bookmarkGig = async (req: Request, res: Response) => {
     const { id, GigId } = req.body;
 
     // Find and update user document with new bookmarked gig
-    const updatedUser = await User.findByIdAndUpdate(
-      {
-        _id: id,
-      },
-      {
-        $addToSet: { bookmarkedGigs: GigId },
-      },
-      {
-        new: true,
-      }
-    );
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        {
+          _id: id,
+        },
+        {
+          $addToSet: { bookmarkedGigs: GigId },
+        },
+        {
+          new: true,
+        }
+      );
 
-    return updatedUser;
+      return updatedUser;
+    } catch (error) {
+      return res.status(400).json("error bookmarking gig");
+    }
   };
 
   // @notice create a new gig
-  createGig = async (req: Request) => {
+  createGig = async (req: Request, res: Response) => {
     const { title } = req.body;
+
+    // populate the rest of the gig body
+    //* validate the body as well
 
     const schema = Joi.object().keys({
       name: Joi.string().required(),
@@ -172,46 +202,62 @@ class gigController {
       file_id: Joi.number(),
       is_closed: Joi.boolean(),
     });
-    // Create new gig document and save to database
-    const newGig = new Gig({
-      ...req.body,
-      slug: slugify(title, +"_" + Date.now().toString()),
-    });
-    const gig = await newGig.save();
 
-    return gig;
+    try {
+      // Create new gig document and save to database
+      const newGig = new Gig({
+        ...req.body,
+        slug: slugify(title, +"_" + Date.now().toString()),
+      });
+      const gig = await newGig.save();
+
+      //* send a confirmation mail to ther user
+      // that its gig has been created succesfully
+
+      return gig;
+    } catch (error) {
+      return res.status(400).json("error creating gig");
+    }
   };
 
   // @notice list gigs by its owner
-  listGigByOwner = async (req: Request) => {
+  listGigByOwner = async (req: Request, res: Response) => {
     const { address } = req.body;
-    let gig = await Gig.find({
-      ownerAddress: address,
-    }).sort({ $natural: -1 });
-    return gig;
+    try {
+      let gig = await Gig.find({
+        ownerAddress: address,
+      }).sort({ $natural: -1 });
+      return gig;
+    } catch (error) {
+      return res.status(400).json("error listing gig by owner");
+    }
   };
 
   // @notice unbookmark a gig
-  removeBookmark = async (req: Request) => {
+  removeBookmark = async (req: Request, res: Response) => {
     const { id, GigId } = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      {
-        _id: id,
-      },
-      {
-        $pull: { bookmarkedGigs: GigId },
-      },
-      {
-        new: true,
-      }
-    );
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        {
+          _id: id,
+        },
+        {
+          $pull: { bookmarkedGigs: GigId },
+        },
+        {
+          new: true,
+        }
+      );
 
-    return updatedUser;
+      return updatedUser;
+    } catch (error) {
+      return res.status(400).json("error removing bookmark");
+    }
   };
 
   // @notice gets all gigs in the system
-  getAllGigs = async (req: Request) => {
+  getAllGigs = async (req: Request, res: Response) => {
     let pageVar;
     const { page = 1, filter = [] } = req.body; // Set default values for page and filter
 
@@ -232,17 +278,21 @@ class gigController {
     // if (filter.length) query.category?.value = { $in: filter };
     // if (filter.length) query["category.value"] = { $in: filter };
 
-    const gigs = await Gig.find(query)
-      .sort({ $natural: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean();
+    try {
+      const gigs = await Gig.find(query)
+        .sort({ $natural: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
 
-    return { gigs };
+      return { gigs };
+    } catch (error) {
+      return res.status(400).json("error getting gig");
+    }
   };
 
   // @notice cancel a gig
-  cancelGig = async (req: Request) => {
+  cancelGig = async (req: Request, res: Response) => {
     const {
       clientId,
       gigId,
@@ -285,9 +335,8 @@ class gigController {
             return error;
           });
       }
-      return { message: "Project failed to cancel" };
     } catch (error) {
-      return error;
+      return res.status(400).json("error cancelling gig");
     }
   };
 }

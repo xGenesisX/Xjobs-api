@@ -38,9 +38,11 @@ router.get(
     wrapAsync(proposalController.checkIfProposalExists);
   }
 );
+
 router.get("/get_job_proposal", (req: express.Request) => {
   wrapAsync(proposalController.getJobProposal);
 });
+
 router.post(
   "/accept_proposal",
   [check("id").not().isEmpty()],
