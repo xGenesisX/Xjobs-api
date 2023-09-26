@@ -20,9 +20,9 @@ class gigController {
         approvedForMenu: true,
         status: { $in: filter },
       });
-      return gig;
+      res.send(gig);
     } catch (error) {
-      return res.status(400).json("error getting gig by id");
+      res.status(400).json("error getting gig by id");
     }
   };
 
@@ -35,9 +35,9 @@ class gigController {
         _id: id,
         ownerAddress: address,
       });
-      return gig;
+      res.send(gig);
     } catch (error) {
-      return res.status(400).json("error getting gig by id");
+      res.status(400).json("error getting gig by id");
     }
   };
 
@@ -53,9 +53,9 @@ class gigController {
       }).sort({
         $natural: -1,
       });
-      return gig;
+      res.send(gig);
     } catch (error) {
-      return res.status(400).json("error getting my jobs");
+      res.status(400).json("error getting my jobs");
     }
   };
 
@@ -67,9 +67,9 @@ class gigController {
       const gig = await Gig.find({
         ownerAddress: address,
       }).sort({ $natural: -1 });
-      return gig;
+      res.send(gig);
     } catch (error) {
-      return res.status(400).json("error getting gigs by owner");
+      res.status(400).json("error getting gigs by owner");
     }
   };
 
@@ -87,15 +87,18 @@ class gigController {
           new: true,
         }
       );
-      return gig;
+      res.send(gig);
     } catch (error) {
-      return res.status(400).json("error updating gig");
+      res.status(400).json("error updating gig");
     }
   };
 
   // @notice awards a gig to a freelancer
-  awardFreelancer = async (req: Request) => {
-    const { id, freelancerId, status } = req.body;
+  awardFreelancer = async (
+    id: string,
+    freelancerId: string,
+    status: string
+  ) => {
     try {
       if (status === "Active") {
         const gig = await Gig.findOneAndUpdate(
@@ -134,11 +137,9 @@ class gigController {
   };
 
   // @notice update a gig status
-  updateGigStatus = async (req: Request) => {
-    const { id, status } = req.body;
-
+  updateGigStatus = async (id: string, status: string) => {
     try {
-      await Gig.findOneAndUpdate(
+      const gig = await Gig.findOneAndUpdate(
         { _id: id },
         {
           $set: {
@@ -148,16 +149,10 @@ class gigController {
         {
           new: true,
         }
-      )
-        .then((gig) => {
-          return gig;
-        })
-        .catch((error) => {
-          return error;
-        });
+      );
+      return gig;
     } catch (error) {
       return "error updating gig status";
-      // return res.status(400).json("error updating gig status");
     }
   };
 
@@ -179,9 +174,9 @@ class gigController {
         }
       );
 
-      return updatedUser;
+      res.send(updatedUser);
     } catch (error) {
-      return res.status(400).json("error bookmarking gig");
+      res.status(400).json("error bookmarking gig");
     }
   };
 
@@ -192,16 +187,16 @@ class gigController {
     // populate the rest of the gig body
     //* validate the body as well
 
-    const schema = Joi.object().keys({
-      name: Joi.string().required(),
-      street_address: Joi.string().required(),
-      number_address: Joi.number().required(),
-      city_address: Joi.string().required(),
-      state_address: Joi.string().required(),
-      country_address: Joi.string().required(),
-      file_id: Joi.number(),
-      is_closed: Joi.boolean(),
-    });
+    // const schema = Joi.object().keys({
+    //   name: Joi.string().required(),
+    //   street_address: Joi.string().required(),
+    //   number_address: Joi.number().required(),
+    //   city_address: Joi.string().required(),
+    //   state_address: Joi.string().required(),
+    //   country_address: Joi.string().required(),
+    //   file_id: Joi.number(),
+    //   is_closed: Joi.boolean(),
+    // });
 
     try {
       // Create new gig document and save to database
@@ -214,9 +209,9 @@ class gigController {
       //* send a confirmation mail to ther user
       // that its gig has been created succesfully
 
-      return gig;
+      res.send(gig);
     } catch (error) {
-      return res.status(400).json("error creating gig");
+      res.status(400).json("error creating gig");
     }
   };
 
@@ -224,12 +219,12 @@ class gigController {
   listGigByOwner = async (req: Request, res: Response) => {
     const { address } = req.body;
     try {
-      let gig = await Gig.find({
+      const gig = await Gig.find({
         ownerAddress: address,
       }).sort({ $natural: -1 });
-      return gig;
+      res.send(gig);
     } catch (error) {
-      return res.status(400).json("error listing gig by owner");
+      res.status(400).json("error listing gig by owner");
     }
   };
 
@@ -250,9 +245,9 @@ class gigController {
         }
       );
 
-      return updatedUser;
+      res.send(updatedUser);
     } catch (error) {
-      return res.status(400).json("error removing bookmark");
+      res.status(400).json("error removing bookmark");
     }
   };
 
@@ -285,9 +280,9 @@ class gigController {
         .limit(limit)
         .lean();
 
-      return { gigs };
+      res.send(gigs);
     } catch (error) {
-      return res.status(400).json("error getting gig");
+      res.status(400).json("error getting gig");
     }
   };
 
@@ -315,28 +310,21 @@ class gigController {
       const cancel = await newCancellationRequest.save();
 
       if (cancel) {
-        await this.updateGigStatus({
-          body: {
-            id: gigId,
-            status: "Refund",
-          },
-        } as Request)
+        await this.updateGigStatus(gigId, "Refund")
           .then(() => {
-            ChatController.summaryPostHandler({
-              body: {
-                conversationID: conversationID,
-                summary: "requested a refund and to cancel this project",
-                sender: clientId,
-              },
-            } as Request);
+            new ChatController(req, res).summaryPostHandler(
+              conversationID,
+              "requested a refund and to cancel this project",
+              clientId
+            );
             cancel();
           })
           .catch((error) => {
-            return error;
+            res.send(error);
           });
       }
     } catch (error) {
-      return res.status(400).json("error cancelling gig");
+      res.status(400).json("error cancelling gig");
     }
   };
 }

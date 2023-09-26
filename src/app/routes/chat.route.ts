@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 
-import { check } from "express-validator";
+// import { check } from "express-validator";
 
 import ChatController from "../controllers/chat.controller";
 
@@ -12,97 +12,44 @@ function wrapAsync(fn: any) {
   };
 }
 
-router.post(
-  "/add_contract_id_to_convo",
-  [check("id"), check("contractId") /*sanitizeBody("id")*/],
-  (req: express.Request) => {
-    wrapAsync(ChatController.addContractIdToConvo);
-  }
-);
-
-router.post("/get_most_recent_convo", [check("id")], (req: express.Request) => {
-  wrapAsync(ChatController.getMostRecentConvo);
+router.post("/add_contract_id_to_convo", (req: Request, res: Response) => {
+  wrapAsync(new ChatController(req, res).addContractIdToConvo);
 });
 
-router.post(
-  "/conversation_put",
-  [check("id"), check("lastMessage"), check("unread")],
-  (req: express.Request) => {
-    wrapAsync(ChatController.conversationPutHandler);
-  }
-);
+router.post("/get_most_recent_convo", (req: Request, res: Response) => {
+  wrapAsync(new ChatController(req, res).getMostRecentConvo);
+});
 
-router.post(
-  "/get_conversation",
-  [check("id").not().isEmpty()],
-  (req: express.Request) => {
-    wrapAsync(ChatController.getConversationHandler);
-  }
-);
+router.post("/conversation_put", (req: Request, res: Response) => {
+  wrapAsync(new ChatController(req, res).conversationPutHandler);
+});
 
-router.post(
-  "/summary_post",
-  [
-    check("conversationID").not().isEmpty(),
-    check("summaryText"),
-    check("sender"),
-  ],
-  (req: express.Request) => {
-    wrapAsync(ChatController.summaryPostHandler);
-  }
-);
+router.post("/get_conversation", (req: Request, res: Response) => {
+  wrapAsync(new ChatController(req, res).getConversationHandler);
+});
 
-router.post(
-  "/convo_post",
-  [
-    check("client"),
-    check("freelancer"),
-    check("sender"),
-    check("message"),
-    check("gigDetails"),
-    check("proposalID"),
-    check("group"),
-  ],
-  (req: express.Request) => {
-    wrapAsync(ChatController.convoPostHandler);
-  }
-);
+router.post("/summary_post", (req: Request, res: Response) => {
+  wrapAsync(new ChatController(req, res).summaryPostHandler);
+});
 
-router.post(
-  "/chat_post",
-  [
-    check("sender").not().isEmpty(),
-    check("message"),
-    check("proposalID"),
-    check("userID"),
-  ],
-  (req: express.Request) => {
-    wrapAsync(ChatController.chatPostHandler);
-  }
-);
+router.post("/convo_post", (req: Request, res: Response) => {
+  wrapAsync(new ChatController(req, res).convoPostHandler);
+});
 
-router.post(
-  "/get_chat",
-  [check("id").not().isEmpty()],
-  (req: express.Request) => {
-    wrapAsync(ChatController.getChatHandler);
-  }
-);
+router.post("/chat_post", (req: Request, res: Response) => {
+  wrapAsync(new ChatController(req, res).chatPostHandler);
+});
 
-router.post(
-  "/mark_as_read",
-  [check("id").not().isEmpty()],
-  (req: express.Request) => {
-    wrapAsync(ChatController.markAsRead);
-  }
-);
+router.post("/get_chat", (req: Request, res: Response) => {
+  wrapAsync(new ChatController(req, res).getChatHandler);
+});
 
-router.post(
-  "/get_convo_by_id",
-  [check("id").not().isEmpty()],
-  (req: express.Request) => {
-    wrapAsync(ChatController.getConvoById);
-  }
-);
+router.post("/mark_as_read", (req: Request, res: Response) => {
+  wrapAsync(new ChatController(req, res).markAsRead);
+});
+
+router.post("/get_convo_by_id", (req: Request, res: Response) => {
+  wrapAsync(new ChatController(req, res).getConvoById);
+});
 
 export default router;

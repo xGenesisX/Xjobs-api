@@ -2,6 +2,9 @@ import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
+import cors from "cors";
+
+import db from "./app/utils/db";
 
 import errorHandler from "./app/middleware/errorHandler";
 
@@ -16,22 +19,30 @@ dotenv.config({ path: __dirname + "/.env" });
 const PORT = process.env.PORT || 8080;
 const app: Express = express();
 
+const corsOptions = {
+  origin: `http://localhost:${PORT}`,
+};
+
 app.use(helmet());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
-app.use("/api/v1/chat", chatRoutes);
-app.use("/api/v1/gig", gigRoutes);
-app.use("/api/v1/profile", profileRoutes);
-app.use("/api/v1/proposal", proposalRoutes);
-app.use("/api/v1/contract", contractRoutes);
+app.use("/v1/gig", gigRoutes);
+app.use("/v1/chat", chatRoutes);
+app.use("/v1/profile", profileRoutes);
+app.use("/v1/proposal", proposalRoutes);
+app.use("/v1/contract", contractRoutes);
 
 app.use(errorHandler);
+
+db();
 
 app.get("/health_check", (req: Request, res: Response) => {
   res.send("<h1>Sometimes science is more art than science</h1>");
 });
+
 app.get("/", (req: Request, res: Response) => {
   res.send("<h1>Wubba Lubba Dub Dub</h1>");
 });
@@ -42,4 +53,4 @@ app.get("*", (req: Request, res: Response) => {
 
 app.listen(PORT, () => console.log(`Getting Schwifty on PORT ${PORT} ⚡`));
 
-export { app };
+export default app;

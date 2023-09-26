@@ -4,7 +4,7 @@ const router = express.Router();
 
 import proposalController from "../controllers/proposal.controller";
 
-import { body, check } from "express-validator";
+// import { body, check } from "express-validator";
 
 function wrapAsync(fn: any) {
   return function (req: Request, res: Response, next: NextFunction) {
@@ -12,42 +12,38 @@ function wrapAsync(fn: any) {
   };
 }
 
-router.put(
-  "/update_proposal_convo_id",
-  [
-    check("id"),
-    check("conversationID"),
-    body("id", "id cannot be empty").not().isEmpty(),
-    body("conversationID", "conversationID cannot be empty").not().isEmpty(),
-  ],
-  (req: express.Request) => {
-    wrapAsync(proposalController.updateProposalConversationID);
-  }
-);
-
-router.get(
-  "/check_proposal_exists",
-  [
-    check("freelancerId"),
-    check("gigID"),
-    body("userId"),
-    body("gigId", "gig id cannot be empty").not().isEmpty(),
-    body("conversationID", "conversation id can not be empty").not().isEmpty(),
-  ],
-  (req: express.Request) => {
-    wrapAsync(proposalController.checkIfProposalExists);
-  }
-);
-
-router.get("/get_job_proposal", (req: express.Request) => {
-  wrapAsync(proposalController.getJobProposal);
+router.put("/update_proposal_convo_id", (req: Request, res: Response) => {
+  wrapAsync(proposalController.updateProposalConversationID(req, res));
 });
 
-router.post(
-  "/accept_proposal",
-  [check("id").not().isEmpty()],
-  (req: express.Request) => {
-    wrapAsync(proposalController.acceptProposal);
+router.get("/check_proposal_exists", (req: Request, res: Response) => {
+  wrapAsync(proposalController.checkIfProposalExists(req, res));
+});
+
+router.get("/get_job_proposal", (req: Request, res: Response) => {
+  wrapAsync(proposalController.getJobProposal(req, res));
+});
+
+router.get("/create_new_proposal", (req: Request, res: Response) => {
+  wrapAsync(proposalController.createNewProposal(req, res));
+});
+
+router.get("/get_a_proposal", (req: Request, res: Response) => {
+  wrapAsync(proposalController.getAProposal(req, res));
+});
+
+router.get("/get_proposal_by_id", (req: Request, res: Response) => {
+  wrapAsync(proposalController.getProposalById(req, res));
+});
+
+router.get("/get_proposals_for_gig", (req: Request, res: Response) => {
+  wrapAsync(proposalController.getProposalsForGig(req, res));
+});
+
+router.get(
+  "/update_proposal_conversation_id",
+  (req: Request, res: Response) => {
+    wrapAsync(proposalController.updateProposalConversationID(req, res));
   }
 );
 

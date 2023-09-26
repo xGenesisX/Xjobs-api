@@ -1,9 +1,9 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { v4 as uuidv4 } from "uuid";
-import db from "../../../utils/db";
-import { SigninMessage } from "../../../utils/SigninMessage";
-import { getSpecificUser } from "../profile/getProfile";
+import db from "../utils/db"
+import { SigninMessage } from "../utils/signMessage"
+import { getUserProfileWithAddress } from "../controllers/profile.controller.ts"
 
 export default NextAuth({
   session: {
@@ -16,8 +16,8 @@ export default NextAuth({
       await db();
       session.user = token.user;
       if (user?.role) session.user.role = user.role;
-      const bannedChecker = await getSpecificUser({
-        addr: session.user.address,
+      const bannedChecker = await getUserProfileWithAddress({
+        userAddress: session.user.address,
       });
 
       if (bannedChecker && bannedChecker.banned) {

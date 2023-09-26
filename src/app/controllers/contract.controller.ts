@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { Request, Response } from "express";
 import ChatController from "./chat.controller";
 import gigController from "./gig.controller";
 import proposalController from "./proposal.controller";
@@ -6,30 +6,26 @@ import Contract from "../models/Contract";
 
 class contractController {
   // @notice accepts a contract
-  acceptContract = async (req: Request) => {
+  acceptContract = async (req: Request, res: Response) => {
     const { gigId, freelancerId, proposalId, conversationID } = req.body;
     try {
       const [result] = await Promise.all([
-        ChatController.summaryPostHandler({
-          body: {
-            conversationID: conversationID,
-            sender: freelancerId,
-            summary: "accepted the offer for this project",
-          },
-        } as Request),
+        new ChatController(req, res).summaryPostHandler(
+          conversationID,
+          "accepted the offer for this project",
+          freelancerId
+        ),
         proposalController.acceptProposal(proposalId),
-        gigController.awardFreelancer({
-          body: { id: gigId, freelancerId: freelancerId, status: "Active" },
-        } as Request),
+        gigController.awardFreelancer(gigId, freelancerId, "Active"),
       ]);
-      return result;
+      res.send(result);
     } catch (error) {
-      return error;
+      res.send(error);
     }
   };
 
   // @notice approve a refund
-  approveRefund = async (req: Request) => {
+  approveRefund = async (req: Request, res: Response) => {
     const {
       userId,
       conversationID,
@@ -49,24 +45,20 @@ class contractController {
       }
     )
       .then(() => {
-        gigController.updateGigStatus({
-          body: { status: "Processing", id: gigId },
-        } as Request);
-        ChatController.summaryPostHandler({
-          body: {
-            conversationID: conversationID,
-            sender: userId,
-            summary: summaryText,
-          },
-        } as Request);
+        gigController.updateGigStatus(gigId, "Processing");
+        new ChatController(req, res).summaryPostHandler(
+          conversationID,
+          summaryText,
+          userId
+        );
       })
       .catch((error) => {
-        return error;
+        res.send(error);
       });
   };
 
   // @notice gets a users contracts
-  getUserContracts = async (req: Request) => {
+  getUserContracts = async (req: Request, res: Response) => {
     const { role, id } = req.query;
     let contract;
     switch (role) {
@@ -81,13 +73,14 @@ class contractController {
           .sort({ updatedAt: -1 });
         break;
       default:
-        return "user does not exist";
+        res.status(400).json("error getting user contracts");
     }
 
-    return contract;
+    res.send(contract);
   };
 
-  hireFreelancer = async (req: Request) => {
+  // @notice hire a freelancer
+  hireFreelancer = async (req: Request, res: Response) => {
     const { clientId, gigId, freelancerId, txHash, amount, conversationID } =
       req.body;
 
@@ -105,113 +98,100 @@ class contractController {
 
       if (contract) {
         await Promise.all([
-          ChatController.addContractIdToConvo({
-            body: { id: conversationID, contractId: contract._id },
-          } as Request),
-          gigController.updateGigStatus({
-            body: { id: gigId, status: "Pending" },
-          } as Request),
-          ChatController.summaryPostHandler({
-            body: {
-              conversationID: conversationID,
-              sender: clientId,
-              summary: `funded escrow contract with ${
-                contract.gigId.currency === "solana"
-                  ? "◎"
-                  : contract.gigId.currency === "usd"
-                  ? "$"
-                  : "no currency"
-              }${amount}`,
-            },
-          } as Request),
+          new ChatController(req, res).addContractIdToConvo(
+            conversationID,
+            contract._id
+          ),
+          gigController.updateGigStatus(gigId, "Pending"),
+          new ChatController(req, res).summaryPostHandler(
+            conversationID,
+            `funded escrow contract with ${
+              contract.gigId.currency === "solana"
+                ? "◎"
+                : contract.gigId.currency === "usd"
+                ? "$"
+                : "no currency"
+            }${amount}`,
+            clientId
+          ),
         ]);
       }
-      return contract;
+      res.send(contract);
     } catch (error) {
-      return error;
+      res.status(400).send(error);
     }
   };
 
-  getHandler = async (req: Request) => {
+  // @notice get all contracts
+  getAllContracts = async (req: Request, res: Response) => {
     // get all contracts from database
-    await Contract.find()
-      .sort({
+    try {
+      const contracts = await Contract.find().sort({
         $natural: -1,
-      })
-      .then((contracts) => {
-        return contracts;
-      })
-      .catch((error) => {
-        return error;
       });
+      res.send(contracts);
+    } catch (error) {
+      res.status(400).json("error getting contracts");
+    }
   };
 
-  rejectContract = async (req: Request) => {
+  // @notice reject contract
+  rejectContract = async (req: Request, res: Response) => {
     const { gigId, freelancerId, conversationID, contractId } = req.body;
 
-    await Promise.all([
-      ChatController.summaryPostHandler({
-        body: {
-          conversationID: conversationID,
-          sender: freelancerId,
-          summary: "rejected the offer for this project",
-        },
-      } as Request),
-      gigController.awardFreelancer({
-        body: {
-          id: gigId,
-          status: "listed",
-        },
-      } as Request),
-      Contract.findOneAndUpdate(
-        { _id: contractId },
-        {
-          status: "Rejected",
-        },
-        {
-          new: true,
-        }
-      ),
-    ])
-      .then((result) => {
-        return result;
-      })
-      .catch((error) => {
-        return error;
-      });
+    try {
+      const result = await Promise.all([
+        new ChatController(req, res).summaryPostHandler(
+          conversationID,
+          "rejected the offer for this project",
+          freelancerId
+        ),
+        gigController.awardFreelancer(gigId, freelancerId, "listed"),
+        Contract.findOneAndUpdate(
+          { _id: contractId },
+          {
+            status: "Rejected",
+          },
+          {
+            new: true,
+          }
+        ),
+      ]);
+      res.send(result);
+    } catch (error) {
+      res.status(400).json("error rejecting contract");
+    }
   };
 
-  releaseFunds = async (req: Request) => {
+  // @notice release funds
+  releaseFunds = async (req: Request, res: Response) => {
     const { gigId, userId, conversationID, contractId } = req.body; // Extract required data from request body
 
     // Create promise array to handle async functions for updating gig status and contract status
-    await Promise.all([
-      gigController.updateGigStatus({
-        body: {
-          id: gigId,
-          status: "Processing",
-        },
-      } as Request),
-      Contract.findOneAndUpdate(
-        { _id: contractId },
-        {
-          status: "Release",
-        },
-        {
-          new: true,
-        }
-      ),
-    ]);
+    try {
+      const result = await Promise.all([
+        gigController.updateGigStatus(gigId, "Processing"),
+        Contract.findOneAndUpdate(
+          { _id: contractId },
+          {
+            status: "Release",
+          },
+          {
+            new: true,
+          }
+        ),
+        // Send summary message data as response
+        new ChatController(req, res).summaryPostHandler(
+          conversationID,
+          "initiated release of funds",
+          userId
+        ),
+      ]);
 
-    // Send summary message data as response
-    const result = await ChatController.summaryPostHandler({
-      body: {
-        conversationID: conversationID,
-        sender: userId,
-        summary: "initiated release of funds",
-      },
-    } as Request);
-    return result;
+      res.send(result);
+    } catch (error) {
+      res.status(400).json("error releasing funds");
+    }
   };
 }
 

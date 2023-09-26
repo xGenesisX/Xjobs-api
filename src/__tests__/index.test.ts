@@ -1,6 +1,6 @@
 import supertest from "supertest";
 
-import { app } from "../index";
+import app from "../index";
 
 describe("Routing", () => {
   it("should return `200` when GET index", async () => {

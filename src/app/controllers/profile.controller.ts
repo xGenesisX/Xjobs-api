@@ -6,8 +6,6 @@ import Email from "../utils/mailer";
 import Joi from "@hapi/joi";
 
 class profileController {
-  constructor() {}
-
   // @notice update a user profile, adds feedback
   addFeedbackToUserProfile = async (req: Request, res: Response) => {
     const { title, description, rate, gigId, userId } = req.body;
@@ -31,20 +29,30 @@ class profileController {
           new: true,
         }
       );
-      return user;
+      res.send(user);
     } catch (error) {
       return res.status(400).json("error updating profile");
     }
   };
 
   // @notice get a specific user by its id
-  getUserProfileWithId = async (req: Request) => {
+  getUserProfileWithId = async (req: Request, res: Response) => {
     const { userId } = req.body;
+    try {
+      const user = await User.findOne({ _id: userId });
+      res.send(user);
+    } catch (error) {
+      res.send(error);
+    }
+  };
+
+  // @notice get a specific user by its id
+  getUserWithId = async (userId: string) => {
     try {
       const user = await User.findOne({ _id: userId });
       return user;
     } catch (error) {
-      return "error getting user";
+      return error;
     }
   };
 
@@ -54,21 +62,21 @@ class profileController {
 
     try {
       const user = await User.findOne({ userAddress });
-      return user;
+      res.send(user);
     } catch (error) {
-      return res.status(400).json("error getting user");
+      res.send(error);
     }
   };
 
   // @notice create a new user profile
   createUserProfile = async (req: Request, res: Response) => {
-    const schema = Joi.object().keys({
-      name: Joi.string().required(),
-    });
+    // const schema = Joi.object().keys({
+    //   name: Joi.string().required(),
+    // });
 
-    if (!schema.validate(req.body)) {
-      return { error: "Validation fails" };
-    }
+    // if (!schema.validate(req.body)) {
+    //   return { error: "Validation fails" };
+    // }
 
     // add validation for the user input here
 
@@ -80,40 +88,30 @@ class profileController {
         emailVerificationToken: verificationToken,
       });
       // Use Promise.allSettled to execute multiple async operations in parallel
-      //   const [user, conversation, email] = await Promise.all([
-      //     newUser.save(),
-      //     ChatController.convoPostHandler({
-      //       body: {
-      //         client: "64073a3334365f04f6854e69",
-      //         freelancer: newUser._id,
-      //         sender: "64073a3334365f04f6854e69",
-      //         group: true,
-      //         message: `Hey ${newUser.name},\nWelcome to XJobs! 👋\nHere you'll be able to send and receive messages about your projects on XJobs. In the sidebar to the right, you'll see next steps you'll need to take in order to move forward.\nWe're so happy you're here! 🚀`,
-      //       },
-      //     } as Request),
-      //     new Email(
-      //       { name: newUser.name, email: newUser.email_address },
-      //       this.url
-      //     ).sendWelcome(),
-      //   ]);
+      const onboard = await Promise.all([
+        newUser.save(),
+        new ChatController(req, res).convoPostHandler(
+          "64073a3334365f04f6854e69",
+          newUser._id,
+          "64073a3334365f04f6854e69",
+          `Hey ${newUser.name},\nWelcome to XJobs! 👋\nHere you'll be able to send and receive messages about your projects on XJobs. In the sidebar to the right, you'll see next steps you'll need to take in order to move forward.\nWe're so happy you're here! 🚀`,
+          "",
+          "",
+          true
+        ),
+        new Email(newUser.email_address, newUser.name).sendWelcome(),
+      ]);
       // Check if all operations were successful
-      if (
-        // user.status === "fulfilled" &&
-        // conversation.status === "fulfilled" &&
-        // email.status === "fulfilled"
-        // user &&
-        // email
-        true
-      ) {
-        return newUser;
+      if (onboard) {
+        res.send(newUser);
       } else {
         // If any operation fails, delete the user and return an error
         // will likely fail if the user already exists
         await User.deleteOne({ _id: newUser._id });
-        return res.status(400).json("error parsing request");
+        res.status(400).json("error parsing request");
       }
     } catch (error) {
-      return { message: "internal server error" };
+      res.status(400).json("internal server error");
     }
   };
 
@@ -134,7 +132,7 @@ class profileController {
     );
 
     if (!userExists) {
-      return res.status(400).json("user not found");
+      res.status(400).json("user not found");
     } else {
       Promise.all([userExists()]);
       // send a mail to ther user confirming thier profile has been updated

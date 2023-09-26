@@ -1,4 +1,7 @@
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+dotenv.config({ path: __dirname + "/.env" });
 
 // For create email obj to send actual emails.
 export default class Email {
@@ -72,18 +75,21 @@ export default class Email {
       "Generic Freelancer Notification"
     );
   }
+
   async FreelancerOnboardingNotification() {
     await this.send(
       "Welcome to XJobs!",
       "Welcome to XJobs! Our platform connects you with skilled freelancers and clients in the Web3 community. We offer an easy-to-use interface and smart contract-based escrow to ensure secure and seamless transactions.If you have any questions or concerns, please contact us at support@xjobs.io.Best regards,The XJobs team"
     );
   }
+
   async NewMessageNotification() {
     await this.send(
       "you have a new message!",
       "Hey there! You have got a new message waiting for you. Log in to your account to check it out"
     );
   }
+
   async ProfileUpdateNotification() {
     await this.send(
       "Details updated!",

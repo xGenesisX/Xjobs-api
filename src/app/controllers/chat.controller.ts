@@ -1,6 +1,6 @@
 import Ably from "ably/promises";
 import dotenv from "dotenv";
-import { Request } from "express";
+import { Request, Response } from "express";
 import { getToken } from "next-auth/jwt";
 import pako from "pako";
 import Email from "../utils/mailer";
@@ -11,7 +11,7 @@ import {
   default as convo,
 } from "../models/Conversation";
 import Message from "../models/Message";
-import expressValidator from "express-validator";
+// import expressValidator from "express-validator";
 
 // const validator = expressValidator.check();
 
@@ -21,25 +21,29 @@ class ChatController {
   ably_key: string;
   rest: Ably.Rest;
   url: string;
-  constructor() {
+  token: any;
+  constructor(req: Request, res: Response) {
     this.ably_key = process.env.ABLY_API_KEY + "";
     this.rest = new Ably.Rest(this.ably_key);
-    // this.url = `${req.protocol}://${req.get("host")}/chat`;
-    this.url = "";
+    this.url = `${req.protocol}://${req.get("host")}/chat`;
+    this.token = getToken({ req });
   }
 
-  chatPostHandler = async (req: Request) => {
-    let { sender, message, conversationID, userID } = req.body;
+  chatPostHandler = async (
+    sender: any,
+    message: any,
+    conversationID: any,
+    userID: any
+  ) => {
+    // let { sender, message, conversationID, userID } = req.body;
     // add Joi validation
-    const schema = Joi.object({
-      name: Joi.string().required().min(1).max(10),
-      age: Joi.number().integer().min(1).max(10),
-    });
-
-    const token = getToken({ req });
+    // const schema = Joi.object({
+    //   name: Joi.string().required().min(1).max(10),
+    //   age: Joi.number().integer().min(1).max(10),
+    // });
 
     const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(token, null, 2),
+      clientId: JSON.stringify(this.token, null, 2),
     });
 
     try {
@@ -56,20 +60,9 @@ class ChatController {
       const channel = this.rest.channels.get(`chat${conversationID}`);
       await Promise.all([
         channel.publish("update-chat", compressedMessage),
-        this.conversationPutHandler({
-          body: {
-            id: conversationID,
-            lastMessage: savedMessage._id,
-            unread: 1,
-            userID: userID,
-          },
-        } as Request),
-
-        await profileController.getUserProfileWithId(userID).then((user) => {
-          // new Email(
-          //   { name: user.name, email: user.email_address },
-          //   this.url
-          // ).sendWelcome();
+        this.conversationPutHandler(conversationID, savedMessage._id, 1),
+        await profileController.getUserWithId(userID).then((user) => {
+          new Email(user.email_address, user.name).NewMessageNotification();
         }),
       ]);
 
@@ -79,13 +72,11 @@ class ChatController {
     }
   };
 
-  getChatHandler = async (req: Request) => {
-    let { id } = req.body;
-    // add Joi validation
-    const token = getToken({ req });
+  getChatHandler = async (id: string) => {
+    // add validation here
 
     const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(token, null, 2),
+      clientId: JSON.stringify(this.token, null, 2),
     });
 
     const message = await Message.find({ conversationID: id });
@@ -98,13 +89,11 @@ class ChatController {
     return { compressedMessage, tokenRequestData };
   };
 
-  conversationPutHandler = async (req: Request) => {
-    const { id, lastMessage, unread } = req.body;
+  conversationPutHandler = async (id: any, lastMessage: any, unread: any) => {
     // add Joi validation
-    const token = getToken({ req });
 
     const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(token, null, 2),
+      clientId: JSON.stringify(this.token, null, 2),
     });
 
     try {
@@ -138,14 +127,19 @@ class ChatController {
     }
   };
 
-  convoPostHandler = async (req: Request) => {
-    let { client, freelancer, sender, message, gigDetails, proposalID, group } =
-      req.body;
+  convoPostHandler = async (
+    client: string,
+    freelancer: string,
+    sender: string,
+    message: string,
+    gigDetails: any,
+    proposalID: any,
+    group: boolean
+  ) => {
     // Joi validation
-    const token = getToken({ req });
 
     const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(token, null, 2),
+      clientId: JSON.stringify(this.token, null, 2),
     });
 
     await convo
@@ -176,28 +170,19 @@ class ChatController {
           }) as Request;
         }
 
-        const chat = this.chatPostHandler({
-          body: {
-            sender: sender,
-            message: message,
-            conversationID: savedConvo._id,
-          },
-        } as Request);
+        const chat = this.chatPostHandler(sender, message, savedConvo._id, "");
 
-        const finalConvo = this.conversationPutHandler({
-          body: { id: savedConvo._id, lastMessage: chat, unread: 0 },
-        } as Request);
+        const finalConvo = this.conversationPutHandler(savedConvo._id, chat, 0);
 
         return { finalConvo, tokenRequestData };
       });
   };
 
-  getConversationHandler = async (req: Request) => {
-    let { id } = req.query;
-    const token = getToken({ req });
+  getConversationHandler = async (id: string) => {
+    // let { id } = req.query;
 
     const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(token, null, 2),
+      clientId: JSON.stringify(this.token, null, 2),
     });
 
     const conv = await convo
@@ -214,8 +199,8 @@ class ChatController {
     return { compressedConvoo, tokenRequestData };
   };
 
-  getConvoById = async (req: Request) => {
-    const { id } = req.body;
+  getConvoById = async (id: string) => {
+    // const { id } = req.body;
     const conv = await convo.findById(id).populate("members gigDetails");
 
     const compressedConvoo = pako.deflate(JSON.stringify(conv));
@@ -223,12 +208,11 @@ class ChatController {
     return compressedConvoo;
   };
 
-  addContractIdToConvo = async (req: Request) => {
-    const { id, contractId } = req.body;
-    const token = getToken({ req });
+  addContractIdToConvo = async (id: any, contractId: any) => {
+    // const { id, contractId } = req.body;
 
     const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(token, null, 2),
+      clientId: JSON.stringify(this.token, null, 2),
     });
 
     try {
@@ -248,24 +232,22 @@ class ChatController {
     }
   };
 
-  getMostRecentConvo = async (req: Request) => {
-    const { id } = req.query;
-    const token = getToken({ req });
+  getMostRecentConvo = async (id: any) => {
+    // const { id } = req.query;
 
     const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(token, null, 2),
+      clientId: JSON.stringify(this.token, null, 2),
     });
 
     const conv = await convo.findOne({ members: id }).sort({ createdAt: -1 });
     return { conv, tokenRequestData };
   };
 
-  markAsRead = async (req: Request) => {
-    const { id } = req.body;
-    const token = getToken({ req });
+  markAsRead = async (id: any) => {
+    // const { id } = req.body;
 
     const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(token, null, 2),
+      clientId: JSON.stringify(this.token, null, 2),
     });
 
     try {
@@ -301,15 +283,17 @@ class ChatController {
     }
   };
 
-  summaryPostHandler = async (req: Request) => {
-    const token = getToken({ req });
-
+  summaryPostHandler = async (
+    conversationID: any,
+    summaryText: any,
+    sender: any
+  ) => {
     const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(token, null, 2),
+      clientId: JSON.stringify(this.token, null, 2),
     });
 
     try {
-      const { conversationID, summaryText, sender } = req.body;
+      // const { conversationID, summaryText, sender } = req.body;
 
       const updatedConvo = await conversation
         .findOneAndUpdate(
@@ -339,4 +323,4 @@ class ChatController {
   };
 }
 
-export default new ChatController();
+export default ChatController;

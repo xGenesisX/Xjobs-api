@@ -4,7 +4,7 @@ const router = express.Router();
 
 import contractController from "../controllers/contract.controller";
 
-import { check } from "express-validator";
+// import { check } from "express-validator";
 
 function wrapAsync(fn: any) {
   return function (req: Request, res: Response, next: NextFunction) {
@@ -12,68 +12,32 @@ function wrapAsync(fn: any) {
   };
 }
 
-router.get(
-  "/get_contracts",
-  [check("role"), check("id")],
-  (req: express.Request) => {
-    wrapAsync(contractController.getUserContracts);
-  }
-);
+router.get("/get_contracts", (req: Request, res: Response) => {
+  wrapAsync(contractController.getUserContracts(req, res));
+});
 
-router.post(
-  "/hire_freelancer",
-  [
-    check("clientId"),
-    check("gigId"),
-    check("freelancerId"),
-    check("txHash"),
-    check("amount"),
-    check("conversationID"),
-  ],
-  (req: express.Request, res: express.Response) => {
-    wrapAsync(contractController.hireFreelancer);
-  }
-);
+router.post("/hire_freelancer", (req: Request, res: Response) => {
+  wrapAsync(contractController.hireFreelancer(req, res));
+});
 
-router.get(
-  "/reject_contract",
-  [
-    check("gigId"),
-    check("freelancerId"),
-    check("conversationId"),
-    check("contractId"),
-  ],
-  (req: express.Request, res: express.Response) => {
-    wrapAsync(contractController.rejectContract);
-  }
-);
-router.get(
-  "/accept_contract",
-  [
-    check("conversationID"),
-    check("proposalId"),
-    check("freelancerId"),
-    check("gigId"),
-  ],
-  (req: express.Request) => {
-    wrapAsync(contractController.acceptContract);
-  }
-);
+router.get("/reject_contract", (req: Request, res: Response) => {
+  wrapAsync(contractController.rejectContract(req, res));
+});
 
-router.get(
-  "/approve_refund",
-  [
-    check("userId"),
-    check("conversationID"),
-    check("contractId"),
-    check("contractStatus"),
-    check("summaryText"),
-    check("gigId"),
-  ],
-  (req: express.Request, res: express.Response) => {
-    wrapAsync(contractController.approveRefund);
-  }
-);
-router.get("/get_contract", wrapAsync(contractController.getHandler));
+router.get("/accept_contract", (req: Request, res: Response) => {
+  wrapAsync(contractController.acceptContract(req, res));
+});
+
+router.get("/approve_refund", (req: Request, res: Response) => {
+  wrapAsync(contractController.approveRefund(req, res));
+});
+
+router.get("/get_contract", (req: Request, res: Response) => {
+  wrapAsync(contractController.getAllContracts(req, res));
+});
+
+router.get("/get_contract", (req: Request, res: Response) => {
+  wrapAsync(contractController.releaseFunds(req, res));
+});
 
 export default router;
