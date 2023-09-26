@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+
+dotenv.config({ path: __dirname + "/.env" });
 
 const MONGODB_URI = process.env.MONGO_URL + "";
 
@@ -15,10 +18,7 @@ async function db() {
     return cachedConnection;
   }
   try {
-    await mongoose.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    } as any);
+    await mongoose.connect(MONGODB_URI);
     console.log("MongoDB Connected");
     cachedConnection = mongoose.connection;
     return cachedConnection;
