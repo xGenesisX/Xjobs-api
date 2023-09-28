@@ -9,7 +9,7 @@ class contractController {
   acceptContract = async (req: Request, res: Response) => {
     const { gigId, freelancerId, proposalId, conversationID } = req.body;
     try {
-      const [result] = await Promise.all([
+      const result = await Promise.all([
         new ChatController(req, res).summaryPostHandler(
           conversationID,
           "accepted the offer for this project",
@@ -18,9 +18,11 @@ class contractController {
         proposalController.acceptProposal(proposalId),
         gigController.awardFreelancer(gigId, freelancerId, "Active"),
       ]);
-      res.send(result);
+      if (result) {
+        res.status(200).json("Contract accepted");
+      }
     } catch (error) {
-      res.send(error);
+      res.status(400).send(error);
     }
   };
 
@@ -35,48 +37,56 @@ class contractController {
       gigId,
     } = req.body;
 
-    await Contract.findOneAndUpdate(
-      { _id: contractId },
-      {
-        status: contractStatus,
-      },
-      {
-        new: true,
+    try {
+      const contract = await Contract.findOneAndUpdate(
+        { _id: contractId },
+        {
+          status: contractStatus,
+        },
+        {
+          new: true,
+        }
+      );
+      if (contract) {
+        Promise.all([
+          gigController.updateGigStatus(gigId, "Processing"),
+          new ChatController(req, res).summaryPostHandler(
+            conversationID,
+            summaryText,
+            userId
+          ),
+        ]);
       }
-    )
-      .then(() => {
-        gigController.updateGigStatus(gigId, "Processing");
-        new ChatController(req, res).summaryPostHandler(
-          conversationID,
-          summaryText,
-          userId
-        );
-      })
-      .catch((error) => {
-        res.send(error);
-      });
+      res.send(contract);
+    } catch (error) {
+      res.status(400).send(error);
+    }
   };
 
   // @notice gets a users contracts
   getUserContracts = async (req: Request, res: Response) => {
     const { role, id } = req.query;
-    let contract;
-    switch (role) {
-      case "client":
-        contract = await Contract.find({ clientId: id })
-          .populate("clientId freelancerId gigId")
-          .sort({ updatedAt: -1 });
-        break;
-      case "freelancer":
-        contract = await Contract.find({ freelancerId: id })
-          .populate("clientId freelancerId gigId")
-          .sort({ updatedAt: -1 });
-        break;
-      default:
-        res.status(400).json("error getting user contracts");
-    }
+    try {
+      let contract;
+      switch (role) {
+        case "client":
+          contract = await Contract.find({ clientId: id })
+            .populate("clientId freelancerId gigId")
+            .sort({ updatedAt: -1 });
+          break;
+        case "freelancer":
+          contract = await Contract.find({ freelancerId: id })
+            .populate("clientId freelancerId gigId")
+            .sort({ updatedAt: -1 });
+          break;
+        default:
+          res.status(400).json("error getting user contracts");
+      }
 
-    res.send(contract);
+      res.send(contract);
+    } catch (error) {
+      res.status(400).send(error);
+    }
   };
 
   // @notice hire a freelancer
@@ -131,7 +141,7 @@ class contractController {
       });
       res.send(contracts);
     } catch (error) {
-      res.status(400).json("error getting contracts");
+      res.status(400).send(error);
     }
   };
 
@@ -159,7 +169,7 @@ class contractController {
       ]);
       res.send(result);
     } catch (error) {
-      res.status(400).json("error rejecting contract");
+      res.status(400).send(error);
     }
   };
 
@@ -190,7 +200,7 @@ class contractController {
 
       res.send(result);
     } catch (error) {
-      res.status(400).json("error releasing funds");
+      res.status(400).send(error);
     }
   };
 }
