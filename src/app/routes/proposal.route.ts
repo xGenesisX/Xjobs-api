@@ -4,6 +4,8 @@ const router = express.Router();
 
 import proposalController from "../controllers/proposal.controller";
 
+// import { body, check } from "express-validator";
+
 function wrapAsync(fn: any) {
   return function (req: Request, res: Response, next: NextFunction) {
     fn(req, res, next).catch(next);
