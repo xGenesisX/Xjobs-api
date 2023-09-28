@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import User from "../models/User";
 // send mail to receiver of tokens
 
@@ -14,7 +15,7 @@ class pointController {
   };
 
   // @notice awards points to a user
-  createFreelancerAccount = async (userId: string) => {
+  createFreelancerAccount = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
       { $inc: { points: 5 } },
@@ -23,7 +24,7 @@ class pointController {
   };
 
   // @notice awards points to a user
-  createClientAccount = async (userId: string) => {
+  createClientAccount = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
       { $inc: { points: 7 } },
@@ -32,7 +33,7 @@ class pointController {
   };
 
   // @notice awards points to a user
-  referNewUser = async (userId: string) => {
+  referNewUser = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
       { $inc: { points: 10 } },
@@ -41,7 +42,7 @@ class pointController {
   };
 
   // @notice awards points to a user
-  completingAJob = async (userId: string) => {
+  completingAJob = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
       { $inc: { points: 30 } },
@@ -50,7 +51,7 @@ class pointController {
   };
 
   // @notice awards points to a user
-  leavingReviews = async (userId: string) => {
+  leavingReviews = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
       { $inc: { points: 10 } },
@@ -59,7 +60,7 @@ class pointController {
   };
 
   // @notice awards points to a user
-  tweetingAboutXjobs = async (userId: string) => {
+  tweetingAboutXjobs = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
       { $inc: { points: 15 } },
@@ -68,7 +69,7 @@ class pointController {
   };
 
   // @notice awards points to a user
-  VotingOnProposals = async (userId: string) => {
+  VotingOnProposals = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
       { $inc: { points: 25 } },
@@ -77,7 +78,7 @@ class pointController {
   };
 
   // @notice awards points to a user
-  GettingAGoodReview = async (userId: string) => {
+  GettingAGoodReview = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
       { $inc: { points: 20 } },

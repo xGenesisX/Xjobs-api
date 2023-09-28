@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Gig from "../models/Gig";
 import Proposal from "../models/Proposal";
 import User from "../models/User";
+import mongoose from "mongoose";
 
 class proposalController {
   // @notice create a new proposal
@@ -29,15 +30,14 @@ class proposalController {
               { $addToSet: { submittedProposals: propId } }
             ),
           ]);
+
           await gig.save();
 
           res.send(proposal);
-        } else {
-          res.status(400).json("error saving proposal");
         }
       }
     } catch (error) {
-      res.send(error);
+      res.status(400).json(error);
     }
   };
 
@@ -51,7 +51,7 @@ class proposalController {
       });
       res.send(gig);
     } catch (error) {
-      res.json("error getting proposal");
+      res.json(error);
     }
   };
 
@@ -67,12 +67,12 @@ class proposalController {
         });
       res.send(proposal);
     } catch (error) {
-      res.json("error getting proposal");
+      res.json(error);
     }
   };
 
   // @notice accept a proposal with a given id
-  acceptProposal = async (id: string) => {
+  acceptProposal = async (id: mongoose.Types.ObjectId) => {
     try {
       const proposal = await Proposal.findOneAndUpdate(
         { _id: id },
@@ -87,7 +87,7 @@ class proposalController {
       );
       return proposal;
     } catch (error) {
-      return "error accepting proposal";
+      return error;
     }
   };
 
@@ -114,7 +114,7 @@ class proposalController {
         });
       res.send(proposal);
     } catch (error) {
-      res.json(error);
+      res.send(error);
     }
   };
 
@@ -132,7 +132,7 @@ class proposalController {
       );
       res.send(proposal);
     } catch (error) {
-      res.json(`error updating proposal conversation id ${id}`);
+      res.json(error);
     }
   };
 
@@ -147,7 +147,7 @@ class proposalController {
         .sort({ $natural: -1 });
       res.send(proposals);
     } catch (error) {
-      res.json("error getting proposal");
+      res.send(error);
     }
   };
 
@@ -161,7 +161,7 @@ class proposalController {
       });
       res.send(proposal);
     } catch (error) {
-      res.json(`error getting proposal for ${gigId}`);
+      res.send(error);
     }
   };
 }
