@@ -16,7 +16,7 @@ import proposalRoutes from "./app/routes/proposal.route";
 
 dotenv.config({ path: __dirname + "/.env" });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 const app: Express = express();
 
 const corsOptions = {
