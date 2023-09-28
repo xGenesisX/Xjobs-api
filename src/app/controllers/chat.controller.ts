@@ -4,16 +4,14 @@ import { Request, Response } from "express";
 import { getToken } from "next-auth/jwt";
 import pako from "pako";
 import Email from "../utils/mailer";
-import Joi from "@hapi/joi";
+// import Joi from "@hapi/joi";
 import profileController from "./profile.controller";
 import {
   default as conversation,
   default as convo,
 } from "../models/Conversation";
 import Message from "../models/Message";
-// import expressValidator from "express-validator";
-
-// const validator = expressValidator.check();
+import mongoose from "mongoose";
 
 dotenv.config({ path: "../../.env" });
 
@@ -27,74 +25,68 @@ class ChatController {
     this.rest = new Ably.Rest(this.ably_key);
     this.url = `${req.protocol}://${req.get("host")}/chat`;
     this.token = getToken({ req });
+
+    this.rest.auth.createTokenRequest({
+      clientId: JSON.stringify(this.token, null, 2),
+    });
   }
 
+  // @notice create a new message, update a conversation, send notification mail to user
   chatPostHandler = async (
-    sender: any,
-    message: any,
-    conversationID: any,
-    userID: any
-  ) => {
-    // let { sender, message, conversationID, userID } = req.body;
+    sender: mongoose.Types.ObjectId,
+    message: string,
+    conversationID: mongoose.Types.ObjectId,
+    userID: mongoose.Types.ObjectId
+  ): Promise<mongoose.Types.ObjectId> => {
     // add Joi validation
     // const schema = Joi.object({
     //   name: Joi.string().required().min(1).max(10),
     //   age: Joi.number().integer().min(1).max(10),
     // });
 
-    const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(this.token, null, 2),
+    const newMessage = new Message({
+      sender: sender,
+      message: message,
+      conversationID: conversationID,
     });
 
-    try {
-      const newMessage = new Message({
-        sender: sender,
-        message: message,
-        conversationID: conversationID,
-      });
+    const savedMessage = await newMessage.save();
 
-      const savedMessage = await newMessage.save();
+    const compressedMessage = pako.deflate(JSON.stringify(savedMessage));
 
-      const compressedMessage = pako.deflate(JSON.stringify(savedMessage));
+    const channel = this.rest.channels.get(`chat${conversationID}`);
 
-      const channel = this.rest.channels.get(`chat${conversationID}`);
-      await Promise.all([
-        channel.publish("update-chat", compressedMessage),
-        this.conversationPutHandler(conversationID, savedMessage._id, 1),
-        await profileController.getUserWithId(userID).then((user) => {
-          new Email(user.email_address, user.name).NewMessageNotification();
-        }),
-      ]);
+    await Promise.all([
+      channel.publish("update-chat", compressedMessage),
+      this.conversationPutHandler(conversationID, savedMessage._id, 1),
+      profileController.getUserWithId(userID).then((user) => {
+        new Email(user.email_address, user.name).NewMessageNotification();
+      }),
+    ]);
 
-      return { compressedMessage, tokenRequestData };
-    } catch (error) {
-      return error;
-    }
+    return savedMessage._id;
   };
 
-  getChatHandler = async (id: string) => {
+  // @notice get chat message by id
+  getChatHandler = async (id: mongoose.Types.ObjectId) => {
     // add validation here
-
-    const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(this.token, null, 2),
-    });
 
     const message = await Message.find({ conversationID: id });
 
-    if (!message.length) {
+    if (message.length == 0) {
       return { error: "Conversation does not exist" };
     }
-    const compressedMessage = pako.deflate(JSON.stringify(message));
 
-    return { compressedMessage, tokenRequestData };
+    return message;
   };
 
-  conversationPutHandler = async (id: any, lastMessage: any, unread: any) => {
+  // @notice update a conversation with a message and read count
+  conversationPutHandler = async (
+    id: mongoose.Types.ObjectId,
+    lastMessage: mongoose.Types.ObjectId,
+    unread: number
+  ) => {
     // add Joi validation
-
-    const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(this.token, null, 2),
-    });
 
     try {
       const convoCurrentUnread = await convo.findById(id);
@@ -121,26 +113,23 @@ class ChatController {
       const channel = this.rest.channels.get(`conversations`);
       await channel.publish("update-convo", compressedConvoo);
 
-      return { convoo, tokenRequestData };
+      return convoo;
     } catch (error) {
       return error;
     }
   };
 
+  // @notice create a new conversation, if it doesnt previosly exist
   convoPostHandler = async (
-    client: string,
-    freelancer: string,
-    sender: string,
+    client: mongoose.Types.ObjectId,
+    freelancer: mongoose.Types.ObjectId,
+    sender: mongoose.Types.ObjectId,
     message: string,
-    gigDetails: any,
-    proposalID: any,
-    group: boolean
+    group: boolean,
+    gigDetails?: mongoose.Types.ObjectId,
+    proposalID?: mongoose.Types.ObjectId
   ) => {
     // Joi validation
-
-    const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(this.token, null, 2),
-    });
 
     await convo
       .exists({
@@ -148,12 +137,11 @@ class ChatController {
         gigDetails: gigDetails,
       })
       .then(() => {
-        const c = convo
+        return convo
           .findOne({ members: [client, freelancer] })
           .populate("lastMessage members gigDetails");
-        return c;
       })
-      .catch(() => {
+      .finally(async () => {
         const newConvo = new convo({
           createdBy: client,
           members: [client, freelancer],
@@ -164,26 +152,22 @@ class ChatController {
 
         const savedConvo = newConvo.save();
 
-        if (proposalID) {
-          ({
-            body: { conversationID: savedConvo._id, id: proposalID },
-          }) as Request;
-        }
-
-        const chat = this.chatPostHandler(sender, message, savedConvo._id, "");
+        const chat = await this.chatPostHandler(
+          sender,
+          message,
+          savedConvo._id,
+          freelancer
+        );
 
         const finalConvo = this.conversationPutHandler(savedConvo._id, chat, 0);
 
-        return { finalConvo, tokenRequestData };
+        return finalConvo;
       });
   };
 
-  getConversationHandler = async (id: string) => {
+  // @notice get most recent converstions of a user by id
+  getConversationHandler = async (id: mongoose.Types.ObjectId) => {
     // let { id } = req.query;
-
-    const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(this.token, null, 2),
-    });
 
     const conv = await convo
       .find({ members: id })
@@ -194,27 +178,20 @@ class ChatController {
         populate: { path: "awardedFreelancer", model: "User" },
       });
 
-    const compressedConvoo = pako.deflate(JSON.stringify(conv));
-
-    return { compressedConvoo, tokenRequestData };
+    return conv;
   };
 
-  getConvoById = async (id: string) => {
-    // const { id } = req.body;
+  // @notice get a conversation by id
+  getConvoById = async (id: mongoose.Types.ObjectId) => {
     const conv = await convo.findById(id).populate("members gigDetails");
-
-    const compressedConvoo = pako.deflate(JSON.stringify(conv));
-
-    return compressedConvoo;
+    return conv;
   };
 
-  addContractIdToConvo = async (id: any, contractId: any) => {
-    // const { id, contractId } = req.body;
-
-    const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(this.token, null, 2),
-    });
-
+  // @notice add a contract id to a conversation
+  addContractIdToConvo = async (
+    id: mongoose.Types.ObjectId,
+    contractId: mongoose.Types.ObjectId
+  ) => {
     try {
       const convoo = await convo.findOneAndUpdate(
         { _id: id },
@@ -226,30 +203,20 @@ class ChatController {
         }
       );
 
-      return { convoo, tokenRequestData };
+      return convoo;
     } catch (error) {
       return error;
     }
   };
 
-  getMostRecentConvo = async (id: any) => {
-    // const { id } = req.query;
-
-    const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(this.token, null, 2),
-    });
-
+  // @notice get most recent conversation for a user
+  getMostRecentConvo = async (id: mongoose.Types.ObjectId) => {
     const conv = await convo.findOne({ members: id }).sort({ createdAt: -1 });
-    return { conv, tokenRequestData };
+    return conv;
   };
 
-  markAsRead = async (id: any) => {
-    // const { id } = req.body;
-
-    const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(this.token, null, 2),
-    });
-
+  // @notice mark a conversation as read by id
+  markAsRead = async (id: mongoose.Types.ObjectId) => {
     try {
       await convo.exists({ _id: id }).then(() => {
         const convoo = convo
@@ -276,25 +243,20 @@ class ChatController {
         const channel = this.rest.channels.get(`conversations`);
         channel.publish("update-convo", compressedConvoo);
 
-        return { convoo, tokenRequestData };
+        return convoo;
       });
     } catch (error) {
       return error;
     }
   };
 
+  // @notice make a new summary
   summaryPostHandler = async (
-    conversationID: any,
-    summaryText: any,
-    sender: any
+    conversationID: mongoose.Types.ObjectId,
+    summaryText: string,
+    sender: mongoose.Types.ObjectId
   ) => {
-    const tokenRequestData = await this.rest.auth.createTokenRequest({
-      clientId: JSON.stringify(this.token, null, 2),
-    });
-
     try {
-      // const { conversationID, summaryText, sender } = req.body;
-
       const updatedConvo = await conversation
         .findOneAndUpdate(
           { _id: conversationID },
@@ -316,7 +278,7 @@ class ChatController {
       const channel = this.rest.channels.get(`conversations`);
       await channel.publish("update-convo", compressedConvoo);
 
-      return { updatedConvo, tokenRequestData };
+      return updatedConvo;
     } catch (error) {
       return error;
     }
