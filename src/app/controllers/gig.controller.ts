@@ -4,8 +4,10 @@ import CancelGig from "../models/CancelGig";
 import Gig from "../models/Gig";
 import User from "../models/User";
 import ChatController from "./chat.controller";
-import { Query } from "../interfaces/Query";
-import Joi from "@hapi/joi";
+import profileController from "./profile.controller";
+// import Joi from "@hapi/joi";
+import mongoose from "mongoose";
+import Email from "../utils/mailer";
 
 class gigController {
   // @notice get a gig by its id
@@ -22,7 +24,7 @@ class gigController {
       });
       res.send(gig);
     } catch (error) {
-      res.status(400).json("error getting gig by id");
+      res.status(400).json(error);
     }
   };
 
@@ -37,7 +39,7 @@ class gigController {
       });
       res.send(gig);
     } catch (error) {
-      res.status(400).json("error getting gig by id");
+      res.status(400).json(error);
     }
   };
 
@@ -55,7 +57,7 @@ class gigController {
       });
       res.send(gig);
     } catch (error) {
-      res.status(400).json("error getting my jobs");
+      res.status(400).json(error);
     }
   };
 
@@ -69,7 +71,7 @@ class gigController {
       }).sort({ $natural: -1 });
       res.send(gig);
     } catch (error) {
-      res.status(400).json("error getting gigs by owner");
+      res.status(400).send(error);
     }
   };
 
@@ -89,14 +91,14 @@ class gigController {
       );
       res.send(gig);
     } catch (error) {
-      res.status(400).json("error updating gig");
+      res.status(400).send(error);
     }
   };
 
   // @notice awards a gig to a freelancer
   awardFreelancer = async (
-    id: string,
-    freelancerId: string,
+    id: mongoose.Types.ObjectId,
+    freelancerId: mongoose.Types.ObjectId,
     status: string
   ) => {
     try {
@@ -131,13 +133,13 @@ class gigController {
 
         return gig;
       }
-    } catch (e) {
-      return "error awarding freelancer gig";
+    } catch (error) {
+      return error;
     }
   };
 
   // @notice update a gig status
-  updateGigStatus = async (id: string, status: string) => {
+  updateGigStatus = async (id: mongoose.Types.ObjectId, status: string) => {
     try {
       const gig = await Gig.findOneAndUpdate(
         { _id: id },
@@ -152,7 +154,7 @@ class gigController {
       );
       return gig;
     } catch (error) {
-      return "error updating gig status";
+      return error;
     }
   };
 
@@ -176,42 +178,53 @@ class gigController {
 
       res.send(updatedUser);
     } catch (error) {
-      res.status(400).json("error bookmarking gig");
+      res.status(400).send(error);
     }
   };
 
   // @notice create a new gig
   createGig = async (req: Request, res: Response) => {
-    const { title } = req.body;
-
-    // populate the rest of the gig body
-    //* validate the body as well
-
-    // const schema = Joi.object().keys({
-    //   name: Joi.string().required(),
-    //   street_address: Joi.string().required(),
-    //   number_address: Joi.number().required(),
-    //   city_address: Joi.string().required(),
-    //   state_address: Joi.string().required(),
-    //   country_address: Joi.string().required(),
-    //   file_id: Joi.number(),
-    //   is_closed: Joi.boolean(),
-    // });
+    const {
+      title,
+      currency,
+      ownerAddress,
+      clientName,
+      company,
+      timezone,
+      category,
+      gig_description,
+      skills_required,
+      url,
+      timeframe,
+      status,
+      owner,
+    } = req.body;
 
     try {
-      // Create new gig document and save to database
       const newGig = new Gig({
-        ...req.body,
+        owner,
+        currency,
+        ownerAddress,
+        clientName,
+        company,
+        timeframe,
+        timezone,
+        category,
+        gig_description,
+        skills_required,
+        url,
+        status,
         slug: slugify(title, +"_" + Date.now().toString()),
       });
       const gig = await newGig.save();
 
-      //* send a confirmation mail to ther user
-      // that its gig has been created succesfully
+      const user = await profileController.getUserWithId(gig.owner);
+
+      new Email(user.email_address, user.name).gigProcessing();
 
       res.send(gig);
     } catch (error) {
-      res.status(400).json("error creating gig");
+      res.status(400).json(error);
     }
   };
 
@@ -224,7 +237,7 @@ class gigController {
       }).sort({ $natural: -1 });
       res.send(gig);
     } catch (error) {
-      res.status(400).json("error listing gig by owner");
+      res.status(400).json(error);
     }
   };
 
@@ -247,14 +260,14 @@ class gigController {
 
       res.send(updatedUser);
     } catch (error) {
-      res.status(400).json("error removing bookmark");
+      res.status(400).send(error);
     }
   };
 
   // @notice gets all gigs in the system
   getAllGigs = async (req: Request, res: Response) => {
     let pageVar;
-    const { page = 1, filter = [] } = req.body; // Set default values for page and filter
+    const { page, filter } = req.body; // Set default values for page and filter
 
     if (page) {
       pageVar = parseInt(page);
@@ -265,16 +278,12 @@ class gigController {
     const limit = 5;
     const skip = (pageVar - 1) * limit;
 
-    const query: Query = {
-      approvedForMenu: true,
-      isAwarded: false,
-    };
-
-    // if (filter.length) query.category?.value = { $in: filter };
-    // if (filter.length) query["category.value"] = { $in: filter };
-
     try {
-      const gigs = await Gig.find(query)
+      let gigs = await Gig.find({
+        approvedForMenu: true,
+        isAwarded: false,
+        categories: { $in: filter },
+      })
         .sort({ $natural: -1 })
         .skip(skip)
         .limit(limit)
@@ -282,7 +291,7 @@ class gigController {
 
       res.send(gigs);
     } catch (error) {
-      res.status(400).json("error getting gig");
+      res.status(400).json(error);
     }
   };
 
@@ -307,24 +316,22 @@ class gigController {
         reason: reason,
       });
 
-      const cancel = await newCancellationRequest.save();
+      const cancel = newCancellationRequest.save();
 
       if (cancel) {
-        await this.updateGigStatus(gigId, "Refund")
-          .then(() => {
-            new ChatController(req, res).summaryPostHandler(
-              conversationID,
-              "requested a refund and to cancel this project",
-              clientId
-            );
-            cancel();
-          })
-          .catch((error) => {
-            res.send(error);
-          });
+        await Promise.all([
+          this.updateGigStatus(gigId, "Cancelled"),
+          new ChatController(req, res).summaryPostHandler(
+            conversationID,
+            "requested a refund and to cancel this project",
+            clientId
+          ),
+        ]);
       }
+
+      res.status(200).json("Cancellation request sent");
     } catch (error) {
-      res.status(400).json("error cancelling gig");
+      res.status(400).send(error);
     }
   };
 }
