@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 import ChatController from "./chat.controller";
 import User from "../models/User";
 import Email from "../utils/mailer";
-import Joi from "@hapi/joi";
+// import Joi from "@hapi/joi";
+import mongoose, { Mongoose } from "mongoose";
 
 class profileController {
   // @notice update a user profile, adds feedback
@@ -31,7 +32,7 @@ class profileController {
       );
       res.send(user);
     } catch (error) {
-      return res.status(400).json("error updating profile");
+      return res.status(400).json(error);
     }
   };
 
@@ -47,7 +48,7 @@ class profileController {
   };
 
   // @notice get a specific user by its id
-  getUserWithId = async (userId: string) => {
+  getUserWithId = async (userId: mongoose.Types.ObjectId) => {
     try {
       const user = await User.findOne({ _id: userId });
       return user;
@@ -91,12 +92,10 @@ class profileController {
       const onboard = await Promise.all([
         newUser.save(),
         new ChatController(req, res).convoPostHandler(
-          "64073a3334365f04f6854e69",
+          new mongoose.Types.ObjectId("64073a3334365f04f6854e69"),
           newUser._id,
-          "64073a3334365f04f6854e69",
+          new mongoose.Types.ObjectId("64073a3334365f04f6854e69"),
           `Hey ${newUser.name},\nWelcome to XJobs! 👋\nHere you'll be able to send and receive messages about your projects on XJobs. In the sidebar to the right, you'll see next steps you'll need to take in order to move forward.\nWe're so happy you're here! 🚀`,
-          "",
-          "",
           true
         ),
         new Email(newUser.email_address, newUser.name).sendWelcome(),
