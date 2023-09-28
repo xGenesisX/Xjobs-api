@@ -32,7 +32,7 @@ router.get("/approve_refund", (req: Request, res: Response) => {
   wrapAsync(contractController.approveRefund(req, res));
 });
 
-router.get("/get_contract", (req: Request, res: Response) => {
+router.get("/get_all_contracts", (req: Request, res: Response) => {
   wrapAsync(contractController.getAllContracts(req, res));
 });
 

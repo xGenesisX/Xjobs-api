@@ -18,6 +18,7 @@ router.post("/add_contract_id_to_convo", (req: Request, res: Response) => {
 
 router.post("/get_most_recent_convo", (req: Request, res: Response) => {
   wrapAsync(new ChatController(req, res).getMostRecentConvo);
+  // const id = req.query
 });
 
 router.post("/conversation_put", (req: Request, res: Response) => {
