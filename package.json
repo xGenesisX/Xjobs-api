@@ -1,7 +1,7 @@
 {
   "name": "xjobs",
   "version": "1.0.0",
-  "description": "Node.js setup with Express and TypeScript",
+  "description": "Xjobs",
   "main": "dist/index.js",
   "scripts": {
     "build": "rimraf dist && tsc",
@@ -39,7 +39,6 @@
     "@types/hapi__joi": "^17.1.11",
     "@types/jest": "^29.5.5",
     "@types/morgan": "^1.9.5",
-    "@types/next-auth": "^3.15.0",
     "@types/nodemailer": "^6.4.11",
     "@types/pako": "^2.0.1",
     "@types/supertest": "^2.0.12",
@@ -50,6 +49,7 @@
     "jest": "29.7.0",
     "mongoose": "^6.6.5",
     "morgan": "^1.10.0",
+    "next-auth": "^4.23.1",
     "nodemailer": "^6.9.5",
     "nodemon": "^3.0.1",
     "redis": "^4.6.10",
