@@ -3,8 +3,6 @@ import User from "../models/User";
 // send mail to receiver of tokens
 
 class pointController {
-  constructor() {}
-
   // @notice send points to a user, with its address
   sendPointsToAUser = async (address: string, points: number) => {
     User.findOneAndUpdate(
