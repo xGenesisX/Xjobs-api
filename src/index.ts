@@ -32,7 +32,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
-app.use(xss());
 app.use(ExpressMongoSanitize());
 
 // gzip compression
