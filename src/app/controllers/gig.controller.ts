@@ -27,6 +27,7 @@ export const getGigByOwner = catchAsync(async (req: Request, res: Response) => {
 
   gigService.default.getGigByOwner(address);
 });
+
 export const updateGigDetails = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.body;
@@ -34,6 +35,7 @@ export const updateGigDetails = catchAsync(
     gigService.default.updateGigDetails(id);
   }
 );
+
 export const awardFreelancer = catchAsync(
   async (req: Request, res: Response) => {
     const { id, freelancerId, status } = req.body;
@@ -41,6 +43,7 @@ export const awardFreelancer = catchAsync(
     gigService.default.awardFreelancer(id, freelancerId, status);
   }
 );
+
 export const updateGigStatus = catchAsync(
   async (req: Request, res: Response) => {
     const { id, status } = req.body;
@@ -48,11 +51,13 @@ export const updateGigStatus = catchAsync(
     gigService.default.updateGigStatus(id, status);
   }
 );
+
 export const bookmarkGig = catchAsync(async (req: Request, res: Response) => {
   const { id, GigId } = req.body;
 
   gigService.default.bookmarkGig(id, GigId);
 });
+
 export const createGig = catchAsync(async (req: Request, res: Response) => {
   const {
     title,
@@ -86,6 +91,7 @@ export const createGig = catchAsync(async (req: Request, res: Response) => {
     owner
   );
 });
+
 export const listGigByOwner = catchAsync(
   async (req: Request, res: Response) => {
     const { address } = req.body;
@@ -93,6 +99,7 @@ export const listGigByOwner = catchAsync(
     gigService.default.listGigByOwner(address);
   }
 );
+
 export const removeBookmark = catchAsync(
   async (req: Request, res: Response) => {
     const { id, GigId } = req.body;
@@ -100,11 +107,13 @@ export const removeBookmark = catchAsync(
     gigService.default.removeBookmark(id, GigId);
   }
 );
+
 export const getAllGigs = catchAsync(async (req: Request, res: Response) => {
   const { page, filter } = req.body;
 
   gigService.default.getAllGigs(page, filter);
 });
+
 export const cancelGig = catchAsync(async (req: Request, res: Response) => {
   const { clientId, gigId, freelancerId, contractId, reason, conversationID } =
     req.body;

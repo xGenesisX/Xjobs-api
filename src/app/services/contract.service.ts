@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import Contract from "../models/Contract";
-import ChatController from "./conversation.service";
 import gigController from "./gig.service";
 import proposalController from "./proposal.service";
 
@@ -27,7 +26,7 @@ class contractController {
   // @notice approve a refund
   approveRefund = async (
     contractId: mongoose.Schema.Types.ObjectId,
-    contractStatus: any,
+    contractStatus: string,
     gigId: mongoose.Schema.Types.ObjectId
   ) => {
     try {
@@ -82,8 +81,8 @@ class contractController {
     clientId: mongoose.Schema.Types.ObjectId,
     gigId: mongoose.Schema.Types.ObjectId,
     freelancerId: mongoose.Schema.Types.ObjectId,
-    txHash: any,
-    amount: any,
+    txHash: string,
+    amount: number,
     conversationID: mongoose.Schema.Types.ObjectId
   ) => {
     try {

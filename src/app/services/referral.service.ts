@@ -12,7 +12,7 @@ export class referralService {
     }
     return ref;
   };
-  createNewReferral = async (userId: string) => {
+  createNewReferral = async (userId: mongoose.Schema.Types.ObjectId) => {
     const newReferrer = new Referral({
       referralId: uuidv4(),
       referralLink: uuidv4(),

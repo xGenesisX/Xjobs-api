@@ -2,7 +2,6 @@ import express, { NextFunction, Request, Response } from "express";
 
 const router = express.Router();
 
-// import contractController from "../controllers/contract.controller";
 import { acceptContract } from "../controllers/contract.controller";
 import { approveRefund } from "../controllers/contract.controller";
 import { getAllContracts } from "../controllers/contract.controller";

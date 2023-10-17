@@ -13,12 +13,14 @@ export const chatPostHandler = catchAsync(
     );
   }
 );
+
 export const getChatHandler = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.body;
     new ChatController(req, res).getChatHandler(id);
   }
 );
+
 export const conversationPutHandler = catchAsync(
   async (req: Request, res: Response) => {
     const { id, lastMessage, unread } = req.body;
@@ -30,6 +32,7 @@ export const conversationPutHandler = catchAsync(
     );
   }
 );
+
 export const convoPostHandler = catchAsync(
   async (req: Request, res: Response) => {
     const {
@@ -59,6 +62,7 @@ export const convoPostHandler = catchAsync(
     // return finalConvo;
   }
 );
+
 export const getConversationHandler = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.body;
@@ -66,11 +70,13 @@ export const getConversationHandler = catchAsync(
     new ChatController(req, res).getConversationHandler(id);
   }
 );
+
 export const getConvoById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.body;
 
   new ChatController(req, res).getConvoById(id);
 });
+
 export const addContractIdToConvo = catchAsync(
   async (req: Request, res: Response) => {
     const { id, contractId } = req.body;
@@ -78,6 +84,7 @@ export const addContractIdToConvo = catchAsync(
     new ChatController(req, res).addContractIdToConvo(id, contractId);
   }
 );
+
 export const getMostRecentConvo = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.body;

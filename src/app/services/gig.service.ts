@@ -187,18 +187,18 @@ class gigController {
   // @notice create a new gig
   createGig = async (
     title: string,
-    currency: any,
-    ownerAddress: any,
-    clientName: any,
-    company: any,
+    currency: string,
+    ownerAddress: string,
+    clientName: string,
+    company: string,
     timezone: any,
     category: any,
-    gig_description: any,
+    gig_description: string,
     skills_required: any,
-    url: any,
-    timeframe: any,
-    status: any,
-    owner: any
+    url: string,
+    timeframe: string,
+    status: string,
+    owner: mongoose.Schema.Types.ObjectId
   ) => {
     try {
       const newGig = new Gig({

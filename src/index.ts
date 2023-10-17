@@ -23,7 +23,7 @@ import xss from "xss-clean";
 
 // import { jwtStrategy } from './modules/auth';
 
-import { authLimiter } from "./app/utils";
+import authLimiter from "./app/utils/rateLimiter";
 import ApiError from "./app/utils/ApiError";
 import { errorConverter } from "./app/utils/error";
 

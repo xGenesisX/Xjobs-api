@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import Joi from "@hapi/joi";
 import catchAsync from "../utils/catchAsync";
 import userService from "../services/user.service";
+import ChatController from "../services/conversation.service";
+import mongoose from "mongoose";
 
 // @notice update a user profile, adds feedback
 export const addFeedbackToUserProfile = catchAsync(
@@ -81,7 +83,14 @@ export const createUserProfile = catchAsync(
         profile_details_description,
         socials
       );
-      res.send(user);
+      new ChatController(req, res).convoPostHandler(
+        new mongoose.Types.ObjectId("64073a3334365f04f6854e69"),
+        user._id,
+        new mongoose.Types.ObjectId("64073a3334365f04f6854e69"),
+        `Hey ${name},\nWelcome to XJobs! 👋\nHere you'll be able to send and receive messages about your projects on XJobs. In the sidebar to the right, you'll see next steps you'll need to take in order to move forward.\nWe're so happy you're here! 🚀`,
+        true
+      ),
+        res.send(user);
     } catch (error) {
       res.status(400).json("internal server error");
     }

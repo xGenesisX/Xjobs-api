@@ -2,8 +2,6 @@ import express, { NextFunction, Request, Response } from "express";
 
 // import { check } from "express-validator";
 
-// import ChatController from "../services/message.service";
-
 import { addContractIdToConvo } from "../controllers/chat.controller";
 import { chatPostHandler } from "../controllers/chat.controller";
 import { conversationPutHandler } from "../controllers/chat.controller";

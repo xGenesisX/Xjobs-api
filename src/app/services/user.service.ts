@@ -1,9 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import { IOptions, QueryResult } from "../utils/paginate";
 import User from "../models/User";
-import ApiError from "../utils/ApiError";
 
-import ChatController from "./conversation.service";
 import { sendResetPasswordEmail } from "./email.service";
 import Joi from "@hapi/joi";
 import mongoose from "mongoose";
@@ -86,16 +83,6 @@ class profileController {
     profile_details_description: string,
     socials: any
   ) => {
-    // const schema = Joi.object().keys({
-    //   name: Joi.string().required(),
-    // });
-
-    // if (!schema.validate(req.body)) {
-    //   return { error: "Validation fails" };
-    // }
-
-    // add validation for the user input here
-
     const verificationToken = uuidv4().toString();
 
     try {
@@ -116,13 +103,6 @@ class profileController {
       // Use Promise.allSettled to execute multiple async operations in parallel
       const onboard = await Promise.all([
         newUser.save(),
-        // new ChatController(req, res).convoPostHandler(
-        //   new mongoose.Types.ObjectId('64073a3334365f04f6854e69'),
-        //   newUser._id,
-        //   new mongoose.Types.ObjectId('64073a3334365f04f6854e69'),
-        //   `Hey ${newUser.name},\nWelcome to XJobs! 👋\nHere you'll be able to send and receive messages about your projects on XJobs. In the sidebar to the right, you'll see next steps you'll need to take in order to move forward.\nWe're so happy you're here! 🚀`,
-        //   true
-        // ),
         // new Email(newUser.email_address, newUser.name).sendWelcome(),
       ]);
       // Check if all operations were successful
@@ -141,10 +121,6 @@ class profileController {
 
   // @notice updates a user profile
   updateUserProfile = async (id: string) => {
-    // const { id } = req.body;
-    // add other user fields to be updated
-    // add validaton here as well...
-
     const userExists = await User.findOneAndUpdate(
       { _id: id },
       {
@@ -154,27 +130,7 @@ class profileController {
         new: true,
       }
     );
-
     return userExists;
-
-    // if (!userExists) {
-    //   // res.status(400).json('user not found');
-    //   return 'user not found';
-    // } else {
-    //   // Promise.all([userExists()]);
-    //   // send a mail to ther user confirming thier profile has been updated
-    // }
-  };
-
-  /**
-   * Query for users
-   * @param {Object} filter - Mongo filter
-   * @param {Object} options - Query options
-   * @returns {Promise<QueryResult>}
-   */
-  queryusers = async (filter: Record<string, any>, options: IOptions) => {
-    // const users = await User.paginate(filter, options);
-    // return users;
   };
 }
 
