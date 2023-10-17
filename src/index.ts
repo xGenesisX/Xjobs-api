@@ -6,7 +6,6 @@ import helmet from "helmet";
 import httpStatus from "http-status";
 import morgan from "morgan";
 import passport from "passport";
-import xss from "xss-clean";
 import errorHandler from "./app/middleware/errorHandler";
 import chatRoutes from "./app/routes/chat.route";
 import contractRoutes from "./app/routes/contract.route";
