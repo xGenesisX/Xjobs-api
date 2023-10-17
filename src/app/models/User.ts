@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { roles } from "../config/roles";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -55,7 +56,7 @@ const UserSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["client", "freelancer", "admin"],
+      enum: roles,
       default: "freelancer",
     },
     socials: {

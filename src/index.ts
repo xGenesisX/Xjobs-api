@@ -14,6 +14,22 @@ import gigRoutes from "./app/routes/gig.route";
 import profileRoutes from "./app/routes/profile.route";
 import proposalRoutes from "./app/routes/proposal.route";
 
+import httpStatus from "http-status";
+
+import xss from "xss-clean";
+import ExpressMongoSanitize from "express-mongo-sanitize";
+import compression from "compression";
+import passport from "passport";
+// import config from './config/config';
+
+// import { jwtStrategy } from './modules/auth';
+
+import { authLimiter } from "./app/utils";
+import ApiError from "./app/utils/ApiError";
+import { errorConverter } from "./app/utils/error";
+// import { ApiError, errorConverter, errorHandler } from './modules/errors';
+// import routes from './routes/v1';
+
 dotenv.config({ path: __dirname + "/.env" });
 
 const PORT = process.env.PORT || 3000;
@@ -29,6 +45,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
+app.use(xss());
+app.use(ExpressMongoSanitize());
+
+// gzip compression
+app.use(compression());
+
+// jwt authentication
+app.use(passport.initialize());
+// passport.use('jwt', jwtStrategy);
+
+app.use("/v1/auth", authLimiter);
 app.use("/v1/gig", gigRoutes);
 app.use("/v1/chat", chatRoutes);
 app.use("/v1/profile", profileRoutes);
@@ -50,6 +77,17 @@ app.get("/", (req: Request, res: Response) => {
 app.get("*", (req: Request, res: Response) => {
   return res.status(404).redirect("/404");
 });
+
+// send back a 404 error for any unknown api request
+app.use((_req: Request, _res: Response, next: any) => {
+  next(new ApiError(httpStatus.NOT_FOUND, "Not found"));
+});
+
+// convert error to ApiError, if needed
+app.use(errorConverter);
+
+// handle error
+app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Getting Schwifty on PORT ${PORT} ⚡`));
 

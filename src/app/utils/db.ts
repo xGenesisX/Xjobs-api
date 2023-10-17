@@ -1,9 +1,13 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
+// dotenv.config({ path: __dirname + "/.env" });
 dotenv.config({ path: __dirname + "/.env" });
 
-const MONGODB_URI = process.env.MONGO_URL + "";
+const MONGODB_URI =
+  "mongodb+srv://xjobs:jtGwEq3pjmd5lwEC@cluster0.7xbw7v5.mongodb.net/?retryWrites=true&w=majority";
+
+// const MONGODB_URI = process.env.MONGO_URL + "";
 
 if (!MONGODB_URI) {
   throw new Error(

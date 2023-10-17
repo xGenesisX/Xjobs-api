@@ -1,169 +1,93 @@
 import { Request, Response } from "express";
-import Gig from "../models/Gig";
-import Proposal from "../models/Proposal";
-import User from "../models/User";
-import mongoose from "mongoose";
+import proposalService from "../services/proposal.service";
 
-class proposalController {
-  // @notice create a new proposal
-  createNewProposal = async (req: Request, res: Response) => {
-    const { gigId, freelancerId, coverLetter } = req.body;
+// @notice create a new proposal
+export const createNewProposal = async (req: Request, res: Response) => {
+  const { gigId, freelancerId, coverLetter } = req.body;
 
-    try {
-      const gig = await Gig.findById(gigId);
-      if (gig) {
-        const proposal = await Proposal.create({
-          freelancerId: freelancerId,
-          gigId: gigId,
-          coverLetter: coverLetter,
-        });
+  try {
+    const p = proposalService.createNewProposal(
+      gigId,
+      freelancerId,
+      coverLetter
+    );
 
-        if (proposal) {
-          const propId = proposal._id.toString();
+    res.send(p);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
 
-          await Promise.all([
-            gig.proposals.push(proposal),
-            User.findByIdAndUpdate(
-              {
-                _id: freelancerId,
-              },
-              { $addToSet: { submittedProposals: propId } }
-            ),
-          ]);
+// @notice get a proposal with a given id
+export const getAProposal = async (req: Request, res: Response) => {
+  const { gigId } = req.body;
+  try {
+    const gig = proposalService.getAProposal(gigId);
+    res.send(gig);
+  } catch (error) {
+    res.json(error);
+  }
+};
 
-          await gig.save();
+// @notice get a job proposal with a given id
+export const getJobProposal = async (req: Request, res: Response) => {
+  const { gigId } = req.body;
+  try {
+    const proposal = proposalService.getJobProposal(gigId);
+    res.send(proposal);
+  } catch (error) {
+    res.json(error);
+  }
+};
 
-          res.send(proposal);
-        }
-      }
-    } catch (error) {
-      res.status(400).json(error);
-    }
-  };
+// @notice check if a proposal exists
+export const checkIfProposalExists = async (req: Request, res: Response) => {
+  const { freelancerId, gigID } = req.body;
 
-  // @notice get a proposal with a given id
-  getAProposal = async (req: Request, res: Response) => {
-    const { gigId } = req.body;
-    try {
-      const gig = await Gig.findById(gigId).populate({
-        path: "proposals",
-        populate: { path: "freelancerId", model: "User" },
-      });
-      res.send(gig);
-    } catch (error) {
-      res.json(error);
-    }
-  };
+  try {
+    const proposal = proposalService.checkIfProposalExists(freelancerId, gigID);
+    res.send(proposal);
+  } catch (error) {
+    res.send(error);
+  }
+};
 
-  // @notice get a job proposal with a given id
-  getJobProposal = async (req: Request, res: Response) => {
-    const { gigId } = req.body;
-    try {
-      const proposal = await Gig.findById(gigId)
-        .populate("awardedFreelancer")
-        .populate({
-          path: "proposals",
-          populate: { path: "freelancerId", model: "User" },
-        });
-      res.send(proposal);
-    } catch (error) {
-      res.json(error);
-    }
-  };
+// @notice update a proposal with a given id
+export const updateProposalConversationID = async (
+  req: Request,
+  res: Response
+) => {
+  const { id, conversationID } = req.body;
 
-  // @notice accept a proposal with a given id
-  acceptProposal = async (id: mongoose.Types.ObjectId) => {
-    try {
-      const proposal = await Proposal.findOneAndUpdate(
-        { _id: id },
-        {
-          $set: {
-            accepted: true,
-          },
-        },
-        {
-          new: true,
-        }
-      );
-      return proposal;
-    } catch (error) {
-      return error;
-    }
-  };
+  try {
+    const proposal = proposalService.updateProposalConversationID(
+      id,
+      conversationID
+    );
+    res.send(proposal);
+  } catch (error) {
+    res.send(error);
+  }
+};
 
-  // @notice check if a proposal exists
-  checkIfProposalExists = async (req: Request, res: Response) => {
-    const { freelancerId, gigID } = req.body;
+// @notice get a proposal with a given id
+export const getProposalById = async (req: Request, res: Response) => {
+  const { id } = req.query;
+  try {
+    const proposals = proposalService.getProposalById(id);
+    res.send(proposals);
+  } catch (error) {
+    res.send(error);
+  }
+};
 
-    try {
-      const proposal = await Proposal.findOne({
-        freelancerId: freelancerId,
-        gigId: gigID,
-      })
-        .select("_id")
-        .then((res) => {
-          if (res._id) {
-            User.findById(freelancerId).then((user) => {
-              const propId = res._id.toString();
-              const subProp = user.submittedProposals;
-              if (subProp.includes(propId)) {
-                return { message: "user has already applied" };
-              }
-            });
-          }
-        });
-      res.send(proposal);
-    } catch (error) {
-      res.send(error);
-    }
-  };
-
-  // @notice update a proposal with a given id
-  updateProposalConversationID = async (req: Request, res: Response) => {
-    const { id, conversationID } = req.body;
-
-    try {
-      const proposal = await Proposal.findOneAndUpdate(
-        { _id: id },
-        { conversationID: conversationID },
-        {
-          new: true,
-        }
-      );
-      res.send(proposal);
-    } catch (error) {
-      res.json(error);
-    }
-  };
-
-  // @notice get a proposal with a given id
-  getProposalById = async (req: Request, res: Response) => {
-    const { id } = req.query;
-    try {
-      const proposals = await Proposal.find({
-        freelancerId: id,
-      })
-        .populate("gigId")
-        .sort({ $natural: -1 });
-      res.send(proposals);
-    } catch (error) {
-      res.send(error);
-    }
-  };
-
-  // @notice get proposal for a gig
-  getProposalsForGig = async (req: Request, res: Response) => {
-    const { gigId } = req.body;
-    try {
-      const proposal = await Proposal.findById(gigId).populate({
-        path: "proposals",
-        populate: { path: "freelancerId", model: "User" },
-      });
-      res.send(proposal);
-    } catch (error) {
-      res.send(error);
-    }
-  };
-}
-
-export default new proposalController();
+// @notice get proposal for a gig
+export const getProposalsForGig = async (req: Request, res: Response) => {
+  const { gigId } = req.body;
+  try {
+    const proposal = proposalService.getProposalsForGig(gigId);
+    res.send(proposal);
+  } catch (error) {
+    res.send(error);
+  }
+};

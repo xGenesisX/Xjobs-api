@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 
 // import { check } from "express-validator";
 
-import ChatController from "../controllers/chat.controller";
+import ChatController from "../services/message.service";
 
 const router = express.Router();
 

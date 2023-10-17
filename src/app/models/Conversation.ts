@@ -22,7 +22,10 @@ const conversationSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    summary: [SummarySchema],
+    summary: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Summary",
+    },
     unread: {
       type: Number,
       default: 0,
