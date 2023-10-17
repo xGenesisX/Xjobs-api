@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
 import * as gigService from "../services/gig.service";
+import ChatController from "../services/conversation.service";
 
 export const getGigById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.body;
@@ -118,12 +119,17 @@ export const cancelGig = catchAsync(async (req: Request, res: Response) => {
   const { clientId, gigId, freelancerId, contractId, reason, conversationID } =
     req.body;
 
-  gigService.default.cancelGig(
-    clientId,
-    gigId,
-    freelancerId,
-    contractId,
-    reason,
-    conversationID
-  );
+  new ChatController(req, res).summaryPostHandler(
+    conversationID,
+    "requested a refund and to cancel this project",
+    clientId
+  ),
+    gigService.default.cancelGig(
+      clientId,
+      gigId,
+      freelancerId,
+      contractId,
+      reason,
+      conversationID
+    );
 });

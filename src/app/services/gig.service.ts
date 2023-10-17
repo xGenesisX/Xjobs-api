@@ -231,7 +231,6 @@ class gigController {
 
   // @notice list gigs by its owner
   listGigByOwner = async (address: string) => {
-    // const { address } = req.body;
     try {
       const gig = await Gig.find({
         ownerAddress: address,
@@ -318,14 +317,7 @@ class gigController {
         reason
       );
 
-      await Promise.all([
-        this.updateGigStatus(gigId, "Cancelled"),
-        // new ChatController(req, res).summaryPostHandler(
-        //   conversationID,
-        //   'requested a refund and to cancel this project',
-        //   clientId
-        // ),
-      ]);
+      await Promise.all([this.updateGigStatus(gigId, "Cancelled")]);
 
       return "cancel request sent";
     } catch (error) {

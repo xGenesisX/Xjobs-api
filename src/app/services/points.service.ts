@@ -9,7 +9,7 @@ class pointController {
   sendPointsToAUser = async (address: string, points: number) => {
     User.findOneAndUpdate(
       { address: address },
-      { $inc: { points: points } },
+      { $inc: { userPoints: points } },
       { new: true }
     );
   };
@@ -18,7 +18,7 @@ class pointController {
   createFreelancerAccount = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
-      { $inc: { points: 5 } },
+      { $inc: { userPoints: 5 } },
       { new: true }
     );
   };
@@ -27,7 +27,7 @@ class pointController {
   createClientAccount = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
-      { $inc: { points: 7 } },
+      { $inc: { userPoints: 7 } },
       { new: true }
     );
   };
@@ -36,7 +36,7 @@ class pointController {
   referNewUser = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
-      { $inc: { points: 10 } },
+      { $inc: { userPoints: 10 } },
       { new: true }
     );
   };
@@ -45,7 +45,7 @@ class pointController {
   completingAJob = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
-      { $inc: { points: 30 } },
+      { $inc: { userPoints: 30 } },
       { new: true }
     );
   };
@@ -54,7 +54,7 @@ class pointController {
   leavingReviews = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
-      { $inc: { points: 10 } },
+      { $inc: { userPoints: 10 } },
       { new: true }
     );
   };
@@ -63,7 +63,7 @@ class pointController {
   tweetingAboutXjobs = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
-      { $inc: { points: 15 } },
+      { $inc: { userPoints: 15 } },
       { new: true }
     );
   };
@@ -72,7 +72,7 @@ class pointController {
   VotingOnProposals = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
-      { $inc: { points: 25 } },
+      { $inc: { userPoints: 25 } },
       { new: true }
     );
   };
@@ -81,7 +81,7 @@ class pointController {
   GettingAGoodReview = async (userId: mongoose.Types.ObjectId) => {
     User.findOneAndUpdate(
       { _id: userId },
-      { $inc: { points: 20 } },
+      { $inc: { userPoints: 20 } },
       { new: true }
     );
   };

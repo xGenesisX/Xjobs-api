@@ -164,3 +164,119 @@ export const sendAccountCreated = async (
   <p><strong>Team</strong></p></div>`;
   await sendEmail(to, subject, text, html);
 };
+
+// profile update notification
+export const profileUpdateNotification = async (
+  to: string,
+  token: string,
+  name: string
+): Promise<void> => {
+  const subject = "profile update notification";
+  const text = `Hi ${name},
+  Don't hesitate to contact us if you face any problems
+  Regards,
+  Team`;
+  const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
+  <p>Congratulations! Your account has been created.</p>
+  <p>Don't hesitate to contact us if you face any problems</p>
+  <p>Regards,</p>
+  <p><strong>Team</strong></p></div>`;
+  await sendEmail(to, subject, text, html);
+};
+// new message notification
+export const newMessageNotification = async (
+  to: string,
+  token: string,
+  name: string
+): Promise<void> => {
+  const subject = "new message notification";
+  const text = `Hi ${name},
+  Congratulations! . 
+  Don't hesitate to contact us if you face any problems
+  Regards,
+  Team`;
+  const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
+  <p>Congratulations! Your account has been created.</p>
+  <p>Don't hesitate to contact us if you face any problems</p>
+  <p>Regards,</p>
+  <p><strong>Team</strong></p></div>`;
+  await sendEmail(to, subject, text, html);
+};
+// freelancer onboarding notification
+export const freelancerOnboardingNotification = async (
+  to: string,
+  token: string,
+  name: string
+): Promise<void> => {
+  const subject = "freelancer onboarding";
+  const text = `Hi ${name},
+  Congratulations!. 
+  Don't hesitate to contact us if you face any problems
+  Regards,
+  Team`;
+  const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
+  <p>Congratulations! Your account has been created.</p>
+  <p>Don't hesitate to contact us if you face any problems</p>
+  <p>Regards,</p>
+  <p><strong>Team</strong></p></div>`;
+  await sendEmail(to, subject, text, html);
+};
+// freelancer notification
+export const freelancerNotification = async (
+  to: string,
+  token: string,
+  name: string
+): Promise<void> => {
+  const subject = "freelancer notification";
+  const text = `Hi ${name},
+  Congratulations! . 
+  Don't hesitate to contact us if you face any problems
+  Regards,
+  Team`;
+  const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
+  <p>Congratulations! Your account has been created.</p>
+  <p>Don't hesitate to contact us if you face any problems</p>
+  <p>Regards,</p>
+  <p><strong>Team</strong></p></div>`;
+  await sendEmail(to, subject, text, html);
+};
+
+// client notification
+export const clientNotification = async (
+  to: string,
+  token: string,
+  name: string
+): Promise<void> => {
+  const subject = "client notification";
+  const text = `Hi ${name},
+  Congratulations! generic client notification. 
+  Don't hesitate to contact us if you face any problems
+  Regards,
+  Team`;
+  const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
+  <p>Congratulations! Your account has been created.</p>
+  <p>Don't hesitate to contact us if you face any problems</p>
+  <p>Regards,</p>
+  <p><strong>Team</strong></p></div>`;
+  await sendEmail(to, subject, text, html);
+};
+// gig processing
+export const gigProcessing = async (
+  to: string,
+  token: string,
+  name: string
+): Promise<void> => {
+  const subject = "Gig Processing";
+  // replace this url with the link to the email verification page of your front-end app
+  const text = `Hi ${name},
+  Congratulations! Your Gig is currently processing. 
+  Don't hesitate to contact us if you face any problems
+  Regards,
+  Team`;
+  const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
+  <p>Congratulations! Your account has been created.</p>
+  <p>Don't hesitate to contact us if you face any problems</p>
+  <p>Regards,</p>
+  <p><strong>Team</strong></p></div>`;
+  await sendEmail(to, subject, text, html);
+};

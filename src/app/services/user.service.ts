@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import User from "../models/User";
-
-import { sendResetPasswordEmail } from "./email.service";
+import { sendAccountCreated } from "./email.service";
 import Joi from "@hapi/joi";
 import mongoose from "mongoose";
 
@@ -103,7 +102,7 @@ class profileController {
       // Use Promise.allSettled to execute multiple async operations in parallel
       const onboard = await Promise.all([
         newUser.save(),
-        // new Email(newUser.email_address, newUser.name).sendWelcome(),
+        sendAccountCreated(email_address, name),
       ]);
       // Check if all operations were successful
       if (onboard) {

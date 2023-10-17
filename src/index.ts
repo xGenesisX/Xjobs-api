@@ -1,35 +1,25 @@
+import compression from "compression";
 import cors from "cors";
-import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
+import ExpressMongoSanitize from "express-mongo-sanitize";
 import helmet from "helmet";
+import httpStatus from "http-status";
 import morgan from "morgan";
-
-import db from "./app/utils/db";
-
+import passport from "passport";
+import xss from "xss-clean";
 import errorHandler from "./app/middleware/errorHandler";
-
 import chatRoutes from "./app/routes/chat.route";
 import contractRoutes from "./app/routes/contract.route";
 import gigRoutes from "./app/routes/gig.route";
 import profileRoutes from "./app/routes/profile.route";
 import proposalRoutes from "./app/routes/proposal.route";
-
-import httpStatus from "http-status";
-
-import compression from "compression";
-import ExpressMongoSanitize from "express-mongo-sanitize";
-import passport from "passport";
-import xss from "xss-clean";
-
-// import { jwtStrategy } from './modules/auth';
+import db from "./app/utils/db";
 
 import authLimiter from "./app/utils/rateLimiter";
-import ApiError from "./app/utils/ApiError";
-import { errorConverter } from "./app/utils/error";
 
-dotenv.config({ path: __dirname + "/.env" });
+import config from "./app/config/config";
 
-const PORT = process.env.PORT || 3000;
+const PORT = config.port || 3000;
 const app: Express = express();
 
 const corsOptions = {
@@ -51,7 +41,6 @@ app.use(compression());
 
 // jwt authentication
 app.use(passport.initialize());
-// passport.use('jwt', jwtStrategy);
 
 app.use("/v1/auth", authLimiter);
 app.use("/v1/gig", gigRoutes);
@@ -73,16 +62,8 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.get("*", (req: Request, res: Response) => {
-  return res.status(404).redirect("/404");
+  return res.status(httpStatus.INTERNAL_SERVER_ERROR).redirect("/404");
 });
-
-// send back a 404 error for any unknown api request
-app.use((_req: Request, _res: Response, next: any) => {
-  next(new ApiError(httpStatus.NOT_FOUND, "Not found"));
-});
-
-// convert error to ApiError, if needed
-app.use(errorConverter);
 
 // handle error
 app.use(errorHandler);
