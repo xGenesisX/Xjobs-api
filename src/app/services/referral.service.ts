@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import Referral from "../models/Refferal";
+import Referral from "../models/Referral";
 
 export class referralService {
   checkReferrer = async (id: mongoose.Schema.Types.ObjectId) => {

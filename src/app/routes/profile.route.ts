@@ -2,7 +2,11 @@ import express, { NextFunction, Request, Response } from "express";
 
 const router = express.Router();
 
-import profileController from "../controllers/profile.controller";
+import { addFeedbackToUserProfile } from "../controllers/profile.controller";
+import { createUserProfile } from "../controllers/profile.controller";
+import { getUserProfileWithAddress } from "../controllers/profile.controller";
+import { getUserProfileWithId } from "../controllers/profile.controller";
+import { updateUserProfile } from "../controllers/profile.controller";
 
 function wrapAsync(fn: any) {
   return function (req: Request, res: Response, next: NextFunction) {
@@ -10,24 +14,39 @@ function wrapAsync(fn: any) {
   };
 }
 
-router.get("/get_user_with_address", (req: Request, res: Response) => {
-  wrapAsync(profileController.getUserProfileWithAddress(req, res));
-});
+router.get(
+  "/get_user_with_address",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(getUserProfileWithAddress(req, res, next));
+  }
+);
 
-router.get("/get_user_with_id", (req: Request, res: Response) => {
-  wrapAsync(profileController.getUserProfileWithId(req, res));
-});
+router.get(
+  "/get_user_with_id",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(getUserProfileWithId(req, res, next));
+  }
+);
 
-router.get("/update_user_profile", (req: Request, res: Response) => {
-  wrapAsync(profileController.updateUserProfile(req, res));
-});
+router.get(
+  "/update_user_profile",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(updateUserProfile(req, res, next));
+  }
+);
 
-router.get("/add_feedback_to_user_profile", (req: Request, res: Response) => {
-  wrapAsync(profileController.addFeedbackToUserProfile(req, res));
-});
+router.get(
+  "/add_feedback_to_user_profile",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(addFeedbackToUserProfile(req, res, next));
+  }
+);
 
-router.get("/create_user_profile", (req: Request, res: Response) => {
-  wrapAsync(profileController.createUserProfile(req, res));
-});
+router.get(
+  "/create_user_profile",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(createUserProfile(req, res, next));
+  }
+);
 
 export default router;

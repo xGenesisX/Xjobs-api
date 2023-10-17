@@ -2,7 +2,14 @@ import express, { NextFunction, Request, Response } from "express";
 
 const router = express.Router();
 
-import contractController from "../controllers/contract.controller";
+// import contractController from "../controllers/contract.controller";
+import { acceptContract } from "../controllers/contract.controller";
+import { approveRefund } from "../controllers/contract.controller";
+import { getAllContracts } from "../controllers/contract.controller";
+import { getUserContracts } from "../controllers/contract.controller";
+import { hireFreelancer } from "../controllers/contract.controller";
+import { rejectContract } from "../controllers/contract.controller";
+import { releaseFunds } from "../controllers/contract.controller";
 
 // import { check } from "express-validator";
 
@@ -12,32 +19,53 @@ function wrapAsync(fn: any) {
   };
 }
 
-router.get("/get_contracts", (req: Request, res: Response) => {
-  wrapAsync(contractController.getUserContracts(req, res));
-});
+router.get(
+  "/get_contracts",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(getUserContracts(req, res, next));
+  }
+);
 
-router.post("/hire_freelancer", (req: Request, res: Response) => {
-  wrapAsync(contractController.hireFreelancer(req, res));
-});
+router.post(
+  "/hire_freelancer",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(hireFreelancer(req, res, next));
+  }
+);
 
-router.get("/reject_contract", (req: Request, res: Response) => {
-  wrapAsync(contractController.rejectContract(req, res));
-});
+router.get(
+  "/reject_contract",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(rejectContract(req, res, next));
+  }
+);
 
-router.get("/accept_contract", (req: Request, res: Response) => {
-  wrapAsync(contractController.acceptContract(req, res));
-});
+router.get(
+  "/accept_contract",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(acceptContract(req, res, next));
+  }
+);
 
-router.get("/approve_refund", (req: Request, res: Response) => {
-  wrapAsync(contractController.approveRefund(req, res));
-});
+router.get(
+  "/approve_refund",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(approveRefund(req, res, next));
+  }
+);
 
-router.get("/get_all_contracts", (req: Request, res: Response) => {
-  wrapAsync(contractController.getAllContracts(req, res));
-});
+router.get(
+  "/get_all_contracts",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(getAllContracts(req, res, next));
+  }
+);
 
-router.get("/get_contract", (req: Request, res: Response) => {
-  wrapAsync(contractController.releaseFunds(req, res));
-});
+router.get(
+  "/get_contract",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(releaseFunds(req, res, next));
+  }
+);
 
 export default router;

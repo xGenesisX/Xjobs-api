@@ -1,8 +1,8 @@
+import cors from "cors";
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
-import cors from "cors";
 
 import db from "./app/utils/db";
 
@@ -16,19 +16,16 @@ import proposalRoutes from "./app/routes/proposal.route";
 
 import httpStatus from "http-status";
 
-import xss from "xss-clean";
-import ExpressMongoSanitize from "express-mongo-sanitize";
 import compression from "compression";
+import ExpressMongoSanitize from "express-mongo-sanitize";
 import passport from "passport";
-// import config from './config/config';
+import xss from "xss-clean";
 
 // import { jwtStrategy } from './modules/auth';
 
 import { authLimiter } from "./app/utils";
 import ApiError from "./app/utils/ApiError";
 import { errorConverter } from "./app/utils/error";
-// import { ApiError, errorConverter, errorHandler } from './modules/errors';
-// import routes from './routes/v1';
 
 dotenv.config({ path: __dirname + "/.env" });
 

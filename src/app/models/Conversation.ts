@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import SummarySchema from "./Summary";
 
 const conversationSchema = new mongoose.Schema(
   {
