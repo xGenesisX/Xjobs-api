@@ -1,4 +1,14 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, model } from "mongoose";
+import { IUser } from "./User";
+
+export type TReferral = {
+  referralId: string;
+  referralLink: string;
+  userId: IUser["_id"];
+  createdBy: number;
+};
+
+export interface IReferral extends TReferral, Document {}
 
 const ReferralSchema = new mongoose.Schema({
   referralId: {
@@ -11,7 +21,7 @@ const ReferralSchema = new mongoose.Schema({
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
+    ref: "user",
   },
   createdAt: {
     type: Date,
@@ -19,5 +29,6 @@ const ReferralSchema = new mongoose.Schema({
   },
 });
 
-const Referral = mongoose.model('Referral', ReferralSchema);
+const Referral = model<IReferral>("Referral", ReferralSchema);
+
 export default Referral;

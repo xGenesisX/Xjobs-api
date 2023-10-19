@@ -1,7 +1,40 @@
-import mongoose from "mongoose";
+import mongoose, { Document, model, Schema } from "mongoose";
 import { roles } from "../config/roles";
+import { IGig } from "./Gig";
+import { INotification } from "./Notification";
 
-const UserSchema = new mongoose.Schema(
+export type TUser = {
+  profileId?: string;
+  isAdmin?: boolean;
+  address?: string;
+  company?: string;
+  user_image: any;
+  name?: string;
+  dateOfBirth?: any;
+  timezone?: any;
+  email_address?: string;
+  verified?: boolean;
+  banned?: boolean;
+  profile_details_description?: string;
+  job_category?: any;
+  skills: any;
+  isAvailable?: boolean;
+  role?: string;
+  socials?: any;
+  expertiseLevel?: string;
+  hourlyRate?: number;
+  gigs: IGig["_id"];
+  submittedProposals: [string];
+  notifications: INotification["_id"];
+  completedGigs: IGig["_id"];
+  bookmarkedGigs: IGig["_id"];
+  feedbacks: any;
+  userPoints: number;
+};
+
+export interface IUser extends TUser, Document {}
+
+const UserSchema = new Schema(
   {
     profileId: {
       type: String,
@@ -126,5 +159,6 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const User = mongoose.models.User || mongoose.model("User", UserSchema);
+const User = model<IUser>("User", UserSchema);
+
 export default User;

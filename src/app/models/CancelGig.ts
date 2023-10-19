@@ -1,4 +1,18 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
+import { IUser } from "./User";
+import { IContract } from "./Contract";
+import { IConversation } from "./Conversation";
+
+export type TCancelGig = {
+  clientId: IUser["_id"];
+  gigId: IGig["_id"];
+  freelancerId: IUser["_id"];
+  contractID: IContract["_id"];
+  conversationID?: IConversation["_id"];
+  reason: string;
+};
+
+export interface IGig extends TCancelGig, Document {}
 
 const cancelSchema = new mongoose.Schema(
   {
@@ -24,7 +38,7 @@ const cancelSchema = new mongoose.Schema(
     },
     conversationID: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "conversation",
+      ref: "Conversation",
     },
     reason: { type: String, required: true },
   },

@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 import config from "../config/config";
-// import logger from "../logger/logger";
 import { Novu } from "@novu/node";
 
 interface Message {
@@ -15,16 +14,16 @@ const novu = new Novu("<NOVU_API_KEY>");
 
 export const transport = nodemailer.createTransport(config.email.smtp);
 /* istanbul ignore next */
-// if (config.env !== "test") {
-//   transport
-//     .verify()
-//     .then(() => logger.info("Connected to email server"))
-//     .catch(() =>
-//       logger.warn(
-//         "Unable to connect to email server. Make sure you have configured the SMTP options in .env"
-//       )
-//     );
-// }
+if (config.env !== "test") {
+  transport
+    .verify()
+    .then(() => console.log("Connected to email server"))
+    .catch(() =>
+      console.log(
+        "Unable to connect to email server. Make sure you have configured the SMTP options in .env"
+      )
+    );
+}
 
 /**
  * Send an email
@@ -44,8 +43,6 @@ export const sendEmail = async (
     to: {
       subscriberId: "<USER_IDENTIFIER>",
       email: to,
-      // firstName: 'John',
-      // lastName: 'Doe',
     },
     payload: {},
   });

@@ -12,7 +12,7 @@ import {
 } from "../models/Conversation";
 import Message from "../models/Message";
 import mongoose from "mongoose";
-// import Email from '../utils/mailer';
+import config from "../config/config";
 
 dotenv.config({ path: "../../.env" });
 
@@ -22,8 +22,7 @@ class ChatController {
   url: string;
   token: any;
   constructor(req: Request, res: Response) {
-    this.ably_key = "";
-    // this.ably_key = process.env.ABLY_API_KEY + '';
+    this.ably_key = config.ablyUrl;
     this.rest = new Ably.Rest(this.ably_key);
     this.url = `${req.protocol}://${req.get("host")}/chat`;
     this.token = getToken({ req });
@@ -141,7 +140,7 @@ class ChatController {
           .findOne({ members: [client, freelancer] })
           .populate("lastMessage members gigDetails");
       })
-      .finally(async () => {
+      .finally(() => {
         const newConvo = new convo({
           createdBy: client,
           members: [client, freelancer],
@@ -158,8 +157,6 @@ class ChatController {
 
   // @notice get most recent converstions of a user by id
   getConversationHandler = async (id: mongoose.Types.ObjectId) => {
-    // let { id } = req.query;
-
     const conv = await convo
       .find({ members: id })
       .sort({ updatedAt: -1 })

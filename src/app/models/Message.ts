@@ -1,10 +1,22 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
+import { IConversation } from "./Conversation";
+import { IUser } from "./User";
+
+export type TMessage = {
+  converssationID: IConversation["_id"];
+  sender: IUser["_id"];
+  message: string;
+  sent: number;
+  read: number;
+};
+
+export interface IMessage extends TMessage, Document {}
 
 const messagesSchema = new mongoose.Schema(
   {
     conversationID: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "conversation",
+      ref: "Conversation",
       required: true,
     },
     sender: {

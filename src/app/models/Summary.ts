@@ -1,4 +1,13 @@
-import mongoose from "mongoose";
+import mongoose, { Document, model } from "mongoose";
+import { IUser } from "./User";
+
+export type TSummary = {
+  sender: IUser["_id"];
+  summary?: string;
+  sent?: number;
+};
+
+export interface ISummary extends TSummary, Document {}
 
 const SummarySchema = new mongoose.Schema(
   {
@@ -20,4 +29,6 @@ const SummarySchema = new mongoose.Schema(
   }
 );
 
-export default SummarySchema;
+const Summary = model<ISummary>("Summary", SummarySchema);
+
+export default Summary;

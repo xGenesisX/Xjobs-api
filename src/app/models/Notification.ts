@@ -1,4 +1,15 @@
-import mongoose from "mongoose";
+import mongoose, { Document, model } from "mongoose";
+import { IUser } from "./User";
+
+export type TNotification = {
+  freelancerId: IUser["_id"];
+  message: string;
+  date: string;
+  gigLink: string;
+  read: boolean;
+};
+
+export interface INotification extends TNotification, Document {}
 
 const notificationSchema = new mongoose.Schema(
   {
@@ -28,4 +39,6 @@ const notificationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = notificationSchema;
+const Notification = model<INotification>("Notification", notificationSchema);
+
+export default Notification;

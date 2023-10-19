@@ -1,4 +1,20 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
+import { IUser } from "./User";
+import { IGig } from "./Gig";
+import { IConversation } from "./Conversation";
+
+export type TContract = {
+  clientId: IUser["_id"];
+  gigId: IGig["_id"];
+  freelancerId: IUser["_id"];
+  status: string;
+  txHash: string;
+  amount: number;
+  releaseFunds: boolean;
+  conversationID: IConversation["_id"];
+};
+
+export interface IContract extends TContract, Document {}
 
 const contractSchema = new mongoose.Schema(
   {
@@ -36,7 +52,7 @@ const contractSchema = new mongoose.Schema(
     },
     conversationID: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "conversation",
+      ref: "Conversation",
     },
   },
   { timestamps: true }

@@ -1,4 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
+import { IUser } from "./User";
+import { IConversation } from "./Conversation";
+import { IGig } from "./Gig";
+
+export type TProposal = {
+  freelancerId: IUser["_id"];
+  conversationID: IConversation["_id"];
+  coverLetter: string;
+  accepted: boolean;
+  gigId: IGig["_id"];
+};
+
+export interface IProposal extends TProposal, Document {}
 
 const ProposalSchema = new mongoose.Schema(
   {
@@ -9,7 +22,7 @@ const ProposalSchema = new mongoose.Schema(
     },
     conversationID: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "conversation",
+      ref: "Conversation",
       default: null,
     },
     coverLetter: {

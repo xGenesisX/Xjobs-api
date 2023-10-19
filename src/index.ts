@@ -40,10 +40,9 @@ app.use(compression());
 // jwt authentication
 app.use(passport.initialize());
 
-app.use("/v1/auth", authLimiter);
-app.use("/v1/gig", gigRoutes);
+app.use("/v1/gig", authLimiter, gigRoutes);
+app.use("/v1/profile", authLimiter, profileRoutes);
 app.use("/v1/chat", chatRoutes);
-app.use("/v1/profile", profileRoutes);
 app.use("/v1/proposal", proposalRoutes);
 app.use("/v1/contract", contractRoutes);
 

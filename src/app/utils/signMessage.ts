@@ -7,7 +7,12 @@ export class SigninMessage {
   nonce: string;
   statement: string;
 
-  constructor({ domain, publicKey, nonce, statement }: SigninMessage) {
+  constructor(
+    domain: string,
+    publicKey: string,
+    nonce: string,
+    statement: string
+  ) {
     this.domain = domain;
     this.publicKey = publicKey;
     this.nonce = nonce;
@@ -15,7 +20,7 @@ export class SigninMessage {
   }
 
   prepare() {
-    return `${this.statement}!`;
+    return `${this.statement}!${this.nonce}`;
   }
 
   async validate(signature: string) {

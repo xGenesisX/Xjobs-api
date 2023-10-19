@@ -1,4 +1,25 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
+import { IUser } from "./User";
+import { IMessage } from "./Message";
+import { ISummary } from "./Summary";
+import { IGig } from "./Gig";
+import { IProposal } from "./Proposal";
+import { IContract } from "./Contract";
+
+export type TConversation = {
+  createdBy: IUser["_id"];
+  lastMessage: IMessage["_id"];
+  members: IUser["_id"];
+  group: boolean;
+  modifiedAt: number;
+  summary: ISummary["_id"];
+  unread: number;
+  gigDetails: IGig["_id"];
+  proposalID: IProposal["_id"];
+  contractID: IContract["_id"];
+};
+
+export interface IConversation extends TConversation, Document {}
 
 const conversationSchema = new mongoose.Schema(
   {
@@ -9,7 +30,7 @@ const conversationSchema = new mongoose.Schema(
     },
     lastMessage: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "messages",
+      ref: "Messages",
     },
     members: {
       type: [mongoose.Schema.Types.ObjectId],
