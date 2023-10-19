@@ -1,6 +1,13 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, model } from "mongoose";
 
-export type TInvoice = {};
+export type TInvoice = {
+  dueDate: any;
+  status: string;
+  invoiceNumber: string;
+  paymentRecords: any;
+  createdAt: number;
+  updatedAt: any;
+};
 
 export interface IInvoice extends TInvoice, Document {}
 
@@ -30,5 +37,6 @@ const InvoiceSchema = new mongoose.Schema({
   },
 });
 
-const InvoiceModel = mongoose.model("InvoiceModel", InvoiceSchema);
+const InvoiceModel = model<IInvoice>("InvoiceModel", InvoiceSchema);
+
 export default InvoiceModel;

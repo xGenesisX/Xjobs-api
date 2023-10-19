@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, model } from "mongoose";
 import { IUser } from "./User";
 import { IMessage } from "./Message";
 import { ISummary } from "./Summary";
@@ -65,8 +65,6 @@ const conversationSchema = new mongoose.Schema(
   }
 );
 
-const conversation =
-  mongoose.models.conversation ||
-  mongoose.model("conversation", conversationSchema);
+const Conversation = model<IConversation>("Conversation", conversationSchema);
 
-export default conversation;
+export default Conversation;

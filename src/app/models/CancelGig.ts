@@ -1,7 +1,8 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, model } from "mongoose";
 import { IUser } from "./User";
 import { IContract } from "./Contract";
 import { IConversation } from "./Conversation";
+import { IGig } from "./Gig";
 
 export type TCancelGig = {
   clientId: IUser["_id"];
@@ -12,7 +13,7 @@ export type TCancelGig = {
   reason: string;
 };
 
-export interface IGig extends TCancelGig, Document {}
+export interface ICancelGig extends TCancelGig, Document {}
 
 const cancelSchema = new mongoose.Schema(
   {
@@ -45,6 +46,6 @@ const cancelSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const CancelGig =
-  mongoose.models.CancelGig || mongoose.model("CancelGig", cancelSchema);
+const CancelGig = model<ICancelGig>("CancelGig", cancelSchema);
+
 export default CancelGig;

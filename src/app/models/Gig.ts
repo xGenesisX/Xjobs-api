@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, model } from "mongoose";
 import { IUser } from "./User";
 import { IProposal } from "./Proposal";
 import { IContract } from "./Contract";
@@ -158,5 +158,6 @@ const GigSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Gig = mongoose.models.Gig || mongoose.model("Gig", GigSchema);
+const Gig = model<IGig>("Gig", GigSchema);
+
 export default Gig;

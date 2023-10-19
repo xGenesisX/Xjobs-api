@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, model } from "mongoose";
 import { IUser } from "./User";
 import { IConversation } from "./Conversation";
 import { IGig } from "./Gig";
@@ -42,7 +42,6 @@ const ProposalSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Proposal =
-  mongoose.models.Proposal || mongoose.model("Proposal", ProposalSchema);
+const Proposal = model<IProposal>("Proposal", ProposalSchema);
 
 export default Proposal;

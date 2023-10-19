@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, model } from "mongoose";
 import { IUser } from "./User";
 import { IGig } from "./Gig";
 import { IConversation } from "./Conversation";
@@ -58,6 +58,6 @@ const contractSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Contract =
-  mongoose.models.Contract || mongoose.model("Contract", contractSchema);
+const Contract = model<IContract>("Contract", contractSchema);
+
 export default Contract;
