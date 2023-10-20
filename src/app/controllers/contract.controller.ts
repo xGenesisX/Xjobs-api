@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import catchAsync from "../utils/catchAsync";
 import * as contractService from "../services/contract.service";
 import ChatController from "../services/conversation.service";
+import catchAsync from "../utils/catchAsync";
 
 export const getAllContracts = catchAsync(
   async (req: Request, res: Response) => {

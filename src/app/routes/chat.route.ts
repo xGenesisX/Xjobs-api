@@ -2,16 +2,18 @@ import express, { NextFunction, Request, Response } from "express";
 
 // import { check } from "express-validator";
 
-import { addContractIdToConvo } from "../controllers/chat.controller";
-import { chatPostHandler } from "../controllers/chat.controller";
-import { conversationPutHandler } from "../controllers/chat.controller";
-import { convoPostHandler } from "../controllers/chat.controller";
-import { getChatHandler } from "../controllers/chat.controller";
-import { summaryPostHandler } from "../controllers/chat.controller";
-import { markAsRead } from "../controllers/chat.controller";
-import { getConvoById } from "../controllers/chat.controller";
-import { getMostRecentConvo } from "../controllers/chat.controller";
-import { getConversationHandler } from "../controllers/chat.controller";
+import {
+  addContractIdToConvo,
+  chatPostHandler,
+  conversationPutHandler,
+  convoPostHandler,
+  getChatHandler,
+  getConversationHandler,
+  getConvoById,
+  getMostRecentConvo,
+  markAsRead,
+  summaryPostHandler,
+} from "../controllers/chat.controller";
 
 const router = express.Router();
 

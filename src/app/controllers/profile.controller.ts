@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
-import Joi from "@hapi/joi";
-import catchAsync from "../utils/catchAsync";
-import userService from "../services/user.service";
-import ChatController from "../services/conversation.service";
 import mongoose from "mongoose";
+import ChatController from "../services/conversation.service";
+import userService from "../services/user.service";
+import catchAsync from "../utils/catchAsync";
 
 // @notice update a user profile, adds feedback
 export const addFeedbackToUserProfile = catchAsync(

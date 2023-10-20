@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import catchAsync from "../utils/catchAsync";
-import * as gigService from "../services/gig.service";
 import ChatController from "../services/conversation.service";
+import * as gigService from "../services/gig.service";
+import catchAsync from "../utils/catchAsync";
 
 export const getGigById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.body;

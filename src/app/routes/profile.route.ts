@@ -2,11 +2,13 @@ import express, { NextFunction, Request, Response } from "express";
 
 const router = express.Router();
 
-import { addFeedbackToUserProfile } from "../controllers/profile.controller";
-import { createUserProfile } from "../controllers/profile.controller";
-import { getUserProfileWithAddress } from "../controllers/profile.controller";
-import { getUserProfileWithId } from "../controllers/profile.controller";
-import { updateUserProfile } from "../controllers/profile.controller";
+import {
+  addFeedbackToUserProfile,
+  createUserProfile,
+  getUserProfileWithAddress,
+  getUserProfileWithId,
+  updateUserProfile,
+} from "../controllers/profile.controller";
 
 function wrapAsync(fn: any) {
   return function (req: Request, res: Response, next: NextFunction) {

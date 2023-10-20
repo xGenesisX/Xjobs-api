@@ -2,13 +2,15 @@ import express, { NextFunction, Request, Response } from "express";
 
 const router = express.Router();
 
-import { acceptContract } from "../controllers/contract.controller";
-import { approveRefund } from "../controllers/contract.controller";
-import { getAllContracts } from "../controllers/contract.controller";
-import { getUserContracts } from "../controllers/contract.controller";
-import { hireFreelancer } from "../controllers/contract.controller";
-import { rejectContract } from "../controllers/contract.controller";
-import { releaseFunds } from "../controllers/contract.controller";
+import {
+  acceptContract,
+  approveRefund,
+  getAllContracts,
+  getUserContracts,
+  hireFreelancer,
+  rejectContract,
+  releaseFunds,
+} from "../controllers/contract.controller";
 
 // import { check } from "express-validator";
 

@@ -4,19 +4,19 @@ const router = express.Router();
 
 // import { check } from "express-validator";
 
-import { awardFreelancer } from "../controllers/gig.controller";
-import { bookmarkGig } from "../controllers/gig.controller";
-import { cancelGig } from "../controllers/gig.controller";
-import { createGig } from "../controllers/gig.controller";
-import { getAllGigs } from "../controllers/gig.controller";
-import { getGigById } from "../controllers/gig.controller";
-import { getGigByOwner } from "../controllers/gig.controller";
-import { getMyJobs } from "../controllers/gig.controller";
-import { getOwnerGigById } from "../controllers/gig.controller";
-import { listGigByOwner } from "../controllers/gig.controller";
-import { removeBookmark } from "../controllers/gig.controller";
-import { updateGigDetails } from "../controllers/gig.controller";
-import { updateGigStatus } from "../controllers/gig.controller";
+import {
+  bookmarkGig,
+  cancelGig,
+  createGig,
+  getAllGigs,
+  getGigById,
+  getGigByOwner,
+  getMyJobs,
+  getOwnerGigById,
+  listGigByOwner,
+  removeBookmark,
+  updateGigDetails,
+} from "../controllers/gig.controller";
 
 function wrapAsync(fn: any) {
   return function (req: Request, res: Response, next: NextFunction) {

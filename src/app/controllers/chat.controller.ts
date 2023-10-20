@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import catchAsync from "../utils/catchAsync";
 import ChatController from "../services/conversation.service";
+import catchAsync from "../utils/catchAsync";
 
 export const chatPostHandler = catchAsync(
   async (req: Request, res: Response) => {
