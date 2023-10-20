@@ -14,8 +14,6 @@ import profileRoutes from "./app/routes/profile.route";
 import proposalRoutes from "./app/routes/proposal.route";
 import db from "./app/utils/db";
 
-import authLimiter from "./app/utils/rateLimiter";
-
 import config from "./app/config/config";
 
 const PORT = config.port || 3000;
@@ -41,7 +39,7 @@ app.use(compression());
 app.use(passport.initialize());
 
 app.use("/v1/gig", gigRoutes);
-app.use("/v1/profile", authLimiter, profileRoutes);
+app.use("/v1/profile", profileRoutes);
 app.use("/v1/chat", chatRoutes);
 app.use("/v1/proposal", proposalRoutes);
 app.use("/v1/contract", contractRoutes);
