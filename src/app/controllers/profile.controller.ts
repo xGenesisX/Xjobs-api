@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import ChatController from "../services/conversation.service";
 import userService from "../services/user.service";
 import catchAsync from "../utils/catchAsync";
+import { TUser } from "../models/User";
 
 // @notice update a user profile, adds feedback
 export const addFeedbackToUserProfile = catchAsync(
@@ -100,10 +101,14 @@ export const createUserProfile = catchAsync(
 export const updateUserProfile = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.body;
-    // add other user fields to be updated
-    // add validaton here as well...
 
-    const userExists = await userService.updateUserProfile(id);
+    const profileFields: TUser = {
+      profileId: id,
+    };
+
+    const userExists = await userService.updateUserProfile(id, profileFields);
+
+    res.send(userExists);
 
     if (!userExists) {
       res.status(400).json("user not found");

@@ -1,21 +1,22 @@
 import mongoose from "mongoose";
-import Contract from "../models/Contract";
+import { roles } from "../config/roles";
+import Contract, { IContract } from "../models/Contract";
 import gigController from "./gig.service";
 import proposalController from "./proposal.service";
 
 class contractController {
   // @notice accepts a contract
   acceptContract = async (
-    gigId: mongoose.Schema.Types.ObjectId,
-    freelancerId: mongoose.Schema.Types.ObjectId,
-    proposalId: mongoose.Schema.Types.ObjectId
+    gigId: mongoose.Types.ObjectId,
+    freelancerId: mongoose.Types.ObjectId,
+    proposalId: mongoose.Types.ObjectId
   ) => {
     try {
       const result = await Promise.all([
         proposalController.acceptProposal(proposalId),
         gigController.awardFreelancer(gigId, freelancerId, "Active"),
       ]);
-      if (result) {
+      if (result[0] && result[1]) {
         return "Contract accepted";
       }
     } catch (error) {
@@ -25,9 +26,9 @@ class contractController {
 
   // @notice approve a refund
   approveRefund = async (
-    contractId: mongoose.Schema.Types.ObjectId,
+    contractId: mongoose.Types.ObjectId,
     contractStatus: string,
-    gigId: mongoose.Schema.Types.ObjectId
+    gigId: mongoose.Types.ObjectId
   ) => {
     try {
       const contract = await Contract.findOneAndUpdate(
@@ -49,19 +50,16 @@ class contractController {
   };
 
   // @notice gets a users contracts
-  getUserContracts = async (
-    role: string,
-    id: mongoose.Schema.Types.ObjectId
-  ) => {
+  getUserContracts = async (role: string, id: mongoose.Types.ObjectId) => {
     try {
       let contract;
       switch (role) {
-        case "client":
+        case roles[0]:
           contract = await Contract.find({ clientId: id })
             .populate("clientId freelancerId gigId")
             .sort({ updatedAt: -1 });
           break;
-        case "freelancer":
+        case roles[1]:
           contract = await Contract.find({ freelancerId: id })
             .populate("clientId freelancerId gigId")
             .sort({ updatedAt: -1 });
@@ -78,42 +76,25 @@ class contractController {
 
   // @notice hire a freelancer
   hireFreelancer = async (
-    clientId: mongoose.Schema.Types.ObjectId,
-    gigId: mongoose.Schema.Types.ObjectId,
-    freelancerId: mongoose.Schema.Types.ObjectId,
+    clientId: mongoose.Types.ObjectId,
+    gigId: mongoose.Types.ObjectId,
+    freelancerId: mongoose.Types.ObjectId,
     txHash: string,
     amount: number,
-    conversationID: mongoose.Schema.Types.ObjectId
-  ) => {
-    try {
-      const newContract = new Contract({
-        clientId: clientId,
-        gigId: gigId,
-        freelancerId: freelancerId,
-        txHash: txHash,
-        amount: amount,
-        conversationID: conversationID,
-      });
+    conversationID: mongoose.Types.ObjectId
+  ): Promise<IContract> => {
+    const newContract = new Contract({
+      clientId: clientId,
+      gigId: gigId,
+      freelancerId: freelancerId,
+      txHash: txHash,
+      amount: amount,
+      conversationID: conversationID,
+    }).save();
 
-      const contract = await newContract.save();
+    await gigController.updateGigStatus(gigId, "Pending");
 
-      if (contract) {
-        await Promise.all([
-          // new ChatController(req, res).addContractIdToConvo(conversationID, contract._id),
-          gigController.updateGigStatus(gigId, "Pending"),
-          //   new ChatController(req, res).summaryPostHandler(
-          //     conversationID,
-          //     `funded escrow contract with ${
-          //       contract.gigId.currency === 'solana' ? '◎' : contract.gigId.currency === 'usd' ? '$' : 'no currency'
-          //     }${amount}`,
-          //     clientId
-          //   ),
-        ]);
-      }
-      return contract;
-    } catch (error) {
-      return error;
-    }
+    return newContract;
   };
 
   // @notice get all contracts
@@ -131,9 +112,9 @@ class contractController {
 
   // @notice reject contract
   rejectContract = async (
-    gigId: mongoose.Schema.Types.ObjectId,
-    freelancerId: mongoose.Schema.Types.ObjectId,
-    contractId: mongoose.Schema.Types.ObjectId
+    gigId: mongoose.Types.ObjectId,
+    freelancerId: mongoose.Types.ObjectId,
+    contractId: mongoose.Types.ObjectId
   ) => {
     try {
       const result = await Promise.all([
@@ -156,8 +137,8 @@ class contractController {
 
   // @notice release funds
   releaseFunds = async (
-    gigId: mongoose.Schema.Types.ObjectId,
-    contractId: mongoose.Schema.Types.ObjectId
+    gigId: mongoose.Types.ObjectId,
+    contractId: mongoose.Types.ObjectId
   ) => {
     // Create promise array to handle async functions for updating gig status and contract status
     try {

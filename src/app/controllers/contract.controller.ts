@@ -2,10 +2,17 @@ import { Request, Response } from "express";
 import * as contractService from "../services/contract.service";
 import ChatController from "../services/conversation.service";
 import catchAsync from "../utils/catchAsync";
+import httpStatus from "http-status";
+import { IContract } from "../models/Contract";
 
 export const getAllContracts = catchAsync(
   async (req: Request, res: Response) => {
-    contractService.default.getAllContracts();
+    try {
+      const contracts = contractService.default.getAllContracts();
+      res.send(contracts);
+    } catch (error) {
+      res.send(error);
+    }
   }
 );
 
@@ -14,14 +21,39 @@ export const hireFreelancer = catchAsync(
     const { clientId, gigId, freelancerId, txHash, amount, conversationID } =
       req.body;
 
-    contractService.default.hireFreelancer(
-      clientId,
-      gigId,
-      freelancerId,
-      txHash,
-      amount,
-      conversationID
-    );
+    try {
+      const contract: IContract = await contractService.default.hireFreelancer(
+        clientId,
+        gigId,
+        freelancerId,
+        txHash,
+        amount,
+        conversationID
+      );
+
+      // add contract id to conversation
+      new ChatController(req, res).addContractIdToConvo(
+        conversationID,
+        contract._id
+      );
+
+      // add summary
+      new ChatController(req, res).summaryPostHandler(
+        conversationID,
+        `funded escrow contract with ${
+          contract.gigId.currency === "solana"
+            ? "◎"
+            : contract.gigId.currency === "usd"
+            ? "$"
+            : "no currency"
+        }${amount}`,
+        clientId
+      );
+
+      res.send(contract);
+    } catch (error) {
+      res.status(httpStatus.BAD_REQUEST).send(error);
+    }
   }
 );
 
@@ -29,7 +61,12 @@ export const getUserContracts = catchAsync(
   async (req: Request, res: Response) => {
     const { role, id } = req.body;
     // const { role, id } = req.query;
-    contractService.default.getUserContracts(role, id);
+    try {
+      let a = contractService.default.getUserContracts(role, id);
+      res.send(a);
+    } catch (error) {
+      res.status(httpStatus.BAD_REQUEST).send(error);
+    }
   }
 );
 
@@ -47,8 +84,18 @@ export const approveRefund = catchAsync(async (req: Request, res: Response) => {
     conversationID,
     summaryText,
     userId
-  ),
-    contractService.default.approveRefund(contractId, contractStatus, gigId);
+  );
+
+  try {
+    let a = contractService.default.approveRefund(
+      contractId,
+      contractStatus,
+      gigId
+    );
+    res.send(a);
+  } catch (error) {
+    res.status(httpStatus.BAD_REQUEST).send(error);
+  }
 });
 
 export const acceptContract = catchAsync(
@@ -59,8 +106,17 @@ export const acceptContract = catchAsync(
       conversationID,
       "accepted the offer for this project",
       freelancerId
-    ),
-      contractService.default.acceptContract(gigId, freelancerId, proposalId);
+    );
+    try {
+      const v = contractService.default.acceptContract(
+        gigId,
+        freelancerId,
+        proposalId
+      );
+      res.send(v);
+    } catch (error) {
+      res.status(httpStatus.BAD_GATEWAY).send(error);
+    }
   }
 );
 
@@ -74,7 +130,16 @@ export const rejectContract = catchAsync(
       freelancerId
     );
 
-    contractService.default.rejectContract(gigId, freelancerId, contractId);
+    try {
+      const a = contractService.default.rejectContract(
+        gigId,
+        freelancerId,
+        contractId
+      );
+      res.send(a);
+    } catch (error) {
+      res.status(httpStatus.BAD_REQUEST).send(error);
+    }
   }
 );
 
@@ -87,5 +152,10 @@ export const releaseFunds = catchAsync(async (req: Request, res: Response) => {
     userId
   );
 
-  contractService.default.releaseFunds(gigId, contractID);
+  try {
+    const cvs = contractService.default.releaseFunds(gigId, contractID);
+    res.send(cvs);
+  } catch (error) {
+    res.status(httpStatus.BAD_REQUEST).json(error);
+  }
 });

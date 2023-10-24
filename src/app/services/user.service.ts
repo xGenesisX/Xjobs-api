@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import User from "../models/User";
+import User, { TUser } from "../models/User";
 import { sendAccountCreated } from "./email.service";
-import Joi from "@hapi/joi";
+// import Joi from "@hapi/joi";
 import mongoose from "mongoose";
 
 class profileController {
@@ -10,8 +10,8 @@ class profileController {
     title: string,
     description: string,
     rate: number,
-    gigId: mongoose.Schema.Types.ObjectId,
-    userId: mongoose.Schema.Types.ObjectId
+    gigId: mongoose.Types.ObjectId,
+    userId: mongoose.Types.ObjectId
   ) => {
     const feedback = {
       title: title,
@@ -39,19 +39,9 @@ class profileController {
   };
 
   // @notice get a specific user by its id
-  getUserProfileWithId = async (userId: mongoose.Schema.Types.ObjectId) => {
+  getUserProfileWithId = async (userId: mongoose.Types.ObjectId) => {
     try {
-      const user = await User.findOne({ _id: userId });
-      return user;
-    } catch (error) {
-      return error;
-    }
-  };
-
-  // @notice get a specific user by its id
-  getUserWithId = async (userId: mongoose.Types.ObjectId) => {
-    try {
-      const user = await User.findOne({ _id: userId });
+      const user = await User.findById(userId);
       return user;
     } catch (error) {
       return error;
@@ -70,7 +60,7 @@ class profileController {
 
   // @notice create a new user profile
   createUserProfile = async (
-    profileId: string,
+    profileId: mongoose.Types.ObjectId,
     isAdmin: boolean,
     address: string,
     company: string,
@@ -119,11 +109,14 @@ class profileController {
   };
 
   // @notice updates a user profile
-  updateUserProfile = async (id: string) => {
+  updateUserProfile = async (
+    id: mongoose.Types.ObjectId,
+    profileField: TUser
+  ) => {
     const userExists = await User.findOneAndUpdate(
       { _id: id },
       {
-        // ...req.body,
+        $set: profileField,
       },
       {
         new: true,

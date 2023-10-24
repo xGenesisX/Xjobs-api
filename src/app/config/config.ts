@@ -16,7 +16,7 @@ const envVarsSchema = Joi.object()
     //   "the from field in the emails sent by the app"
     // ),
     // CLIENT_URL: Joi.string().required().description("Client url"),
-    // ABLY_API_KEY: Joi.string().required().description("ably url"),
+    ABLY_API_KEY: Joi.string().required().description("ably url"),
   })
   .unknown();
 

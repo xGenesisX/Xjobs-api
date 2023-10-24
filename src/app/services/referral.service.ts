@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import Referral from "../models/Referral";
 
 export class referralService {
-  checkReferrer = async (id: mongoose.Schema.Types.ObjectId) => {
+  checkReferrer = async (id: mongoose.Types.ObjectId) => {
     const ref = await Referral.findById(id).populate({ path: "userId" });
 
     //If referral is not found, throw error.
@@ -12,7 +12,7 @@ export class referralService {
     }
     return ref;
   };
-  createNewReferral = async (userId: mongoose.Schema.Types.ObjectId) => {
+  createNewReferral = async (userId: mongoose.Types.ObjectId) => {
     const newReferrer = new Referral({
       referralId: uuidv4(),
       referralLink: uuidv4(),

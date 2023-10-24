@@ -1,19 +1,22 @@
 import mongoose from "mongoose";
-import Gig from "../models/Proposal";
-import Proposal from "../models/Proposal";
+import {
+  default as Gig,
+  IProposal,
+  default as Proposal,
+} from "../models/Proposal";
 import User from "../models/User";
 
 class proposalService {
   // @notice create a new proposal
   createNewProposal = async (
-    gigId: mongoose.Schema.Types.ObjectId,
-    freelancerId: mongoose.Schema.Types.ObjectId,
-    coverLetter: mongoose.Schema.Types.ObjectId
+    gigId: mongoose.Types.ObjectId,
+    freelancerId: mongoose.Types.ObjectId,
+    coverLetter: string
   ) => {
     try {
       const gig = await Gig.findById(gigId);
       if (gig) {
-        const proposal = await Proposal.create({
+        const proposal: IProposal = await Proposal.create({
           freelancerId: freelancerId,
           gigId: gigId,
           coverLetter: coverLetter,
@@ -47,7 +50,7 @@ class proposalService {
   };
 
   // @notice get a proposal with a given id
-  getAProposal = async (gigId: mongoose.Schema.Types.ObjectId) => {
+  getAProposal = async (gigId: mongoose.Types.ObjectId) => {
     try {
       const gig = await Gig.findById(gigId).populate({
         path: "proposals",
@@ -60,7 +63,7 @@ class proposalService {
   };
 
   // @notice get a job proposal with a given id
-  getJobProposal = async (gigId: mongoose.Schema.Types.ObjectId) => {
+  getJobProposal = async (gigId: mongoose.Types.ObjectId) => {
     try {
       const proposal = await Gig.findById(gigId)
         .populate("awardedFreelancer")
@@ -75,7 +78,7 @@ class proposalService {
   };
 
   // @notice accept a proposal with a given id
-  acceptProposal = async (id: mongoose.Schema.Types.ObjectId) => {
+  acceptProposal = async (id: mongoose.Types.ObjectId) => {
     try {
       const proposal = await Proposal.findOneAndUpdate(
         { _id: id },
@@ -96,8 +99,8 @@ class proposalService {
 
   // @notice check if a proposal exists
   checkIfProposalExists = async (
-    freelancerId: mongoose.Schema.Types.ObjectId,
-    gigID: mongoose.Schema.Types.ObjectId
+    freelancerId: mongoose.Types.ObjectId,
+    gigID: mongoose.Types.ObjectId
   ) => {
     try {
       const proposal = await Proposal.findOne({
@@ -124,8 +127,8 @@ class proposalService {
 
   // @notice update a proposal with a given id
   updateProposalConversationID = async (
-    id: mongoose.Schema.Types.ObjectId,
-    conversationID: mongoose.Schema.Types.ObjectId
+    id: mongoose.Types.ObjectId,
+    conversationID: mongoose.Types.ObjectId
   ) => {
     try {
       const proposal = await Proposal.findOneAndUpdate(
@@ -142,7 +145,7 @@ class proposalService {
   };
 
   // @notice get a proposal with a given id
-  getProposalById = async (id: any) => {
+  getProposalById = async (id: mongoose.Types.ObjectId) => {
     try {
       const proposals = await Proposal.find({
         freelancerId: id,
@@ -156,7 +159,7 @@ class proposalService {
   };
 
   // @notice get proposal for a gig
-  getProposalsForGig = async (gigId: mongoose.Schema.Types.ObjectId) => {
+  getProposalsForGig = async (gigId: mongoose.Types.ObjectId) => {
     try {
       const proposal = await Proposal.findById(gigId).populate({
         path: "proposals",

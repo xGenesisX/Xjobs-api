@@ -8,13 +8,13 @@ export const createNewProposal = catchAsync(
     const { gigId, freelancerId, coverLetter } = req.body;
 
     try {
-      const p = proposalService.createNewProposal(
+      const proposal = proposalService.createNewProposal(
         gigId,
         freelancerId,
         coverLetter
       );
 
-      res.send(p);
+      res.send(proposal);
     } catch (error) {
       res.status(400).json(error);
     }
@@ -82,7 +82,7 @@ export const updateProposalConversationID = catchAsync(
 // @notice get a proposal with a given id
 export const getProposalById = catchAsync(
   async (req: Request, res: Response) => {
-    const { id } = req.query;
+    const { id } = req.body;
     try {
       const proposals = proposalService.getProposalById(id);
       res.send(proposals);

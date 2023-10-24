@@ -6,7 +6,7 @@ import User from "../models/User";
 
 class gigController {
   // @notice get a gig by its id
-  getGigById = async (id: mongoose.Schema.Types.ObjectId) => {
+  getGigById = async (id: mongoose.Types.ObjectId) => {
     // const { id } = req.body;
     const filter = ["listed", "Pending"]; // Define filter for gig status
 
@@ -24,10 +24,7 @@ class gigController {
   };
 
   // @notice get a gig owner by its id
-  getOwnerGigById = async (
-    id: mongoose.Schema.Types.ObjectId,
-    address: string
-  ) => {
+  getOwnerGigById = async (id: mongoose.Types.ObjectId, address: string) => {
     // Find and return gig object that matches the given ID and owner address
     try {
       const gig = await Gig.findOne({
@@ -41,7 +38,7 @@ class gigController {
   };
 
   // @notice get a users gigs
-  getMyJobs = async (id: mongoose.Schema.Types.ObjectId, status: string) => {
+  getMyJobs = async (id: mongoose.Types.ObjectId, status: string) => {
     // const { id, status } = req.body; // Extract required data from request body
 
     // Find and return array of gig objects that are awarded to the given freelancer and match the given status
@@ -60,7 +57,6 @@ class gigController {
 
   // @notice get a gig by its owner
   getGigByOwner = async (address: string) => {
-    // const { address } = req.body;
     // Find and return array of gig objects that are owned by the given owner
     try {
       const gig = await Gig.find({
@@ -74,8 +70,7 @@ class gigController {
   };
 
   // @notice update a gigs details
-  updateGigDetails = async (id: mongoose.Schema.Types.ObjectId) => {
-    // const { id } = req.body;
+  updateGigDetails = async (id: mongoose.Types.ObjectId) => {
     try {
       const gig = await Gig.findOneAndUpdate(
         { _id: id },
@@ -95,8 +90,8 @@ class gigController {
 
   // @notice awards a gig to a freelancer
   awardFreelancer = async (
-    id: mongoose.Schema.Types.ObjectId,
-    freelancerId: mongoose.Schema.Types.ObjectId,
+    id: mongoose.Types.ObjectId,
+    freelancerId: mongoose.Types.ObjectId,
     status: string
   ) => {
     try {
@@ -137,10 +132,7 @@ class gigController {
   };
 
   // @notice update a gig status
-  updateGigStatus = async (
-    id: mongoose.Schema.Types.ObjectId,
-    status: string
-  ) => {
+  updateGigStatus = async (id: mongoose.Types.ObjectId, status: string) => {
     try {
       const gig = await Gig.findOneAndUpdate(
         { _id: id },
@@ -161,8 +153,8 @@ class gigController {
 
   // @notice bookmark a gig
   bookmarkGig = async (
-    id: mongoose.Schema.Types.ObjectId,
-    GigId: mongoose.Schema.Types.ObjectId
+    id: mongoose.Types.ObjectId,
+    GigId: mongoose.Types.ObjectId
   ) => {
     // Find and update user document with new bookmarked gig
     try {
@@ -198,7 +190,7 @@ class gigController {
     url: string,
     timeframe: string,
     status: string,
-    owner: mongoose.Schema.Types.ObjectId
+    owner: mongoose.Types.ObjectId
   ) => {
     try {
       const newGig = new Gig({
@@ -243,11 +235,9 @@ class gigController {
 
   // @notice unbookmark a gig
   removeBookmark = async (
-    id: mongoose.Schema.Types.ObjectId,
-    GigId: mongoose.Schema.Types.ObjectId
+    id: mongoose.Types.ObjectId,
+    GigId: mongoose.Types.ObjectId
   ) => {
-    // const { id, GigId } = req.body;
-
     try {
       const updatedUser = await User.findByIdAndUpdate(
         {
@@ -268,10 +258,8 @@ class gigController {
   };
 
   // @notice gets all gigs in the system
-  getAllGigs = async (page: any, filter: any) => {
+  getAllGigs = async (page: string, filter: any) => {
     let pageVar;
-    // const { page, filter } = req.body; // Set default values for page and filter
-
     if (page) {
       pageVar = parseInt(page);
     } else {
@@ -300,12 +288,12 @@ class gigController {
 
   // @notice cancel a gig
   cancelGig = async (
-    clientId: mongoose.Schema.Types.ObjectId,
-    gigId: mongoose.Schema.Types.ObjectId,
-    freelancerId: mongoose.Schema.Types.ObjectId,
-    contractID: mongoose.Schema.Types.ObjectId,
+    clientId: mongoose.Types.ObjectId,
+    gigId: mongoose.Types.ObjectId,
+    freelancerId: mongoose.Types.ObjectId,
+    contractID: mongoose.Types.ObjectId,
     reason: string,
-    conversationID: mongoose.Schema.Types.ObjectId
+    conversationID: mongoose.Types.ObjectId
   ) => {
     try {
       await cancelGigService.cancelGig(

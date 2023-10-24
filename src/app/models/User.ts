@@ -8,7 +8,7 @@ export type TUser = {
   isAdmin?: boolean;
   address?: string;
   company?: string;
-  user_image: any;
+  user_image?: any;
   name?: string;
   dateOfBirth?: any;
   timezone?: any;
@@ -17,19 +17,19 @@ export type TUser = {
   banned?: boolean;
   profile_details_description?: string;
   job_category?: any;
-  skills: any;
+  skills?: any;
   isAvailable?: boolean;
   role?: string;
   socials?: any;
   expertiseLevel?: string;
   hourlyRate?: number;
-  gigs: IGig["_id"];
-  submittedProposals: [string];
-  notifications: INotification["_id"];
-  completedGigs: IGig["_id"];
-  bookmarkedGigs: IGig["_id"];
-  feedbacks: any;
-  userPoints: number;
+  gigs?: IGig["_id"];
+  submittedProposals?: [string];
+  notifications?: INotification["_id"];
+  completedGigs?: IGig["_id"];
+  bookmarkedGigs?: IGig["_id"];
+  feedbacks?: any;
+  userPoints?: number;
 };
 
 export interface IUser extends TUser, Document {}

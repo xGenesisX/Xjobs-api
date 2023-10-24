@@ -15,20 +15,20 @@ export type TGig = {
   category: any;
   gig_description: string;
   skills_required: any;
-  payment_type: string;
+  payment_type?: string;
   date_due: any;
   experience_level: string;
-  url: string;
-  timeframe: string;
+  url?: string;
+  timeframe?: string;
   approvedForMenu: boolean;
   isActive: boolean;
-  featured: boolean;
+  featured?: boolean;
   isAwarded: boolean;
-  awardedFreelancer: IUser["_id"];
+  awardedFreelancer?: IUser["_id"];
   proposals: IProposal["_id"];
-  status: string;
+  status?: string;
   price: number;
-  contractId: IContract["_id"];
+  contractId?: IContract["_id"];
 };
 
 export interface IGig extends TGig, Document {}

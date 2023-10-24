@@ -2,38 +2,59 @@ import { Request, Response } from "express";
 import ChatController from "../services/conversation.service";
 import * as gigService from "../services/gig.service";
 import catchAsync from "../utils/catchAsync";
+import httpStatus from "http-status";
 
 export const getGigById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.body;
 
-  gigService.default.getGigById(id);
+  try {
+    gigService.default.getGigById(id);
+  } catch (error) {
+    res.status(httpStatus.BAD_REQUEST).send(error);
+  }
 });
 
 export const getOwnerGigById = catchAsync(
   async (req: Request, res: Response) => {
     const { id, address } = req.body;
 
-    gigService.default.getOwnerGigById(id, address);
+    try {
+      gigService.default.getOwnerGigById(id, address);
+    } catch (error) {
+      res.status(httpStatus.BAD_REQUEST).send(error);
+    }
   }
 );
 
 export const getMyJobs = catchAsync(async (req: Request, res: Response) => {
   const { id, status } = req.body;
 
-  gigService.default.getMyJobs(id, status);
+  try {
+    gigService.default.getMyJobs(id, status);
+  } catch (error) {
+    res.status(httpStatus.BAD_REQUEST).send(error);
+  }
 });
 
 export const getGigByOwner = catchAsync(async (req: Request, res: Response) => {
   const { address } = req.body;
 
-  gigService.default.getGigByOwner(address);
+  try {
+    gigService.default.getGigByOwner(address);
+  } catch (error) {
+    res.status(httpStatus.BAD_REQUEST).send(error);
+  }
 });
 
 export const updateGigDetails = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.body;
 
-    gigService.default.updateGigDetails(id);
+    try {
+      gigService.default.updateGigDetails(id);
+    } catch (error) {
+      res.status(httpStatus.BAD_REQUEST).send(error);
+    }
   }
 );
 
@@ -41,7 +62,11 @@ export const awardFreelancer = catchAsync(
   async (req: Request, res: Response) => {
     const { id, freelancerId, status } = req.body;
 
-    gigService.default.awardFreelancer(id, freelancerId, status);
+    try {
+      gigService.default.awardFreelancer(id, freelancerId, status);
+    } catch (error) {
+      res.status(httpStatus.BAD_REQUEST).send(error);
+    }
   }
 );
 
@@ -49,14 +74,22 @@ export const updateGigStatus = catchAsync(
   async (req: Request, res: Response) => {
     const { id, status } = req.body;
 
-    gigService.default.updateGigStatus(id, status);
+    try {
+      gigService.default.updateGigStatus(id, status);
+    } catch (error) {
+      res.status(httpStatus.BAD_REQUEST).send(error);
+    }
   }
 );
 
 export const bookmarkGig = catchAsync(async (req: Request, res: Response) => {
   const { id, GigId } = req.body;
 
-  gigService.default.bookmarkGig(id, GigId);
+  try {
+    gigService.default.bookmarkGig(id, GigId);
+  } catch (error) {
+    res.status(httpStatus.BAD_REQUEST).send(error);
+  }
 });
 
 export const createGig = catchAsync(async (req: Request, res: Response) => {
@@ -66,7 +99,6 @@ export const createGig = catchAsync(async (req: Request, res: Response) => {
     ownerAddress,
     clientName,
     company,
-    timezone,
     category,
     gig_description,
     skills_required,
@@ -76,28 +108,36 @@ export const createGig = catchAsync(async (req: Request, res: Response) => {
     owner,
   } = req.body;
 
-  gigService.default.createGig(
-    title,
-    currency,
-    ownerAddress,
-    clientName,
-    company,
-    timeframe,
-    category,
-    gig_description,
-    skills_required,
-    url,
-    timeframe,
-    status,
-    owner
-  );
+  try {
+    await gigService.default.createGig(
+      title,
+      currency,
+      ownerAddress,
+      clientName,
+      company,
+      timeframe,
+      category,
+      gig_description,
+      skills_required,
+      url,
+      timeframe,
+      status,
+      owner
+    );
+  } catch (error) {
+    res.status(httpStatus.BAD_REQUEST).send(error);
+  }
 });
 
 export const listGigByOwner = catchAsync(
   async (req: Request, res: Response) => {
     const { address } = req.body;
 
-    gigService.default.listGigByOwner(address);
+    try {
+      await gigService.default.listGigByOwner(address);
+    } catch (error) {
+      res.status(httpStatus.BAD_REQUEST).send(error);
+    }
   }
 );
 
@@ -105,14 +145,22 @@ export const removeBookmark = catchAsync(
   async (req: Request, res: Response) => {
     const { id, GigId } = req.body;
 
-    gigService.default.removeBookmark(id, GigId);
+    try {
+      await gigService.default.removeBookmark(id, GigId);
+    } catch (error) {
+      res.status(httpStatus.BAD_REQUEST).send(error);
+    }
   }
 );
 
 export const getAllGigs = catchAsync(async (req: Request, res: Response) => {
   const { page, filter } = req.body;
 
-  gigService.default.getAllGigs(page, filter);
+  try {
+    await gigService.default.getAllGigs(page, filter);
+  } catch (error) {
+    res.status(httpStatus.BAD_REQUEST).send(error);
+  }
 });
 
 export const cancelGig = catchAsync(async (req: Request, res: Response) => {
@@ -123,8 +171,10 @@ export const cancelGig = catchAsync(async (req: Request, res: Response) => {
     conversationID,
     "requested a refund and to cancel this project",
     clientId
-  ),
-    gigService.default.cancelGig(
+  );
+
+  try {
+    await gigService.default.cancelGig(
       clientId,
       gigId,
       freelancerId,
@@ -132,4 +182,7 @@ export const cancelGig = catchAsync(async (req: Request, res: Response) => {
       reason,
       conversationID
     );
+  } catch (error) {
+    res.status(httpStatus.BAD_REQUEST).send(error);
+  }
 });

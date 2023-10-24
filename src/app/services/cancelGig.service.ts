@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 class cancelGigService {
   // cancel a gig
   cancelGig = async (
-    clientId: mongoose.Schema.Types.ObjectId,
-    gigId: mongoose.Schema.Types.ObjectId,
-    freelancerId: mongoose.Schema.Types.ObjectId,
-    contractID: mongoose.Schema.Types.ObjectId,
-    conversationID: mongoose.Schema.Types.ObjectId,
+    clientId: mongoose.Types.ObjectId,
+    gigId: mongoose.Types.ObjectId,
+    freelancerId: mongoose.Types.ObjectId,
+    contractID: mongoose.Types.ObjectId,
+    conversationID: mongoose.Types.ObjectId,
     reason: string
   ) => {
     const newCancellationRequest = new CancelGig({

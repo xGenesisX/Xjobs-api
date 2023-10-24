@@ -45,7 +45,7 @@ export const convoPostHandler = catchAsync(
       proposalId,
     } = req.body;
 
-    const a = new ChatController(req, res).convoPostHandler(
+    new ChatController(req, res).convoPostHandler(
       client,
       freelancer,
       sender,

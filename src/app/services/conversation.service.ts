@@ -1,5 +1,5 @@
 // import httpStatus from "http-status";
-import Joi from "@hapi/joi";
+// import Joi from "@hapi/joi";
 import Ably from "ably/promises";
 import dotenv from "dotenv";
 import { Request, Response } from "express";
@@ -60,7 +60,7 @@ class ChatController {
     await Promise.all([
       channel.publish("update-chat", compressedMessage),
       this.conversationPutHandler(conversationID, savedMessage._id, 1),
-      profileController.getUserWithId(userID).then((user) => {
+      profileController.getUserProfileWithId(userID).then((user) => {
         // new Email(user.email_address, user.name).NewMessageNotification();
       }),
     ]);
@@ -127,8 +127,8 @@ class ChatController {
     sender: mongoose.Types.ObjectId,
     message: string,
     group: boolean,
-    gigDetails?: mongoose.Types.ObjectId,
-    proposalID?: mongoose.Types.ObjectId
+    proposalID?: mongoose.Types.ObjectId,
+    gigDetails?: mongoose.Types.ObjectId
   ) => {
     await convo
       .exists({

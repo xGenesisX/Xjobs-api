@@ -12,11 +12,11 @@ export type TConversation = {
   members: IUser["_id"];
   group: boolean;
   modifiedAt: number;
-  summary: ISummary["_id"];
-  unread: number;
-  gigDetails: IGig["_id"];
-  proposalID: IProposal["_id"];
-  contractID: IContract["_id"];
+  summary?: ISummary["_id"];
+  unread?: number;
+  gigDetails?: IGig["_id"];
+  proposalID?: IProposal["_id"];
+  contractID?: IContract["_id"];
 };
 
 export interface IConversation extends TConversation, Document {}
