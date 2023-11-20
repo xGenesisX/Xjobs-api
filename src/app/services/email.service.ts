@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 import config from "../config/config";
-import { Novu } from "@novu/node";
 import { resend } from "../utils/resend";
 
 interface Message {
@@ -10,8 +9,6 @@ interface Message {
   text: string;
   html?: string;
 }
-
-// const novu = new Novu("<NOVU_API_KEY>");
 
 export const transport = nodemailer.createTransport(config.email.smtp);
 /* istanbul ignore next */
@@ -40,21 +37,6 @@ export const sendEmail = async (
   text: string,
   html: string
 ): Promise<void> => {
-  // await novu.trigger("<WORKFLOW_TRIGGER_IDENTIFIER>", {
-  //   to: {
-  //     subscriberId: "<USER_IDENTIFIER>",
-  //     email: to,
-  //   },
-  //   payload: {},
-  // });
-  // const msg: Message = {
-  //   from: config.email.from,
-  //   to,
-  //   subject,
-  //   text,
-  //   html,
-  // };
-  // await transport.sendMail(msg);
   console.log(["archangeltv24@gmail.com"]);
   try {
     await resend.emails.send({

@@ -11,16 +11,12 @@ class contractController {
     freelancerId: mongoose.Types.ObjectId,
     proposalId: mongoose.Types.ObjectId
   ) => {
-    try {
-      const result = await Promise.all([
-        proposalController.acceptProposal(proposalId),
-        gigController.awardFreelancer(gigId, freelancerId, "Active"),
-      ]);
-      if (result[0] && result[1]) {
-        return "Contract accepted";
-      }
-    } catch (error) {
-      return error;
+    const result = await Promise.all([
+      proposalController.acceptProposal(proposalId),
+      gigController.awardFreelancer(gigId, freelancerId, "Active"),
+    ]);
+    if (result[0] && result[1]) {
+      return "Contract accepted";
     }
   };
 
@@ -30,48 +26,40 @@ class contractController {
     contractStatus: string,
     gigId: mongoose.Types.ObjectId
   ) => {
-    try {
-      const contract = await Contract.findOneAndUpdate(
-        { _id: contractId },
-        {
-          status: contractStatus,
-        },
-        {
-          new: true,
-        }
-      );
-      if (contract) {
-        Promise.all([gigController.updateGigStatus(gigId, "Processing")]);
+    const contract = await Contract.findOneAndUpdate(
+      { _id: contractId },
+      {
+        status: contractStatus,
+      },
+      {
+        new: true,
       }
-      return contract;
-    } catch (error) {
-      return error;
+    );
+    if (contract) {
+      Promise.all([gigController.updateGigStatus(gigId, "Processing")]);
     }
+    return contract;
   };
 
   // @notice gets a users contracts
   getUserContracts = async (role: string, id: mongoose.Types.ObjectId) => {
-    try {
-      let contract;
-      switch (role) {
-        case roles[0]:
-          contract = await Contract.find({ clientId: id })
-            .populate("clientId freelancerId gigId")
-            .sort({ updatedAt: -1 });
-          break;
-        case roles[1]:
-          contract = await Contract.find({ freelancerId: id })
-            .populate("clientId freelancerId gigId")
-            .sort({ updatedAt: -1 });
-          break;
-        default:
-          return "error getting user contracts";
-      }
-
-      return contract;
-    } catch (error) {
-      return error;
+    let contract;
+    switch (role) {
+      case roles[0]:
+        contract = await Contract.find({ clientId: id })
+          .populate("clientId freelancerId gigId")
+          .sort({ updatedAt: -1 });
+        break;
+      case roles[1]:
+        contract = await Contract.find({ freelancerId: id })
+          .populate("clientId freelancerId gigId")
+          .sort({ updatedAt: -1 });
+        break;
+      default:
+        return "error getting user contracts";
     }
+
+    return contract;
   };
 
   // @notice hire a freelancer
@@ -100,14 +88,10 @@ class contractController {
   // @notice get all contracts
   getAllContracts = async () => {
     // get all contracts from database
-    try {
-      const contracts = await Contract.find().sort({
-        $natural: -1,
-      });
-      return contracts;
-    } catch (error) {
-      return error;
-    }
+    const contracts = await Contract.find().sort({
+      $natural: -1,
+    });
+    return contracts;
   };
 
   // @notice reject contract
@@ -116,23 +100,19 @@ class contractController {
     freelancerId: mongoose.Types.ObjectId,
     contractId: mongoose.Types.ObjectId
   ) => {
-    try {
-      const result = await Promise.all([
-        gigController.awardFreelancer(gigId, freelancerId, "listed"),
-        Contract.findOneAndUpdate(
-          { _id: contractId },
-          {
-            status: "Rejected",
-          },
-          {
-            new: true,
-          }
-        ),
-      ]);
-      return result;
-    } catch (error) {
-      return error;
-    }
+    const result = await Promise.all([
+      gigController.awardFreelancer(gigId, freelancerId, "listed"),
+      Contract.findOneAndUpdate(
+        { _id: contractId },
+        {
+          status: "Rejected",
+        },
+        {
+          new: true,
+        }
+      ),
+    ]);
+    return result;
   };
 
   // @notice release funds
@@ -141,24 +121,20 @@ class contractController {
     contractId: mongoose.Types.ObjectId
   ) => {
     // Create promise array to handle async functions for updating gig status and contract status
-    try {
-      const result = await Promise.all([
-        gigController.updateGigStatus(gigId, "Processing"),
-        Contract.findOneAndUpdate(
-          { _id: contractId },
-          {
-            status: "Release",
-          },
-          {
-            new: true,
-          }
-        ),
-      ]);
+    const result = await Promise.all([
+      gigController.updateGigStatus(gigId, "Processing"),
+      Contract.findOneAndUpdate(
+        { _id: contractId },
+        {
+          status: "Release",
+        },
+        {
+          new: true,
+        }
+      ),
+    ]);
 
-      return result;
-    } catch (error) {
-      return error;
-    }
+    return result;
   };
 }
 

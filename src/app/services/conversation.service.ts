@@ -89,35 +89,31 @@ class ChatController {
   ) => {
     // add Joi validation
 
-    try {
-      const convoCurrentUnread = await convo.findById(id);
-      const convoo = await convo
-        .findOneAndUpdate(
-          { _id: id },
-          {
-            // unread: convoCurrentUnread.unread + unread,
-            lastMessage: lastMessage,
-          },
-          {
-            new: true,
-          }
-        )
-        .sort({ updatedAt: -1 })
-        .populate("lastMessage members gigDetails summary.sender")
-        .populate({
-          path: "gigDetails",
-          populate: { path: "awardedFreelancer", model: "User" },
-        });
+    const convoCurrentUnread = await convo.findById(id);
+    const convoo = await convo
+      .findOneAndUpdate(
+        { _id: id },
+        {
+          // unread: convoCurrentUnread.unread + unread,
+          lastMessage: lastMessage,
+        },
+        {
+          new: true,
+        }
+      )
+      .sort({ updatedAt: -1 })
+      .populate("lastMessage members gigDetails summary.sender")
+      .populate({
+        path: "gigDetails",
+        populate: { path: "awardedFreelancer", model: "User" },
+      });
 
-      const compressedConvoo = pako.deflate(JSON.stringify(convoo));
+    const compressedConvoo = pako.deflate(JSON.stringify(convoo));
 
-      const channel = this.rest.channels.get(`conversations`);
-      await channel.publish("update-convo", compressedConvoo);
+    const channel = this.rest.channels.get(`conversations`);
+    await channel.publish("update-convo", compressedConvoo);
 
-      return convoo;
-    } catch (error) {
-      return error;
-    }
+    return convoo;
   };
 
   // @notice create a new conversation, if it doesnt previosly exist
@@ -180,21 +176,17 @@ class ChatController {
     id: mongoose.Types.ObjectId,
     contractId: mongoose.Types.ObjectId
   ) => {
-    try {
-      const convoo = await convo.findOneAndUpdate(
-        { _id: id },
-        {
-          contractID: contractId,
-        },
-        {
-          new: true,
-        }
-      );
+    const convoo = await convo.findOneAndUpdate(
+      { _id: id },
+      {
+        contractID: contractId,
+      },
+      {
+        new: true,
+      }
+    );
 
-      return convoo;
-    } catch (error) {
-      return error;
-    }
+    return convoo;
   };
 
   // @notice get most recent conversation for a user
@@ -205,37 +197,33 @@ class ChatController {
 
   // @notice mark a conversation as read by id
   markAsRead = async (id: mongoose.Types.ObjectId) => {
-    try {
-      await convo.exists({ _id: id }).then(() => {
-        const convoo = convo
-          .findOneAndUpdate(
-            { _id: id },
-            {
-              $set: {
-                unread: 0,
-              },
+    await convo.exists({ _id: id }).then(() => {
+      const convoo = convo
+        .findOneAndUpdate(
+          { _id: id },
+          {
+            $set: {
+              unread: 0,
             },
-            {
-              new: true,
-              timestamps: false,
-            }
-          )
-          .populate("members lastMessage summary.sender gigDetails")
-          .populate({
-            path: "gigDetails",
-            populate: { path: "awardedFreelancer", model: "User" },
-          });
+          },
+          {
+            new: true,
+            timestamps: false,
+          }
+        )
+        .populate("members lastMessage summary.sender gigDetails")
+        .populate({
+          path: "gigDetails",
+          populate: { path: "awardedFreelancer", model: "User" },
+        });
 
-        const compressedConvoo = pako.deflate(JSON.stringify(convoo));
+      const compressedConvoo = pako.deflate(JSON.stringify(convoo));
 
-        const channel = this.rest.channels.get(`conversations`);
-        channel.publish("update-convo", compressedConvoo);
+      const channel = this.rest.channels.get(`conversations`);
+      channel.publish("update-convo", compressedConvoo);
 
-        return convoo;
-      });
-    } catch (error) {
-      return error;
-    }
+      return convoo;
+    });
   };
 
   // @notice make a new summary
@@ -244,32 +232,28 @@ class ChatController {
     summaryText: string,
     sender: mongoose.Types.ObjectId
   ) => {
-    try {
-      const updatedConvo = await conversation
-        .findOneAndUpdate(
-          { _id: conversationID },
-          { $addToSet: { summary: { sender: sender, summary: summaryText } } },
-          {
-            new: true,
-            timestamps: false,
-          }
-        )
-        .sort({ updatedAt: -1 })
-        .populate("lastMessage members gigDetails summary.sender")
-        .populate({
-          path: "gigDetails",
-          populate: { path: "awardedFreelancer", model: "User" },
-        });
+    const updatedConvo = await conversation
+      .findOneAndUpdate(
+        { _id: conversationID },
+        { $addToSet: { summary: { sender: sender, summary: summaryText } } },
+        {
+          new: true,
+          timestamps: false,
+        }
+      )
+      .sort({ updatedAt: -1 })
+      .populate("lastMessage members gigDetails summary.sender")
+      .populate({
+        path: "gigDetails",
+        populate: { path: "awardedFreelancer", model: "User" },
+      });
 
-      const compressedConvoo = pako.deflate(JSON.stringify(updatedConvo));
+    const compressedConvoo = pako.deflate(JSON.stringify(updatedConvo));
 
-      const channel = this.rest.channels.get(`conversations`);
-      await channel.publish("update-convo", compressedConvoo);
+    const channel = this.rest.channels.get(`conversations`);
+    await channel.publish("update-convo", compressedConvoo);
 
-      return updatedConvo;
-    } catch (error) {
-      return error;
-    }
+    return updatedConvo;
   };
 }
 

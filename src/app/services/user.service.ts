@@ -20,42 +20,30 @@ class profileController {
       gigId: gigId,
     };
 
-    try {
-      const user = await User.findByIdAndUpdate(
-        {
-          _id: userId,
-        },
-        {
-          $addToSet: { feedbacks: feedback },
-        },
-        {
-          new: true,
-        }
-      );
-      return user;
-    } catch (error) {
-      return error;
-    }
+    const user = await User.findByIdAndUpdate(
+      {
+        _id: userId,
+      },
+      {
+        $addToSet: { feedbacks: feedback },
+      },
+      {
+        new: true,
+      }
+    );
+    return user;
   };
 
   // @notice get a specific user by its id
   getUserProfileWithId = async (userId: mongoose.Types.ObjectId) => {
-    try {
-      const user = await User.findById(userId);
-      return user;
-    } catch (error) {
-      return error;
-    }
+    const user = await User.findById(userId);
+    return user;
   };
 
   // @notice get a specific user by its registered address
   getUserProfileWithAddress = async (userAddress: string) => {
-    try {
-      const user = await User.findOne({ userAddress });
-      return user;
-    } catch (error) {
-      return error;
-    }
+    const user = await User.findOne({ userAddress });
+    return user;
   };
 
   // @notice create a new user profile
@@ -74,7 +62,6 @@ class profileController {
   ) => {
     const verificationToken = uuidv4().toString();
 
-    // try {
     const newUser = new User({
       profileId: profileId,
       isAdmin: isAdmin,
@@ -103,9 +90,6 @@ class profileController {
       await User.deleteOne({ _id: newUser._id });
       return "error parsing request";
     }
-    // } catch (error) {
-    //   return error;
-    // }
   };
 
   // @notice updates a user profile

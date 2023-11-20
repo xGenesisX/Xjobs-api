@@ -11,30 +11,22 @@ class gigController {
     const filter = ["listed", "Pending"]; // Define filter for gig status
 
     // Find and return gig object that matches the given ID and satisfies the filter criteria
-    try {
-      const gig = await Gig.findOne({
-        _id: id,
-        approvedForMenu: true,
-        status: { $in: filter },
-      });
-      return gig;
-    } catch (error) {
-      return error;
-    }
+    const gig = await Gig.findOne({
+      _id: id,
+      approvedForMenu: true,
+      status: { $in: filter },
+    });
+    return gig;
   };
 
   // @notice get a gig owner by its id
   getOwnerGigById = async (id: mongoose.Types.ObjectId, address: string) => {
     // Find and return gig object that matches the given ID and owner address
-    try {
-      const gig = await Gig.findOne({
-        _id: id,
-        ownerAddress: address,
-      });
-      return gig;
-    } catch (error) {
-      return error;
-    }
+    const gig = await Gig.findOne({
+      _id: id,
+      ownerAddress: address,
+    });
+    return gig;
   };
 
   // @notice get a users gigs
@@ -42,50 +34,37 @@ class gigController {
     // const { id, status } = req.body; // Extract required data from request body
 
     // Find and return array of gig objects that are awarded to the given freelancer and match the given status
-    try {
-      const gig = await Gig.find({
-        awardedFreelancer: id,
-        status: status,
-      }).sort({
-        $natural: -1,
-      });
-      return gig;
-    } catch (error) {
-      return error;
-    }
+    const gig = await Gig.find({
+      awardedFreelancer: id,
+      status: status,
+    }).sort({
+      $natural: -1,
+    });
+    return gig;
   };
 
   // @notice get a gig by its owner
   getGigByOwner = async (address: string) => {
     // Find and return array of gig objects that are owned by the given owner
-    try {
-      const gig = await Gig.find({
-        ownerAddress: address,
-      }).sort({ $natural: -1 });
-      return gig;
-    } catch (error) {
-      // res.status(400).send(error);
-      return error;
-    }
+    const gig = await Gig.find({
+      ownerAddress: address,
+    }).sort({ $natural: -1 });
+    return gig;
   };
 
   // @notice update a gigs details
   updateGigDetails = async (id: mongoose.Types.ObjectId) => {
-    try {
-      const gig = await Gig.findOneAndUpdate(
-        { _id: id },
-        {
-          // ...req.body,
-          approvedForMenu: false,
-        },
-        {
-          new: true,
-        }
-      );
-      return gig;
-    } catch (error) {
-      return error;
-    }
+    const gig = await Gig.findOneAndUpdate(
+      { _id: id },
+      {
+        // ...req.body,
+        approvedForMenu: false,
+      },
+      {
+        new: true,
+      }
+    );
+    return gig;
   };
 
   // @notice awards a gig to a freelancer
@@ -94,46 +73,23 @@ class gigController {
     freelancerId: mongoose.Types.ObjectId,
     status: string
   ) => {
-    try {
-      if (status === "Active") {
-        const gig = await Gig.findOneAndUpdate(
-          { _id: id },
-          {
-            $set: {
-              awardedFreelancer: freelancerId,
-              isAwarded: true,
-              status: status,
-            },
+    if (status === "Active") {
+      const gig = await Gig.findOneAndUpdate(
+        { _id: id },
+        {
+          $set: {
+            awardedFreelancer: freelancerId,
+            isAwarded: true,
+            status: status,
           },
-          {
-            new: true,
-          }
-        );
+        },
+        {
+          new: true,
+        }
+      );
 
-        return gig;
-      } else {
-        const gig = await Gig.findOneAndUpdate(
-          { _id: id },
-          {
-            $set: {
-              status: status,
-            },
-          },
-          {
-            new: true,
-          }
-        );
-
-        return gig;
-      }
-    } catch (error) {
-      return error;
-    }
-  };
-
-  // @notice update a gig status
-  updateGigStatus = async (id: mongoose.Types.ObjectId, status: string) => {
-    try {
+      return gig;
+    } else {
       const gig = await Gig.findOneAndUpdate(
         { _id: id },
         {
@@ -145,10 +101,25 @@ class gigController {
           new: true,
         }
       );
+
       return gig;
-    } catch (error) {
-      return error;
     }
+  };
+
+  // @notice update a gig status
+  updateGigStatus = async (id: mongoose.Types.ObjectId, status: string) => {
+    const gig = await Gig.findOneAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          status: status,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    return gig;
   };
 
   // @notice bookmark a gig
@@ -157,23 +128,19 @@ class gigController {
     GigId: mongoose.Types.ObjectId
   ) => {
     // Find and update user document with new bookmarked gig
-    try {
-      const updatedUser = await User.findByIdAndUpdate(
-        {
-          _id: id,
-        },
-        {
-          $addToSet: { bookmarkedGigs: GigId },
-        },
-        {
-          new: true,
-        }
-      );
+    const updatedUser = await User.findByIdAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        $addToSet: { bookmarkedGigs: GigId },
+      },
+      {
+        new: true,
+      }
+    );
 
-      return updatedUser;
-    } catch (error) {
-      return error;
-    }
+    return updatedUser;
   };
 
   // @notice create a new gig
@@ -192,45 +159,36 @@ class gigController {
     status: string,
     owner: mongoose.Types.ObjectId
   ) => {
-    try {
-      const newGig = new Gig({
-        owner,
-        currency,
-        ownerAddress,
-        clientName,
-        company,
-        timeframe,
-        timezone,
-        category,
-        gig_description,
-        skills_required,
-        url,
-        status,
-        slug: slugify(title, +"_" + Date.now().toString()),
-      });
-      const gig = await newGig.save();
+    const newGig = new Gig({
+      owner,
+      currency,
+      ownerAddress,
+      clientName,
+      company,
+      timeframe,
+      timezone,
+      category,
+      gig_description,
+      skills_required,
+      url,
+      status,
+      slug: slugify(title, +"_" + Date.now().toString()),
+    });
+    const gig = await newGig.save();
 
-      //   const user = await profileController.getUserWithId(gig.owner);
+    //   const user = await profileController.getUserWithId(gig.owner);
 
-      //   new Email(user.email_address, user.name).gigProcessing();
+    //   new Email(user.email_address, user.name).gigProcessing();
 
-      return gig;
-    } catch (error) {
-      // res.status(400).json(error);
-      return error;
-    }
+    return gig;
   };
 
   // @notice list gigs by its owner
   listGigByOwner = async (address: string) => {
-    try {
-      const gig = await Gig.find({
-        ownerAddress: address,
-      }).sort({ $natural: -1 });
-      return gig;
-    } catch (error) {
-      return error;
-    }
+    const gig = await Gig.find({
+      ownerAddress: address,
+    }).sort({ $natural: -1 });
+    return gig;
   };
 
   // @notice unbookmark a gig
@@ -238,23 +196,19 @@ class gigController {
     id: mongoose.Types.ObjectId,
     GigId: mongoose.Types.ObjectId
   ) => {
-    try {
-      const updatedUser = await User.findByIdAndUpdate(
-        {
-          _id: id,
-        },
-        {
-          $pull: { bookmarkedGigs: GigId },
-        },
-        {
-          new: true,
-        }
-      );
+    const updatedUser = await User.findByIdAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        $pull: { bookmarkedGigs: GigId },
+      },
+      {
+        new: true,
+      }
+    );
 
-      return updatedUser;
-    } catch (error) {
-      return error;
-    }
+    return updatedUser;
   };
 
   // @notice gets all gigs in the system
@@ -269,21 +223,17 @@ class gigController {
     const limit = 5;
     const skip = (pageVar - 1) * limit;
 
-    try {
-      let gigs = await Gig.find({
-        approvedForMenu: true,
-        isAwarded: false,
-        categories: { $in: filter },
-      })
-        .sort({ $natural: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean();
+    let gigs = await Gig.find({
+      approvedForMenu: true,
+      isAwarded: false,
+      categories: { $in: filter },
+    })
+      .sort({ $natural: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
 
-      return gigs;
-    } catch (error) {
-      return error;
-    }
+    return gigs;
   };
 
   // @notice cancel a gig
@@ -295,22 +245,18 @@ class gigController {
     reason: string,
     conversationID: mongoose.Types.ObjectId
   ) => {
-    try {
-      await cancelGigService.cancelGig(
-        clientId,
-        gigId,
-        freelancerId,
-        contractID,
-        conversationID,
-        reason
-      );
+    await cancelGigService.cancelGig(
+      clientId,
+      gigId,
+      freelancerId,
+      contractID,
+      conversationID,
+      reason
+    );
 
-      await Promise.all([this.updateGigStatus(gigId, "Cancelled")]);
+    await Promise.all([this.updateGigStatus(gigId, "Cancelled")]);
 
-      return "cancel request sent";
-    } catch (error) {
-      return error;
-    }
+    return "cancel request sent";
   };
 }
 
