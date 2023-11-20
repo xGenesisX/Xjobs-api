@@ -31,14 +31,14 @@ router.get(
   }
 );
 
-router.get(
+router.put(
   "/update_gig_details",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(updateGigDetails(req, res, next));
   }
 );
 
-router.get(
+router.delete(
   "/remove_bookmark",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(removeBookmark(req, res, next));
@@ -87,15 +87,21 @@ router.get(
   }
 );
 
-router.get("/create_gig", (req: Request, res: Response, next: NextFunction) => {
-  wrapAsync(createGig(req, res, next));
-});
+router.post(
+  "/create_gig",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(createGig(req, res, next));
+  }
+);
 
-router.get("/cancel_gig", (req: Request, res: Response, next: NextFunction) => {
-  wrapAsync(cancelGig(req, res, next));
-});
+router.post(
+  "/cancel_gig",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(cancelGig(req, res, next));
+  }
+);
 
-router.get(
+router.put(
   "/bookmark_gig",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(bookmarkGig(req, res, next));

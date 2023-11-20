@@ -41,7 +41,7 @@ router.get(
   }
 );
 
-router.get(
+router.post(
   "/create_new_proposal",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(createNewProposal(req, res, next));
@@ -69,7 +69,7 @@ router.get(
   }
 );
 
-router.get(
+router.put(
   "/update_proposal_conversation_id",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(updateProposalConversationID(req, res, next));

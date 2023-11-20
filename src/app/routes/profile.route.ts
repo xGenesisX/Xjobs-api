@@ -30,21 +30,21 @@ router.get(
   }
 );
 
-router.get(
+router.put(
   "/update_user_profile",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(updateUserProfile(req, res, next));
   }
 );
 
-router.get(
+router.put(
   "/add_feedback_to_user_profile",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(addFeedbackToUserProfile(req, res, next));
   }
 );
 
-router.get(
+router.post(
   "/create_user_profile",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(createUserProfile(req, res, next));

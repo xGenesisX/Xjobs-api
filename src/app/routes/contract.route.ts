@@ -34,21 +34,21 @@ router.post(
   }
 );
 
-router.get(
+router.post(
   "/reject_contract",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(rejectContract(req, res, next));
   }
 );
 
-router.get(
+router.post(
   "/accept_contract",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(acceptContract(req, res, next));
   }
 );
 
-router.get(
+router.post(
   "/approve_refund",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(approveRefund(req, res, next));

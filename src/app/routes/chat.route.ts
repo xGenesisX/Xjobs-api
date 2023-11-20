@@ -30,21 +30,21 @@ router.post(
   }
 );
 
-router.post(
+router.get(
   "/get_most_recent_convo",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(getMostRecentConvo(req, res, next));
   }
 );
 
-router.post(
+router.put(
   "/conversation_put",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(conversationPutHandler(req, res, next));
   }
 );
 
-router.post(
+router.get(
   "/get_conversation",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(getConversationHandler(req, res, next));
@@ -69,7 +69,7 @@ router.post("/chat_post", (req: Request, res: Response, next: NextFunction) => {
   wrapAsync(chatPostHandler(req, res, next));
 });
 
-router.post("/get_chat", (req: Request, res: Response, next: NextFunction) => {
+router.get("/get_chat", (req: Request, res: Response, next: NextFunction) => {
   wrapAsync(getChatHandler(req, res, next));
 });
 
@@ -80,7 +80,7 @@ router.post(
   }
 );
 
-router.post(
+router.get(
   "/get_convo_by_id",
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(getConvoById(req, res, next));
