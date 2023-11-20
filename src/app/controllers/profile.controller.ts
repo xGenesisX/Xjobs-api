@@ -55,6 +55,7 @@ export const getUserProfileWithAddress = catchAsync(
 // @notice create a new user profile
 export const createUserProfile = catchAsync(
   async (req: Request, res: Response) => {
+    console.log(req.body);
     const {
       profileId,
       isAdmin,
@@ -92,6 +93,7 @@ export const createUserProfile = catchAsync(
       ),
         res.send(user);
     } catch (error) {
+      console.log(error);
       res.status(400).json("internal server error");
     }
   }
