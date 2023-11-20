@@ -74,38 +74,38 @@ class profileController {
   ) => {
     const verificationToken = uuidv4().toString();
 
-    try {
-      const newUser = new User({
-        profileId: profileId,
-        isAdmin: isAdmin,
-        address: address,
-        company: company,
-        user_image: user_image,
-        name: name,
-        dateOfBirth: dateOfBirth,
-        timezone: timezone,
-        email_address: email_address,
-        profile_details_description: profile_details_description,
-        socials: socials,
-        emailVerificationToken: verificationToken,
-      });
-      // Use Promise.allSettled to execute multiple async operations in parallel
-      const onboard = await Promise.all([
-        newUser.save(),
-        sendAccountCreated(email_address, name),
-      ]);
-      // Check if all operations were successful
-      if (onboard) {
-        return newUser._id;
-      } else {
-        // If any operation fails, delete the user and return an error
-        // will likely fail if the user already exists
-        await User.deleteOne({ _id: newUser._id });
-        return "error parsing request";
-      }
-    } catch (error) {
-      return error;
+    // try {
+    const newUser = new User({
+      profileId: profileId,
+      isAdmin: isAdmin,
+      address: address,
+      company: company,
+      user_image: user_image,
+      name: name,
+      dateOfBirth: dateOfBirth,
+      timezone: timezone,
+      email_address: email_address,
+      profile_details_description: profile_details_description,
+      socials: socials,
+      emailVerificationToken: verificationToken,
+    });
+    // Use Promise.allSettled to execute multiple async operations in parallel
+    const onboard = await Promise.all([
+      newUser.save(),
+      sendAccountCreated(email_address, name),
+    ]);
+    // Check if all operations were successful
+    if (onboard) {
+      return newUser._id;
+    } else {
+      // If any operation fails, delete the user and return an error
+      // will likely fail if the user already exists
+      await User.deleteOne({ _id: newUser._id });
+      return "error parsing request";
     }
+    // } catch (error) {
+    //   return error;
+    // }
   };
 
   // @notice updates a user profile

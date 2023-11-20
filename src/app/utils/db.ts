@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import config from "../config/config";
 
-const MONGODB_URI = `mongodb+srv://${config.mongoose.url}`;
+const MONGODB_URI = `${config.mongoose.url}`;
 
 if (!MONGODB_URI) {
   throw new Error(
@@ -21,6 +21,7 @@ async function db() {
     cachedConnection = mongoose.connection;
     return cachedConnection;
   } catch (error) {
+    console.log("Error is here");
     console.error(error);
     process.exit(1);
   }

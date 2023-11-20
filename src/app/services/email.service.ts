@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import config from "../config/config";
 import { Novu } from "@novu/node";
+import { resend } from "../utils/resend";
 
 interface Message {
   from: string;
@@ -10,7 +11,7 @@ interface Message {
   html?: string;
 }
 
-const novu = new Novu("<NOVU_API_KEY>");
+// const novu = new Novu("<NOVU_API_KEY>");
 
 export const transport = nodemailer.createTransport(config.email.smtp);
 /* istanbul ignore next */
@@ -39,21 +40,43 @@ export const sendEmail = async (
   text: string,
   html: string
 ): Promise<void> => {
-  await novu.trigger("<WORKFLOW_TRIGGER_IDENTIFIER>", {
-    to: {
-      subscriberId: "<USER_IDENTIFIER>",
-      email: to,
-    },
-    payload: {},
-  });
-  const msg: Message = {
-    from: config.email.from,
-    to,
-    subject,
-    text,
-    html,
-  };
-  await transport.sendMail(msg);
+  // await novu.trigger("<WORKFLOW_TRIGGER_IDENTIFIER>", {
+  //   to: {
+  //     subscriberId: "<USER_IDENTIFIER>",
+  //     email: to,
+  //   },
+  //   payload: {},
+  // });
+  // const msg: Message = {
+  //   from: config.email.from,
+  //   to,
+  //   subject,
+  //   text,
+  //   html,
+  // };
+  // await transport.sendMail(msg);
+  console.log(["archangeltv24@gmail.com"]);
+  try {
+    await resend.emails.send({
+      from: "Xjobs <onboarding@xjobs.io>",
+      to: [String(to)],
+      subject: subject,
+      text: text,
+      html: html,
+      headers: {
+        "X-Entity-Ref-ID": "123456789",
+      },
+      tags: [
+        {
+          name: "category",
+          value: "confirm_email",
+        },
+      ],
+    });
+    console.log("Email Sent");
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 /**
@@ -101,7 +124,20 @@ export const sendVerificationEmail = async (
   const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
   <p>To verify your email, click on this link: ${verificationEmailUrl}</p>
   <p>If you did not create an account, then ignore this email.</p></div>`;
-  await sendEmail(to, subject, text, html);
+  // await sendEmail(to, subject, text, html);
+
+  await resend.emails.send({
+    from: "Acme <onboarding@resend.dev>",
+    to: to,
+    subject: "Email Verification",
+    html: `<h3>Hi ${name},</h3>
+   <p>To verify your email, click on this link: ${verificationEmailUrl}
+    If you did not create an account, then ignore this email.</p>
+    <div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
+  <p>To verify your email, click on this link: ${verificationEmailUrl}</p>
+  <p>If you did not create an account, then ignore this email.</p></div>
+    `,
+  });
 };
 
 /**
@@ -158,7 +194,7 @@ export const sendAccountCreated = async (
   <p>You can now login at: ${loginUrl}</p>
   <p>Don't hesitate to contact us if you face any problems</p>
   <p>Regards,</p>
-  <p><strong>Team</strong></p></div>`;
+  <p><strong>Team Abeg</strong></p></div>`;
   await sendEmail(to, subject, text, html);
 };
 
