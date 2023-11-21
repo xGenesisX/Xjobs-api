@@ -49,11 +49,11 @@ app.use(errorHandler);
 db();
 
 app.get("/health_check", (req: Request, res: Response) => {
-  res.send("<h1>Sometimes science is more art than science</h1>");
+  res.send("Sometimes science is more art than science");
 });
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("<h1>Wubba Lubba Dub Dub</h1>");
+  res.send("Wubba Lubba Dub Dub");
 });
 
 app.get("*", (req: Request, res: Response) => {

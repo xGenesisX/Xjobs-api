@@ -1,4 +1,3 @@
-import nodemailer from "nodemailer";
 import config from "../config/config";
 import { resend } from "../utils/resend";
 
@@ -8,19 +7,6 @@ interface Message {
   subject: string;
   text: string;
   html?: string;
-}
-
-export const transport = nodemailer.createTransport(config.email.smtp);
-/* istanbul ignore next */
-if (config.env !== "test") {
-  transport
-    .verify()
-    .then(() => console.log("Connected to email server"))
-    .catch(() =>
-      console.log(
-        "Unable to connect to email server. Make sure you have configured the SMTP options in .env"
-      )
-    );
 }
 
 /**
