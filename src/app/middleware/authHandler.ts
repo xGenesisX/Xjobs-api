@@ -1,2 +1,3 @@
-// generate jwt for the frontend
-// work in tandem with next auth..
+const auth = async () => {
+  // issues jwt token external from the frontend
+};
