@@ -18,7 +18,7 @@ interface Message {
  * @returns {Promise<void>}
  */
 export const sendEmail = async (
-  to: string,
+  to: string | undefined,
   subject: string,
   text: string,
   html: string
@@ -162,7 +162,7 @@ export const sendAccountCreated = async (
   <p>You can now login at: ${loginUrl}</p>
   <p>Don't hesitate to contact us if you face any problems</p>
   <p>Regards,</p>
-  <p><strong>Team Abeg</strong></p></div>`;
+  <p><strong>Team Xjobs</strong></p></div>`;
   await sendEmail(to, subject, text, html);
 };
 
@@ -172,11 +172,11 @@ export const profileUpdateNotification = async (
   token: string,
   name: string
 ): Promise<void> => {
-  const subject = "profile update notification";
+  const subject = "Profile Update Notification";
   const text = `Hi ${name},
   Don't hesitate to contact us if you face any problems
   Regards,
-  Team`;
+  Team Xjobs`;
   const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
   <p>Congratulations! Your account has been created.</p>
   <p>Don't hesitate to contact us if you face any problems</p>
@@ -190,7 +190,7 @@ export const newMessageNotification = async (
   token: string,
   name: string
 ): Promise<void> => {
-  const subject = "new message notification";
+  const subject = "New Message Notification";
   const text = `Hi ${name},
   Congratulations! . 
   Don't hesitate to contact us if you face any problems
@@ -200,7 +200,7 @@ export const newMessageNotification = async (
   <p>Congratulations! Your account has been created.</p>
   <p>Don't hesitate to contact us if you face any problems</p>
   <p>Regards,</p>
-  <p><strong>Team</strong></p></div>`;
+  <p><strong>Team Xjobs</strong></p></div>`;
   await sendEmail(to, subject, text, html);
 };
 // freelancer onboarding notification
@@ -224,9 +224,8 @@ export const freelancerOnboardingNotification = async (
 };
 // freelancer notification
 export const freelancerNotification = async (
-  to: string,
-  token: string,
-  name: string
+  to: string | undefined,
+  name: string | undefined
 ): Promise<void> => {
   const subject = "freelancer notification";
   const text = `Hi ${name},
@@ -263,9 +262,8 @@ export const clientNotification = async (
 };
 // gig processing
 export const gigProcessing = async (
-  to: string,
-  token: string,
-  name: string
+  to: string | undefined,
+  name: string | undefined
 ): Promise<void> => {
   const subject = "Gig Processing";
   // replace this url with the link to the email verification page of your front-end app
@@ -275,7 +273,7 @@ export const gigProcessing = async (
   Regards,
   Team`;
   const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
-  <p>Congratulations! Your account has been created.</p>
+  <p>Congratulations! Your gig is now processing</p>
   <p>Don't hesitate to contact us if you face any problems</p>
   <p>Regards,</p>
   <p><strong>Team</strong></p></div>`;

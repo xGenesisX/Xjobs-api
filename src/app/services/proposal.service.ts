@@ -38,7 +38,6 @@ class proposalService {
             { $addToSet: { submittedProposals: propId } }
           ),
         ]);
-
         return proposal;
       }
     }

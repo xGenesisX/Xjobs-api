@@ -3,6 +3,7 @@ import User, { TUser } from "../models/User";
 import { sendAccountCreated } from "./email.service";
 // import Joi from "@hapi/joi";
 import mongoose from "mongoose";
+import pointsService from "./points.service";
 
 class profileController {
   // @notice update a user profile, adds feedback
@@ -80,6 +81,7 @@ class profileController {
     const onboard = await Promise.all([
       newUser.save(),
       sendAccountCreated(email_address, name),
+      pointsService.createFreelancerAccount(newUser._id),
     ]);
     // Check if all operations were successful
     if (onboard) {

@@ -1,18 +1,14 @@
-// import httpStatus from "http-status";
-// import Joi from "@hapi/joi";
 import Ably from "ably/promises";
 import dotenv from "dotenv";
-import { Request, Response } from "express";
-import { getToken } from "next-auth/jwt";
+import mongoose from "mongoose";
 import pako from "pako";
-import profileController from "./user.service";
+import config from "../config/config";
 import {
   default as conversation,
   default as convo,
 } from "../models/Conversation";
 import Message from "../models/Message";
-import mongoose from "mongoose";
-import config from "../config/config";
+import profileController from "./user.service";
 
 dotenv.config({ path: "../../.env" });
 
@@ -21,12 +17,11 @@ class ChatController {
   rest: Ably.Rest;
   url: string;
   token: any;
-  constructor(req: Request, res: Response) {
+  constructor(token: any, url: any) {
     this.ably_key = config.ablyUrl;
     this.rest = new Ably.Rest(this.ably_key);
-    this.url = `${req.protocol}://${req.get("host")}/chat`;
-    this.token = getToken({ req });
-
+    this.url = url;
+    this.token = token;
     this.rest.auth.createTokenRequest({
       clientId: JSON.stringify(this.token, null, 2),
     });

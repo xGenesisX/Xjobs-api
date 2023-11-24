@@ -3,11 +3,12 @@ import slugify from "slugify";
 import cancelGigService from "./cancelGig.service";
 import Gig from "../models/Gig";
 import User from "../models/User";
+import { freelancerNotification, gigProcessing } from "./email.service";
+import userService from "./user.service";
 
 class gigController {
   // @notice get a gig by its id
   getGigById = async (id: mongoose.Types.ObjectId) => {
-    // const { id } = req.body;
     const filter = ["listed", "Pending"]; // Define filter for gig status
 
     // Find and return gig object that matches the given ID and satisfies the filter criteria
@@ -31,8 +32,6 @@ class gigController {
 
   // @notice get a users gigs
   getMyJobs = async (id: mongoose.Types.ObjectId, status: string) => {
-    // const { id, status } = req.body; // Extract required data from request body
-
     // Find and return array of gig objects that are awarded to the given freelancer and match the given status
     const gig = await Gig.find({
       awardedFreelancer: id,
@@ -174,11 +173,14 @@ class gigController {
       status,
       slug: slugify(title, +"_" + Date.now().toString()),
     });
-    const gig = await newGig.save();
 
-    //   const user = await profileController.getUserWithId(gig.owner);
+    const user = await userService.getUserProfileWithId(newGig.owner);
 
-    //   new Email(user.email_address, user.name).gigProcessing();
+    const gig = await Promise.all([
+      newGig.save(),
+      freelancerNotification(user?.email_address, user?.name),
+      gigProcessing(user?.email_address, user?.name),
+    ]);
 
     return gig;
   };
