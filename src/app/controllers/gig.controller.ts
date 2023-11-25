@@ -225,6 +225,7 @@ export const getAllGigs = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const cancelGig = catchAsync(async (req: Request, res: Response) => {
+  let url = `${req.protocol}://${req.get("host")}/chat`;
   let token = getToken({ req });
   if (!token) {
     return res.status(httpStatus.UNAUTHORIZED);
@@ -238,7 +239,7 @@ export const cancelGig = catchAsync(async (req: Request, res: Response) => {
       conversationID,
     } = req.body;
 
-    new ChatController(req, res).summaryPostHandler(
+    await new ChatController(token, url).summaryPostHandler(
       conversationID,
       "requested a refund and to cancel this project",
       clientId

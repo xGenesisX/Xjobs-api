@@ -24,6 +24,7 @@ export const getAllContracts = catchAsync(
 
 export const hireFreelancer = catchAsync(
   async (req: Request, res: Response) => {
+    let url = `${req.protocol}://${req.get("host")}/chat`;
     let token = getToken({ req });
     if (!token) {
       return res.status(httpStatus.UNAUTHORIZED);
@@ -43,13 +44,13 @@ export const hireFreelancer = catchAsync(
           );
 
         // add contract id to conversation
-        new ChatController(req, res).addContractIdToConvo(
+        new ChatController(token, url).addContractIdToConvo(
           conversationID,
           contract._id
         );
 
         // add summary
-        new ChatController(req, res).summaryPostHandler(
+        new ChatController(token, url).summaryPostHandler(
           conversationID,
           `funded escrow contract with ${
             contract.gigId.currency === "solana"
@@ -89,6 +90,7 @@ export const getUserContracts = catchAsync(
 
 export const approveRefund = catchAsync(async (req: Request, res: Response) => {
   let token = getToken({ req });
+  let url = `${req.protocol}://${req.get("host")}/chat`;
   if (!token) {
     return res.status(httpStatus.UNAUTHORIZED);
   } else {
@@ -101,7 +103,7 @@ export const approveRefund = catchAsync(async (req: Request, res: Response) => {
       gigId,
     } = req.body;
 
-    new ChatController(req, res).summaryPostHandler(
+    new ChatController(token, url).summaryPostHandler(
       conversationID,
       summaryText,
       userId
@@ -122,13 +124,14 @@ export const approveRefund = catchAsync(async (req: Request, res: Response) => {
 
 export const acceptContract = catchAsync(
   async (req: Request, res: Response) => {
+    let url = `${req.protocol}://${req.get("host")}/chat`;
     let token = getToken({ req });
     if (!token) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { gigId, freelancerId, proposalId, conversationID } = req.body;
 
-      new ChatController(req, res).summaryPostHandler(
+      new ChatController(token, url).summaryPostHandler(
         conversationID,
         "accepted the offer for this project",
         freelancerId
@@ -149,13 +152,14 @@ export const acceptContract = catchAsync(
 
 export const rejectContract = catchAsync(
   async (req: Request, res: Response) => {
+    let url = `${req.protocol}://${req.get("host")}/chat`;
     let token = getToken({ req });
     if (!token) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { gigId, freelancerId, conversationID, contractId } = req.body;
 
-      new ChatController(req, res).summaryPostHandler(
+      new ChatController(token, url).summaryPostHandler(
         conversationID,
         "rejected the offer for this project",
         freelancerId
@@ -176,13 +180,14 @@ export const rejectContract = catchAsync(
 );
 
 export const releaseFunds = catchAsync(async (req: Request, res: Response) => {
+  let url = `${req.protocol}://${req.get("host")}/chat`;
   let token = getToken({ req });
   if (!token) {
     return res.status(httpStatus.UNAUTHORIZED);
   } else {
     const { conversationID, userId, gigId, contractID } = req.body;
 
-    new ChatController(req, res).summaryPostHandler(
+    new ChatController(token, url).summaryPostHandler(
       conversationID,
       "initiated release of funds",
       userId

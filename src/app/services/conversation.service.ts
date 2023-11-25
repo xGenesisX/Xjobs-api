@@ -8,6 +8,7 @@ import {
   default as convo,
 } from "../models/Conversation";
 import Message from "../models/Message";
+import { freelancerNotification } from "./email.service";
 import profileController from "./user.service";
 
 dotenv.config({ path: "../../.env" });
@@ -17,7 +18,7 @@ class ChatController {
   rest: Ably.Rest;
   url: string;
   token: any;
-  constructor(token: any, url: any) {
+  constructor(token: any, url: string) {
     this.ably_key = config.ablyUrl;
     this.rest = new Ably.Rest(this.ably_key);
     this.url = url;
@@ -34,12 +35,6 @@ class ChatController {
     conversationID: mongoose.Types.ObjectId,
     userID: mongoose.Types.ObjectId
   ): Promise<mongoose.Types.ObjectId> => {
-    // add Joi validation
-    // const schema = Joi.object({
-    //   name: Joi.string().required().min(1).max(10),
-    //   age: Joi.number().integer().min(1).max(10),
-    // });
-
     const newMessage = new Message({
       sender: sender,
       message: message,
@@ -56,7 +51,8 @@ class ChatController {
       channel.publish("update-chat", compressedMessage),
       this.conversationPutHandler(conversationID, savedMessage._id, 1),
       profileController.getUserProfileWithId(userID).then((user) => {
-        // new Email(user.email_address, user.name).NewMessageNotification();
+        // email notification
+        freelancerNotification(user?.email_address, user?.name);
       }),
     ]);
 

@@ -74,6 +74,7 @@ export const createUserProfile = catchAsync(
   async (req: Request, res: Response) => {
     // console.log(req.body);
     let token = getToken({ req });
+    let url = `${req.protocol}://${req.get("host")}/chat`;
     if (!token) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
@@ -105,7 +106,7 @@ export const createUserProfile = catchAsync(
           profile_details_description,
           socials
         );
-        new ChatController(req, res).convoPostHandler(
+        new ChatController(token, url).convoPostHandler(
           new mongoose.Types.ObjectId("64073a3334365f04f6854e69"),
           user._id,
           new mongoose.Types.ObjectId("64073a3334365f04f6854e69"),
