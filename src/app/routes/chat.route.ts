@@ -1,6 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-
-// import { check } from "express-validator";
+import { authenticate } from "../middleware/authHandler";
 
 import {
   addContractIdToConvo,
@@ -19,9 +18,16 @@ const router = express.Router();
 
 function wrapAsync(fn: any) {
   return function (req: Request, res: Response, next: NextFunction) {
+    authenticate;
     fn(req, res, next).catch(next);
   };
 }
+
+router
+  .route("/get_owner_gig_by_id")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    // getOwnerGigById(req, res, next);
+  });
 
 router.post(
   "/add_contract_id_to_convo",

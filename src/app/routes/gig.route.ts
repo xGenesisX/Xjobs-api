@@ -2,8 +2,6 @@ import express, { NextFunction, Request, Response } from "express";
 
 const router = express.Router();
 
-// import { check } from "express-validator";
-
 import {
   bookmarkGig,
   cancelGig,
@@ -17,95 +15,62 @@ import {
   removeBookmark,
   updateGigDetails,
 } from "../controllers/gig.controller";
+import { authenticate } from "../middleware/authHandler";
 
-function wrapAsync(fn: any) {
-  return function (req: Request, res: Response, next: NextFunction) {
-    fn(req, res, next).catch(next);
-  };
-}
-
-router.get(
-  "/get_owner_gig_by_id",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getOwnerGigById(req, res, next));
-  }
-);
-
-router.put(
-  "/update_gig_details",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(updateGigDetails(req, res, next));
-  }
-);
-
-router.delete(
-  "/remove_bookmark",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(removeBookmark(req, res, next));
-  }
-);
-
-router.get(
-  "/list_gig_by_owner",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(listGigByOwner(req, res, next));
-  }
-);
-
-router.get(
-  "/get_owner_gig_by_id",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getOwnerGigById(req, res, next));
-  }
-);
-
-router.get(
-  "/get_my_jobs",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getMyJobs(req, res, next));
-  }
-);
-
-router.get(
-  "/get_gig_by_owner",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getGigByOwner(req, res, next));
-  }
-);
-
-router.get(
-  "/get_gig_by_id",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getGigById(req, res, next));
-  }
-);
-
-router.get(
-  "/get_all_gigs",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getAllGigs(req, res, next));
-  }
-);
-
-router.post(
-  "/create_gig",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(createGig(req, res, next));
-  }
-);
-
-router.post(
-  "/cancel_gig",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(cancelGig(req, res, next));
-  }
-);
-
-router.put(
-  "/bookmark_gig",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(bookmarkGig(req, res, next));
-  }
-);
+router
+  .route("/get_owner_gig_by_id")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getOwnerGigById(req, res, next);
+  });
+router
+  .route("/update_gig_details")
+  .put(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    updateGigDetails(req, res, next);
+  });
+router
+  .route("/remove_bookmark")
+  .delete(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    removeBookmark(req, res, next);
+  });
+router
+  .route("/list_gig_by_owner")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    listGigByOwner(req, res, next);
+  });
+router
+  .route("/get_my_jobs")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getMyJobs(req, res, next);
+  });
+router
+  .route("/get_gig_by_owner")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getGigByOwner(req, res, next);
+  });
+router
+  .route("/get_gig_by_id")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getGigById(req, res, next);
+  });
+router
+  .route("/get_all_gigs")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getAllGigs(req, res, next);
+  });
+router
+  .route("/create_gig")
+  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    createGig(req, res, next);
+  });
+router
+  .route("/cancel_gig")
+  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    cancelGig(req, res, next);
+  });
+router
+  .route("/bookmark_gig")
+  .put(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    bookmarkGig(req, res, next);
+  });
 
 export default router;

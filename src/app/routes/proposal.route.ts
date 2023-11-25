@@ -11,69 +11,54 @@ import {
   getProposalsForGig,
   updateProposalConversationID,
 } from "../controllers/proposal.controller";
+import { authenticate } from "../middleware/authHandler";
 
-// import { body, check } from "express-validator";
+router
+  .route("/update_proposal_convo_id")
+  .put(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    updateProposalConversationID(req, res, next);
+  });
 
-function wrapAsync(fn: any) {
-  return function (req: Request, res: Response, next: NextFunction) {
-    fn(req, res, next).catch(next);
-  };
-}
+router
+  .route("/check_proposal_exists")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    checkIfProposalExists(req, res, next);
+  });
 
-router.put(
-  "/update_proposal_convo_id",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(updateProposalConversationID(req, res, next));
-  }
-);
+router
+  .route("/get_job_proposal")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getJobProposal(req, res, next);
+  });
 
-router.get(
-  "/check_proposal_exists",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(checkIfProposalExists(req, res, next));
-  }
-);
+router
+  .route("/get_a_proposal")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getAProposal(req, res, next);
+  });
 
-router.get(
-  "/get_job_proposal",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getJobProposal(req, res, next));
-  }
-);
+router
+  .route("/get_proposal_by_id")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getProposalById(req, res, next);
+  });
 
-router.post(
-  "/create_new_proposal",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(createNewProposal(req, res, next));
-  }
-);
+router
+  .route("/get_proposals_for_gig")
+  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getProposalsForGig(req, res, next);
+  });
 
-router.get(
-  "/get_a_proposal",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getAProposal(req, res, next));
-  }
-);
+router
+  .route("/update_proposal_conversation_id")
+  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    updateProposalConversationID(req, res, next);
+  });
 
-router.get(
-  "/get_proposal_by_id",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getProposalById(req, res, next));
-  }
-);
-
-router.get(
-  "/get_proposals_for_gig",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getProposalsForGig(req, res, next));
-  }
-);
-
-router.put(
-  "/update_proposal_conversation_id",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(updateProposalConversationID(req, res, next));
-  }
-);
+router
+  .route("/create_new_proposal")
+  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    createNewProposal(req, res, next);
+  });
 
 export default router;
