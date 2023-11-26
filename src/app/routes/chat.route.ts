@@ -16,81 +16,55 @@ import {
 
 const router = express.Router();
 
-function wrapAsync(fn: any) {
-  return function (req: Request, res: Response, next: NextFunction) {
-    authenticate;
-    fn(req, res, next).catch(next);
-  };
-}
-
 router
-  .route("/get_owner_gig_by_id")
-  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
-    // getOwnerGigById(req, res, next);
+  .route("/add_contract_id_to_convo")
+  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    addContractIdToConvo(req, res, next);
   });
-
-router.post(
-  "/add_contract_id_to_convo",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(addContractIdToConvo(req, res, next));
-  }
-);
-
-router.get(
-  "/get_most_recent_convo",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getMostRecentConvo(req, res, next));
-  }
-);
-
-router.put(
-  "/conversation_put",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(conversationPutHandler(req, res, next));
-  }
-);
-
-router.get(
-  "/get_conversation",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getConversationHandler(req, res, next));
-  }
-);
-
-router.post(
-  "/summary_post",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(summaryPostHandler(req, res, next));
-  }
-);
-
-router.post(
-  "/convo_post",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(convoPostHandler(req, res, next));
-  }
-);
-
-router.post("/chat_post", (req: Request, res: Response, next: NextFunction) => {
-  wrapAsync(chatPostHandler(req, res, next));
-});
-
-router.get("/get_chat", (req: Request, res: Response, next: NextFunction) => {
-  wrapAsync(getChatHandler(req, res, next));
-});
-
-router.post(
-  "/mark_as_read",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(markAsRead(req, res, next));
-  }
-);
-
-router.get(
-  "/get_convo_by_id",
-  (req: Request, res: Response, next: NextFunction) => {
-    wrapAsync(getConvoById(req, res, next));
-  }
-);
+router
+  .route("/get_most_recent_convo")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getMostRecentConvo(req, res, next);
+  });
+router
+  .route("/conversation_put")
+  .put(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    conversationPutHandler(req, res, next);
+  });
+router
+  .route("/get_conversation")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getConversationHandler(req, res, next);
+  });
+router
+  .route("/summary_post")
+  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    summaryPostHandler(req, res, next);
+  });
+router
+  .route("/convo_post")
+  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    convoPostHandler(req, res, next);
+  });
+router
+  .route("/chat_post")
+  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    chatPostHandler(req, res, next);
+  });
+router
+  .route("/get_chat")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getChatHandler(req, res, next);
+  });
+router
+  .route("/mark_as_read")
+  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    markAsRead(req, res, next);
+  });
+router
+  .route("/get_convo_by_id")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    getConvoById(req, res, next);
+  });
 
 export default router;
