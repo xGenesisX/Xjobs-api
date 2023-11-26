@@ -15,7 +15,7 @@ class contractController {
       proposalController.acceptProposal(proposalId),
       gigController.awardFreelancer(gigId, freelancerId, "Active"),
     ]);
-    if (result[0] && result[1]) {
+    if (result) {
       return "Contract accepted";
     }
   };

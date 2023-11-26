@@ -46,12 +46,6 @@ export enum BlockchainConnectionNetwork {
   TEST = "testnet",
 }
 
-export enum BlockchainConnectionChain {
-  ETH = "ETH",
-  BSC = "BSC",
-  MATIC = "MATIC",
-}
-
 export enum RequestContext {
   TEST = "TEST",
   LIVE = "LIVE",

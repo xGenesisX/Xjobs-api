@@ -57,7 +57,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.get("*", (req: Request, res: Response) => {
-  return res.status(httpStatus.INTERNAL_SERVER_ERROR).redirect("/404");
+  return res.status(httpStatus.NOT_FOUND).redirect("/404");
 });
 
 // handle error
