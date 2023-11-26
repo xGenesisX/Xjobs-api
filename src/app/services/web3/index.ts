@@ -1,9 +1,9 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import { config } from "dotenv";
 import path from "path";
-import gigService from "../services/gig.service";
-import pointsService from "../services/points.service";
-import userService from "../services/user.service";
+import gigService from "../gig.service";
+import pointsService from "../points.service";
+import userService from "../user.service";
 import { chainID, chainMetadata } from "./constants";
 
 config({ path: path.resolve(__dirname, "../../../.env") });

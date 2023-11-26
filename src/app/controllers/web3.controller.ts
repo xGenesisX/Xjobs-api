@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import httpStatus from "http-status";
 import { getToken } from "next-auth/jwt";
 import catchAsync from "../utils/catchAsync";
-import { SPLWeb3 } from "../web3";
+import { SPLWeb3 } from "../services/web3";
 
 export const receiveSOL = catchAsync(async (req: Request, res: Response) => {
   let token = getToken({ req });
