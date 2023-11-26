@@ -279,3 +279,22 @@ export const gigProcessing = async (
   <p><strong>Team</strong></p></div>`;
   await sendEmail(to, subject, text, html);
 };
+// refund processing
+export const refundProcessing = async (
+  to: string | undefined,
+  name: string | undefined
+): Promise<void> => {
+  const subject = "Gig Processing";
+  // replace this url with the link to the email verification page of your front-end app
+  const text = `Hi ${name},
+  Congratulations! Your Refund is currently processing. 
+  Don't hesitate to contact us if you face any problems
+  Regards,
+  Team`;
+  const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
+  <p>Congratulations! Your gig is now processing</p>
+  <p>Don't hesitate to contact us if you face any problems</p>
+  <p>Regards,</p>
+  <p><strong>Team</strong></p></div>`;
+  await sendEmail(to, subject, text, html);
+};

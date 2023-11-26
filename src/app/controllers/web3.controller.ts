@@ -17,6 +17,7 @@ export const receiveSOL = catchAsync(async (req: Request, res: Response) => {
     }
   }
 });
+
 export const sendSOL = catchAsync(async (req: Request, res: Response) => {
   let token = getToken({ req });
   if (!token) {

@@ -10,15 +10,10 @@ config({ path: path.resolve(__dirname, "../../../.env") });
 
 export class SPLWeb3 {
   private networkCluster;
-  private daiAddress;
   private usdcAddress;
-  private usdtAddress;
-  private busdAddress;
-  private wbtcAddress;
   private connection;
   private XjobsSigner;
   private networkEndpoint;
-  private mintArr;
   private XjobsVault;
   private chain_id;
   private iv: string = process.env.INIT_VECTOR as string;
@@ -26,19 +21,7 @@ export class SPLWeb3 {
   constructor(chainId: chainID, network: string) {
     this.chain_id = chainId;
     this.networkCluster = network;
-    this.daiAddress = chainMetadata[chainId].TokenAddresses.DAI;
-    this.usdtAddress = chainMetadata[chainId].TokenAddresses.USDT;
     this.usdcAddress = chainMetadata[chainId].TokenAddresses.USDC;
-    this.busdAddress = chainMetadata[chainId].TokenAddresses.BUSD;
-    this.wbtcAddress = chainMetadata[chainId].TokenAddresses.WBTC;
-
-    this.mintArr = [
-      this.daiAddress,
-      this.usdcAddress,
-      this.usdtAddress,
-      this.busdAddress,
-      this.wbtcAddress,
-    ];
 
     this.connection = new Connection(chainMetadata[chainId].rpcUrl);
 

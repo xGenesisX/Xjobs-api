@@ -6,12 +6,12 @@ const router = express.Router();
 
 router
   .route("/receive_sol")
-  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
     receiveSOL(req, res, next);
   });
 
 router
   .route("/send_sol")
-  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
     sendSOL(req, res, next);
   });
