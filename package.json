@@ -35,13 +35,14 @@
     "resend": "^2.0.0",
     "rimraf": "^3.0.2",
     "tweetnacl": "^1.0.3",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.3",
+    "cookie-parser": "^1.4.5",
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.20",
     "@babel/preset-react": "^7.22.15",
     "@babel/preset-typescript": "^7.22.15",
-    "@novu/node": "^0.20.0",
     "@solana/web3.js": "^1.87.6",
     "@types/bcryptjs": "^2.4.2",
     "@types/bs58": "^4.0.2",

@@ -17,7 +17,6 @@ export enum SupportedSPLCurrencies {
 export const chainMetadata = {
   [chainID.SOLANA]: {
     chainId: chainID.SOLANA,
-    contract: "",
     rpcUrl: "",
     blockExplorerURL: "https://solscan.io/",
     Tokens: ["USDC"],

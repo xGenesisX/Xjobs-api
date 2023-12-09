@@ -80,4 +80,9 @@ export class SPLWeb3 {
       pointsService.completingAJob,
     ]);
   };
+
+  // @todo add a cron job functionality, to schedule payments for every evening by 7pm
+  // @todo add a contant wait time before a user can receive payment after it has been released
+  // @todo integrate tatum solami wallet to implement the payment for the escorw. to automate shit up.
+  // @todo explore shamir key sharing to split the private key among multiple users.
 }

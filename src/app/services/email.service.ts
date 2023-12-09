@@ -224,8 +224,8 @@ export const freelancerOnboardingNotification = async (
 };
 // freelancer notification
 export const freelancerNotification = async (
-  to: string | undefined,
-  name: string | undefined
+  to: string,
+  name: string
 ): Promise<void> => {
   const subject = "freelancer notification";
   const text = `Hi ${name},

@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { NextFunction, Request, Response } from "express";
 // import asyncHandler from "express-async-handler";
+// import jwt from "jsonwebtoken"; // install jst types.
 
 export const authenticate = /*asyncHandler*/ async (
   req: Request,
