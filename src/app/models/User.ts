@@ -2,6 +2,7 @@ import mongoose, { Document, model, Schema } from "mongoose";
 import { roles } from "../config/roles";
 import { IGig } from "./Gig";
 import { INotification } from "./Notification";
+import { IsEmailOptions } from "express-validator/src/options";
 
 export type TUser = {
   profileId?: string;
@@ -12,7 +13,13 @@ export type TUser = {
   name?: string;
   dateOfBirth?: any;
   timezone?: any;
-  email_address?: string;
+  email_address?: {
+    type: string;
+    unique: true;
+    lowercase: true;
+    // required: [true, "your email or your life "];
+    // validate: [IsEmailOptions, "im serious"];
+  };
   verified?: boolean;
   banned?: boolean;
   profile_details_description?: string;

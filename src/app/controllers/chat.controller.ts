@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
-import ChatController from "../services/conversation.service";
-import catchAsync from "../utils/catchAsync";
 import httpStatus from "http-status";
 import { getToken } from "next-auth/jwt";
+
 import { CustomRequest } from "../middleware/authHandler";
 
 export const chatPostHandler = catchAsync(

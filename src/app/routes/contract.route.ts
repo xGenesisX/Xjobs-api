@@ -11,6 +11,7 @@ import {
   rejectContract,
   releaseFunds,
 } from "../controllers/contract.controller";
+
 import verifyToken from "../middleware/authHandler";
 
 // import { check } from "express-validator";

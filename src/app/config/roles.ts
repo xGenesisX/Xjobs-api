@@ -1,16 +1,6 @@
 const allRoles = {
-  client: [
-    "getContracts",
-    "createContract",
-    "updateContract",
-    "deleteContract",
-  ],
-  freelancer: [
-    "getContracts",
-    "createContract",
-    "updateContract",
-    "deleteContract",
-  ],
+  client: [],
+  freelancer: [],
 };
 
 export const roles: string[] = Object.keys(allRoles);

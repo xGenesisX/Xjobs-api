@@ -176,13 +176,13 @@ class gigController {
 
     const user = await userService.getUserProfileWithId(newGig.owner);
 
-    const gig = await Promise.all([
-      newGig.save(),
-      freelancerNotification(user?.email_address, user?.name),
-      gigProcessing(user?.email_address, user?.name),
-    ]);
+    // const gig = await Promise.all([
+    //   newGig.save(),
+    //   freelancerNotification(user?.email_address, user?.name),
+    //   gigProcessing(user?.email_address, user?.name),
+    // ]);
 
-    return gig;
+    // return gig;
   };
 
   // @notice list gigs by its owner

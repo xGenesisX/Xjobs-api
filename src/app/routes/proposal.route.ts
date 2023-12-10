@@ -11,15 +11,21 @@ import {
   getProposalsForGig,
   updateProposalConversationID,
 } from "../controllers/proposal.controller";
+
 import verifyToken from "../middleware/authHandler";
 
-// import { body, check } from "express-validator";
 
-function wrapAsync(fn: any) {
-  return function (req: Request, res: Response, next: NextFunction) {
-    fn(req, res, next).catch(next);
-  };
-}
+router
+  .route("/update_proposal_convo_id")
+  .put(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    updateProposalConversationID(req, res, next);
+  });
+
+router
+  .route("/check_proposal_exists")
+  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
+    checkIfProposalExists(req, res, next);
+  });
 
 router.put(
   "/update_proposal_convo_id",

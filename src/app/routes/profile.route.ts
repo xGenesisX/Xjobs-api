@@ -9,6 +9,7 @@ import {
   getUserProfileWithId,
   updateUserProfile,
 } from "../controllers/profile.controller";
+
 import verifyToken from "../middleware/authHandler";
 
 function wrapAsync(fn: any) {

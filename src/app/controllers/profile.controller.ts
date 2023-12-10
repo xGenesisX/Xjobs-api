@@ -94,6 +94,7 @@ export const getUserProfileWithAddress = catchAsync(
 export const createUserProfile = catchAsync(
   async (req: Request, res: Response) => {
     // console.log(req.body);
+
     // let token = getToken({ req });
     // if (!token) {
     //   return res.status(httpStatus.UNAUTHORIZED);

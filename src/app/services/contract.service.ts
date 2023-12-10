@@ -3,6 +3,7 @@ import { roles } from "../config/roles";
 import Contract, { IContract } from "../models/Contract";
 import gigController from "./gig.service";
 import proposalController from "./proposal.service";
+import { refundProcessing } from "./email.service";
 
 class contractController {
   // @notice accepts a contract
@@ -15,7 +16,7 @@ class contractController {
       proposalController.acceptProposal(proposalId),
       gigController.awardFreelancer(gigId, freelancerId, "Active"),
     ]);
-    if (result[0] && result[1]) {
+    if (result) {
       return "Contract accepted";
     }
   };
@@ -36,7 +37,10 @@ class contractController {
       }
     );
     if (contract) {
-      Promise.all([gigController.updateGigStatus(gigId, "Processing")]);
+      Promise.all([
+        gigController.updateGigStatus(gigId, "Processing"),
+        // @note send refund has been approved mail here
+      ]);
     }
     return contract;
   };

@@ -1,6 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-
-// import { check } from "express-validator";
+import { authenticate } from "../middleware/authHandler";
 
 import {
   addContractIdToConvo,
@@ -17,6 +16,7 @@ import {
 import verifyToken from "../middleware/authHandler";
 
 const router = express.Router();
+
 
 function wrapAsync(fn: any) {
   return function (req: Request, res: Response, next: NextFunction) {

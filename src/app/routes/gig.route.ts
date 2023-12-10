@@ -2,8 +2,6 @@ import express, { NextFunction, Request, Response } from "express";
 
 const router = express.Router();
 
-// import { check } from "express-validator";
-
 import {
   bookmarkGig,
   cancelGig,
@@ -17,6 +15,7 @@ import {
   removeBookmark,
   updateGigDetails,
 } from "../controllers/gig.controller";
+
 import verifyToken from "../middleware/authHandler";
 
 function wrapAsync(fn: any) {
