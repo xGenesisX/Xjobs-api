@@ -11,6 +11,7 @@ import {
   getProposalsForGig,
   updateProposalConversationID,
 } from "../controllers/proposal.controller";
+import verifyToken from "../middleware/authHandler";
 
 // import { body, check } from "express-validator";
 
@@ -22,6 +23,7 @@ function wrapAsync(fn: any) {
 
 router.put(
   "/update_proposal_convo_id",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(updateProposalConversationID(req, res, next));
   }
@@ -29,6 +31,7 @@ router.put(
 
 router.get(
   "/check_proposal_exists",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(checkIfProposalExists(req, res, next));
   }
@@ -36,6 +39,7 @@ router.get(
 
 router.get(
   "/get_job_proposal",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(getJobProposal(req, res, next));
   }
@@ -43,6 +47,7 @@ router.get(
 
 router.post(
   "/create_new_proposal",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(createNewProposal(req, res, next));
   }
@@ -50,6 +55,7 @@ router.post(
 
 router.get(
   "/get_a_proposal",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(getAProposal(req, res, next));
   }
@@ -57,6 +63,7 @@ router.get(
 
 router.get(
   "/get_proposal_by_id",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(getProposalById(req, res, next));
   }
@@ -64,6 +71,7 @@ router.get(
 
 router.get(
   "/get_proposals_for_gig",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(getProposalsForGig(req, res, next));
   }
@@ -71,6 +79,7 @@ router.get(
 
 router.put(
   "/update_proposal_conversation_id",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(updateProposalConversationID(req, res, next));
   }

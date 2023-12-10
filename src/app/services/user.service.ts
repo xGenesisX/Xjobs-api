@@ -4,6 +4,7 @@ import { sendAccountCreated } from "./email.service";
 // import Joi from "@hapi/joi";
 import mongoose from "mongoose";
 import pointsService from "./points.service";
+import * as jwt from "jsonwebtoken";
 
 class profileController {
   // @notice update a user profile, adds feedback
@@ -44,6 +45,21 @@ class profileController {
   // @notice get a specific user by its registered address
   getUserProfileWithAddress = async (userAddress: string) => {
     const user = await User.findOne({ userAddress });
+
+    const token = jwt.sign(
+      { user_id: user?._id, address: user?.address },
+      "JSONXJOBSKEY$",
+      {
+        expiresIn: "24h",
+      }
+    );
+
+    if (user) {
+      user.token = token;
+      const newUser = await user?.save();
+      return newUser;
+    }
+
     return user;
   };
 
@@ -77,6 +93,12 @@ class profileController {
       socials: socials,
       emailVerificationToken: verificationToken,
     });
+
+    const token = jwt.sign({ user_id: newUser._id, address }, "JSONXJOBSKEY$", {
+      expiresIn: "24h",
+    });
+
+    newUser.token = token;
     // Use Promise.allSettled to execute multiple async operations in parallel
     const onboard = await Promise.all([
       newUser.save(),
@@ -85,7 +107,8 @@ class profileController {
     ]);
     // Check if all operations were successful
     if (onboard) {
-      return newUser._id;
+      newUser;
+      return newUser;
     } else {
       // If any operation fails, delete the user and return an error
       // will likely fail if the user already exists

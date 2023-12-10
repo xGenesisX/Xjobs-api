@@ -17,6 +17,7 @@ import {
   removeBookmark,
   updateGigDetails,
 } from "../controllers/gig.controller";
+import verifyToken from "../middleware/authHandler";
 
 function wrapAsync(fn: any) {
   return function (req: Request, res: Response, next: NextFunction) {
@@ -33,6 +34,7 @@ router.get(
 
 router.put(
   "/update_gig_details",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(updateGigDetails(req, res, next));
   }
@@ -40,6 +42,7 @@ router.put(
 
 router.delete(
   "/remove_bookmark",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(removeBookmark(req, res, next));
   }
@@ -89,6 +92,7 @@ router.get(
 
 router.post(
   "/create_gig",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(createGig(req, res, next));
   }
@@ -96,6 +100,7 @@ router.post(
 
 router.post(
   "/cancel_gig",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(cancelGig(req, res, next));
   }
@@ -103,6 +108,7 @@ router.post(
 
 router.put(
   "/bookmark_gig",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(bookmarkGig(req, res, next));
   }

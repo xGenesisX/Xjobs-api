@@ -11,6 +11,7 @@ import {
   rejectContract,
   releaseFunds,
 } from "../controllers/contract.controller";
+import verifyToken from "../middleware/authHandler";
 
 // import { check } from "express-validator";
 
@@ -22,6 +23,7 @@ function wrapAsync(fn: any) {
 
 router.get(
   "/get_contracts",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(getUserContracts(req, res, next));
   }
@@ -29,6 +31,7 @@ router.get(
 
 router.post(
   "/hire_freelancer",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(hireFreelancer(req, res, next));
   }
@@ -36,6 +39,7 @@ router.post(
 
 router.post(
   "/reject_contract",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(rejectContract(req, res, next));
   }
@@ -43,6 +47,7 @@ router.post(
 
 router.post(
   "/accept_contract",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(acceptContract(req, res, next));
   }
@@ -50,6 +55,7 @@ router.post(
 
 router.post(
   "/approve_refund",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(approveRefund(req, res, next));
   }
@@ -64,6 +70,7 @@ router.get(
 
 router.get(
   "/get_contract",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(releaseFunds(req, res, next));
   }

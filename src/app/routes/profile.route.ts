@@ -9,6 +9,7 @@ import {
   getUserProfileWithId,
   updateUserProfile,
 } from "../controllers/profile.controller";
+import verifyToken from "../middleware/authHandler";
 
 function wrapAsync(fn: any) {
   return function (req: Request, res: Response, next: NextFunction) {
@@ -25,6 +26,7 @@ router.get(
 
 router.get(
   "/get_user_with_id",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(getUserProfileWithId(req, res, next));
   }
@@ -32,6 +34,7 @@ router.get(
 
 router.put(
   "/update_user_profile",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(updateUserProfile(req, res, next));
   }
@@ -39,6 +42,7 @@ router.put(
 
 router.put(
   "/add_feedback_to_user_profile",
+  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(addFeedbackToUserProfile(req, res, next));
   }

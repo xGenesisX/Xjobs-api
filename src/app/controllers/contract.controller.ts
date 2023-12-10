@@ -5,27 +5,23 @@ import { IContract } from "../models/Contract";
 import * as contractService from "../services/contract.service";
 import ChatController from "../services/conversation.service";
 import catchAsync from "../utils/catchAsync";
+import { CustomRequest } from "../middleware/authHandler";
 
 export const getAllContracts = catchAsync(
   async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
-      return res.status(httpStatus.UNAUTHORIZED);
-    } else {
-      try {
-        const contracts = contractService.default.getAllContracts();
-        res.send(contracts);
-      } catch (error) {
-        res.send(error);
-      }
+    try {
+      const contracts = contractService.default.getAllContracts();
+      res.send(contracts);
+    } catch (error) {
+      res.send(error);
     }
   }
 );
 
 export const hireFreelancer = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { clientId, gigId, freelancerId, txHash, amount, conversationID } =
@@ -70,9 +66,9 @@ export const hireFreelancer = catchAsync(
 );
 
 export const getUserContracts = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { role, id } = req.body;
@@ -87,43 +83,45 @@ export const getUserContracts = catchAsync(
   }
 );
 
-export const approveRefund = catchAsync(async (req: Request, res: Response) => {
-  let token = getToken({ req });
-  if (!token) {
-    return res.status(httpStatus.UNAUTHORIZED);
-  } else {
-    const {
-      userId,
-      conversationID,
-      contractId,
-      contractStatus,
-      summaryText,
-      gigId,
-    } = req.body;
-
-    new ChatController(req, res).summaryPostHandler(
-      conversationID,
-      summaryText,
-      userId
-    );
-
-    try {
-      let a = contractService.default.approveRefund(
+export const approveRefund = catchAsync(
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    if (!auth) {
+      return res.status(httpStatus.UNAUTHORIZED);
+    } else {
+      const {
+        userId,
+        conversationID,
         contractId,
         contractStatus,
-        gigId
+        summaryText,
+        gigId,
+      } = req.body;
+
+      new ChatController(req, res).summaryPostHandler(
+        conversationID,
+        summaryText,
+        userId
       );
-      res.send(a);
-    } catch (error) {
-      res.status(httpStatus.BAD_REQUEST).send(error);
+
+      try {
+        let a = contractService.default.approveRefund(
+          contractId,
+          contractStatus,
+          gigId
+        );
+        res.send(a);
+      } catch (error) {
+        res.status(httpStatus.BAD_REQUEST).send(error);
+      }
     }
   }
-});
+);
 
 export const acceptContract = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { gigId, freelancerId, proposalId, conversationID } = req.body;
@@ -148,9 +146,9 @@ export const acceptContract = catchAsync(
 );
 
 export const rejectContract = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { gigId, freelancerId, conversationID, contractId } = req.body;
@@ -175,24 +173,26 @@ export const rejectContract = catchAsync(
   }
 );
 
-export const releaseFunds = catchAsync(async (req: Request, res: Response) => {
-  let token = getToken({ req });
-  if (!token) {
-    return res.status(httpStatus.UNAUTHORIZED);
-  } else {
-    const { conversationID, userId, gigId, contractID } = req.body;
+export const releaseFunds = catchAsync(
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    if (!auth) {
+      return res.status(httpStatus.UNAUTHORIZED);
+    } else {
+      const { conversationID, userId, gigId, contractID } = req.body;
 
-    new ChatController(req, res).summaryPostHandler(
-      conversationID,
-      "initiated release of funds",
-      userId
-    );
+      new ChatController(req, res).summaryPostHandler(
+        conversationID,
+        "initiated release of funds",
+        userId
+      );
 
-    try {
-      const cvs = contractService.default.releaseFunds(gigId, contractID);
-      res.send(cvs);
-    } catch (error) {
-      res.status(httpStatus.BAD_REQUEST).json(error);
+      try {
+        const cvs = contractService.default.releaseFunds(gigId, contractID);
+        res.send(cvs);
+      } catch (error) {
+        res.status(httpStatus.BAD_REQUEST).json(error);
+      }
     }
   }
-});
+);

@@ -30,6 +30,7 @@ export type TUser = {
   bookmarkedGigs?: IGig["_id"];
   feedbacks?: any;
   userPoints?: number;
+  token?: string;
 };
 
 export interface IUser extends TUser, Document {}
@@ -155,6 +156,7 @@ const UserSchema = new Schema(
       default: 0,
       max: 10_000,
     },
+    token: { type: String, unique: true, default: "none" },
   },
   { timestamps: true }
 );
