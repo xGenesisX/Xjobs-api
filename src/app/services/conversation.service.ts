@@ -52,7 +52,7 @@ class ChatController {
       this.conversationPutHandler(conversationID, savedMessage._id, 1),
       profileController.getUserProfileWithId(userID).then((user) => {
         // email notification
-        freelancerNotification(user?.email_address, user?.name);
+        // freelancerNotification(user?.email_address, user?.name);
       }),
     ]);
 
