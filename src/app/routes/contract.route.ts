@@ -11,48 +11,70 @@ import {
   rejectContract,
   releaseFunds,
 } from "../controllers/contract.controller";
-import { authenticate } from "../middleware/authHandler";
 
-router
-  .route("/get_contracts")
-  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
-    getUserContracts(req, res, next);
-  });
+import verifyToken from "../middleware/authHandler";
 
-router
-  .route("/hire_freelancer")
-  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
-    hireFreelancer(req, res, next);
-  });
+// import { check } from "express-validator";
 
-router
-  .route("/reject_contract")
-  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
-    rejectContract(req, res, next);
-  });
+function wrapAsync(fn: any) {
+  return function (req: Request, res: Response, next: NextFunction) {
+    fn(req, res, next).catch(next);
+  };
+}
 
-router
-  .route("/accept_contract")
-  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
-    acceptContract(req, res, next);
-  });
+router.get(
+  "/get_contracts",
+  verifyToken,
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(getUserContracts(req, res, next));
+  }
+);
 
-router
-  .route("/approve_refund")
-  .post(authenticate, (req: Request, res: Response, next: NextFunction) => {
-    approveRefund(req, res, next);
-  });
+router.post(
+  "/hire_freelancer",
+  verifyToken,
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(hireFreelancer(req, res, next));
+  }
+);
 
-router
-  .route("/get_all_contracts")
-  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
-    getAllContracts(req, res, next);
-  });
+router.post(
+  "/reject_contract",
+  verifyToken,
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(rejectContract(req, res, next));
+  }
+);
 
-router
-  .route("/release_funds")
-  .get(authenticate, (req: Request, res: Response, next: NextFunction) => {
-    releaseFunds(req, res, next);
-  });
+router.post(
+  "/accept_contract",
+  verifyToken,
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(acceptContract(req, res, next));
+  }
+);
+
+router.post(
+  "/approve_refund",
+  verifyToken,
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(approveRefund(req, res, next));
+  }
+);
+
+router.get(
+  "/get_all_contracts",
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(getAllContracts(req, res, next));
+  }
+);
+
+router.get(
+  "/get_contract",
+  verifyToken,
+  (req: Request, res: Response, next: NextFunction) => {
+    wrapAsync(releaseFunds(req, res, next));
+  }
+);
 
 export default router;

@@ -3,12 +3,14 @@ import httpStatus from "http-status";
 import { getToken } from "next-auth/jwt";
 import proposalService from "../services/proposal.service";
 import catchAsync from "../utils/catchAsync";
+import { CustomRequest } from "../middleware/authHandler";
 
 // @notice create a new proposal
 export const createNewProposal = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { gigId, freelancerId, coverLetter } = req.body;
@@ -29,27 +31,31 @@ export const createNewProposal = catchAsync(
 );
 
 // @notice get a proposal with a given id
-export const getAProposal = catchAsync(async (req: Request, res: Response) => {
-  const { gigId } = req.body;
-  let token = getToken({ req });
-  if (!token) {
-    return res.status(httpStatus.UNAUTHORIZED);
-  } else {
-    try {
-      const gig = proposalService.getAProposal(gigId);
-      res.send(gig);
-    } catch (error) {
-      res.json(error);
+export const getAProposal = catchAsync(
+  async (req: CustomRequest, res: Response) => {
+    const { gigId } = req.body;
+    let auth = req.currentUser;
+
+    if (!auth) {
+      return res.status(httpStatus.UNAUTHORIZED);
+    } else {
+      try {
+        const gig = proposalService.getAProposal(gigId);
+        res.send(gig);
+      } catch (error) {
+        res.json(error);
+      }
     }
   }
-});
+);
 
 // @notice get a job proposal with a given id
 export const getJobProposal = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: CustomRequest, res: Response) => {
     const { gigId } = req.body;
-    let token = getToken({ req });
-    if (!token) {
+    let auth = req.currentUser;
+
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       try {
@@ -64,9 +70,10 @@ export const getJobProposal = catchAsync(
 
 // @notice check if a proposal exists
 export const checkIfProposalExists = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { freelancerId, gigID } = req.body;
@@ -85,12 +92,12 @@ export const checkIfProposalExists = catchAsync(
 
 // @notice update a proposal with a given id
 export const updateProposalConversationID = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: CustomRequest, res: Response) => {
     const { id, conversationID } = req.body;
 
-    let token = getToken({ req });
+    let auth = req.currentUser;
 
-    if (!token) {
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       try {
@@ -108,9 +115,10 @@ export const updateProposalConversationID = catchAsync(
 
 // @notice get a proposal with a given id
 export const getProposalById = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { id } = req.body;
@@ -126,9 +134,10 @@ export const getProposalById = catchAsync(
 
 // @notice get proposal for a gig
 export const getProposalsForGig = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { gigId } = req.body;

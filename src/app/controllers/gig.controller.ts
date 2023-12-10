@@ -4,14 +4,16 @@ import { getToken } from "next-auth/jwt";
 import ChatController from "../services/conversation.service";
 import * as gigService from "../services/gig.service";
 import catchAsync from "../utils/catchAsync";
+import { CustomRequest } from "../middleware/authHandler";
 
 export const getGigById = catchAsync(async (req: Request, res: Response) => {
-  let token = getToken({ req });
-  if (!token) {
-    return res.status(httpStatus.UNAUTHORIZED);
-  } else {
-    const { id } = req.body;
+  const { id } = req.body;
 
+  if (!id) {
+    return res
+      .status(400)
+      .json({ status: "error", message: "Missing parameter id" });
+  } else {
     try {
       gigService.default.getGigById(id);
     } catch (error) {
@@ -22,12 +24,13 @@ export const getGigById = catchAsync(async (req: Request, res: Response) => {
 
 export const getOwnerGigById = catchAsync(
   async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
-      return res.status(httpStatus.UNAUTHORIZED);
-    } else {
-      const { id, address } = req.body;
+    const { id, address } = req.body;
 
+    if (!id || !address) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "id and address must be specified" });
+    } else {
       try {
         gigService.default.getOwnerGigById(id, address);
       } catch (error) {
@@ -38,12 +41,12 @@ export const getOwnerGigById = catchAsync(
 );
 
 export const getMyJobs = catchAsync(async (req: Request, res: Response) => {
-  let token = getToken({ req });
-  if (!token) {
-    return res.status(httpStatus.UNAUTHORIZED);
+  const { id, status } = req.body;
+  if (!id) {
+    return res
+      .status(400)
+      .json({ status: "error", message: "Missing parameter id" });
   } else {
-    const { id, status } = req.body;
-
     try {
       gigService.default.getMyJobs(id, status);
     } catch (error) {
@@ -53,12 +56,12 @@ export const getMyJobs = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getGigByOwner = catchAsync(async (req: Request, res: Response) => {
-  let token = getToken({ req });
-  if (!token) {
-    return res.status(httpStatus.UNAUTHORIZED);
+  const { address } = req.body;
+  if (!address) {
+    return res
+      .status(400)
+      .json({ status: "error", message: "Missing parameter address" });
   } else {
-    const { address } = req.body;
-
     try {
       gigService.default.getGigByOwner(address);
     } catch (error) {
@@ -68,9 +71,9 @@ export const getGigByOwner = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const updateGigDetails = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { id } = req.body;
@@ -85,9 +88,9 @@ export const updateGigDetails = catchAsync(
 );
 
 export const awardFreelancer = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { id, freelancerId, status } = req.body;
@@ -102,9 +105,10 @@ export const awardFreelancer = catchAsync(
 );
 
 export const updateGigStatus = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { id, status } = req.body;
@@ -118,67 +122,74 @@ export const updateGigStatus = catchAsync(
   }
 );
 
-export const bookmarkGig = catchAsync(async (req: Request, res: Response) => {
-  let token = getToken({ req });
-  if (!token) {
-    return res.status(httpStatus.UNAUTHORIZED);
-  } else {
-    const { id, GigId } = req.body;
+export const bookmarkGig = catchAsync(
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
 
-    try {
-      gigService.default.bookmarkGig(id, GigId);
-    } catch (error) {
-      res.status(httpStatus.BAD_REQUEST).send(error);
+    if (!auth) {
+      return res.status(httpStatus.UNAUTHORIZED);
+    } else {
+      const { id, GigId } = req.body;
+
+      try {
+        gigService.default.bookmarkGig(id, GigId);
+      } catch (error) {
+        res.status(httpStatus.BAD_REQUEST).send(error);
+      }
     }
   }
-});
+);
 
-export const createGig = catchAsync(async (req: Request, res: Response) => {
-  let token = getToken({ req });
-  if (!token) {
-    return res.status(httpStatus.UNAUTHORIZED);
-  } else {
-    const {
-      title,
-      currency,
-      ownerAddress,
-      clientName,
-      company,
-      category,
-      gig_description,
-      skills_required,
-      url,
-      timeframe,
-      status,
-      owner,
-    } = req.body;
+export const createGig = catchAsync(
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
 
-    try {
-      await gigService.default.createGig(
+    if (!auth) {
+      return res.status(httpStatus.UNAUTHORIZED);
+    } else {
+      const {
         title,
         currency,
         ownerAddress,
         clientName,
         company,
-        timeframe,
         category,
         gig_description,
         skills_required,
         url,
         timeframe,
         status,
-        owner
-      );
-    } catch (error) {
-      res.status(httpStatus.BAD_REQUEST).send(error);
+        owner,
+      } = req.body;
+
+      try {
+        await gigService.default.createGig(
+          title,
+          currency,
+          ownerAddress,
+          clientName,
+          company,
+          timeframe,
+          category,
+          gig_description,
+          skills_required,
+          url,
+          timeframe,
+          status,
+          owner
+        );
+      } catch (error) {
+        res.status(httpStatus.BAD_REQUEST).send(error);
+      }
     }
   }
-});
+);
 
 export const listGigByOwner = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { address } = req.body;
@@ -193,9 +204,10 @@ export const listGigByOwner = catchAsync(
 );
 
 export const removeBookmark = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
-    if (!token) {
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { id, GigId } = req.body;
@@ -210,52 +222,48 @@ export const removeBookmark = catchAsync(
 );
 
 export const getAllGigs = catchAsync(async (req: Request, res: Response) => {
-  let token = getToken({ req });
-  if (!token) {
-    return res.status(httpStatus.UNAUTHORIZED);
-  } else {
-    const { page, filter } = req.body;
+  const { page, filter } = req.body;
 
-    try {
-      await gigService.default.getAllGigs(page, filter);
-    } catch (error) {
-      res.status(httpStatus.BAD_REQUEST).send(error);
-    }
+  try {
+    await gigService.default.getAllGigs(page, filter);
+  } catch (error) {
+    res.status(httpStatus.BAD_REQUEST).send(error);
   }
 });
 
-export const cancelGig = catchAsync(async (req: Request, res: Response) => {
-  let url = `${req.protocol}://${req.get("host")}/chat`;
-  let token = getToken({ req });
-  if (!token) {
-    return res.status(httpStatus.UNAUTHORIZED);
-  } else {
-    const {
-      clientId,
-      gigId,
-      freelancerId,
-      contractId,
-      reason,
-      conversationID,
-    } = req.body;
-
-    await new ChatController(token, url).summaryPostHandler(
-      conversationID,
-      "requested a refund and to cancel this project",
-      clientId
-    );
-
-    try {
-      await gigService.default.cancelGig(
+export const cancelGig = catchAsync(
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    if (!auth) {
+      return res.status(httpStatus.UNAUTHORIZED);
+    } else {
+      const {
         clientId,
         gigId,
         freelancerId,
         contractId,
         reason,
-        conversationID
+        conversationID,
+      } = req.body;
+
+      new ChatController(req, res).summaryPostHandler(
+        conversationID,
+        "requested a refund and to cancel this project",
+        clientId
       );
-    } catch (error) {
-      res.status(httpStatus.BAD_REQUEST).send(error);
+
+      try {
+        await gigService.default.cancelGig(
+          clientId,
+          gigId,
+          freelancerId,
+          contractId,
+          reason,
+          conversationID
+        );
+      } catch (error) {
+        res.status(httpStatus.BAD_REQUEST).send(error);
+      }
     }
   }
-});
+);

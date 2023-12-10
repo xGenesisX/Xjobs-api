@@ -1,31 +1,41 @@
-import bcrypt from "bcryptjs";
-import { NextFunction, Request, Response } from "express";
-// import asyncHandler from "express-async-handler";
-// import jwt from "jsonwebtoken"; // install jst types.
 
-export const authenticate = /*asyncHandler*/ async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+import { NextFunction, Request, Response } from "express";
+import * as jwt from "jsonwebtoken";
+import mongoose, { ObjectId } from "mongoose";
+
+export interface CustomRequest extends Request {
+  currentUser?: { user_id: mongoose.Types.ObjectId; address: string };
+}
+
+const verifyToken = (req: CustomRequest, res: Response, next: NextFunction) => {
+  const authHeader = req.header("Authorization");
+
+  if (!authHeader) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized - Missing Authorization header" });
+  }
+
+  const [scheme, token] = authHeader.split(" ");
+
+  if (scheme !== "Bearer" || !token) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized - Invalid Authorization header format" });
+  }
+
   try {
-    const apiKey = req.headers["x-api-key"] as string;
-    if (apiKey) {
-      const isAuthenticated = await bcrypt.compare(
-        apiKey,
-        process.env.HASHED_KEY as string
-      );
-      if (!isAuthenticated) {
-        res.status(401);
-        next(new Error("Unauthorized Credentials"));
-      }
-      next();
-    } else {
-      res.status(500);
-      next(new Error("No credentials found"));
-    }
+    const decoded = jwt.verify(token, "JSONXJOBSKEY$") as {
+      user_id: mongoose.Types.ObjectId;
+      address: string;
+    };
+    req.currentUser = decoded;
+
+    console.log(decoded);
+    next();
   } catch (error) {
-    res.status(500);
-    next(error);
+    return res.status(401).json({ message: "Unauthorized - Invalid token" });
   }
 };
+
+export default verifyToken;

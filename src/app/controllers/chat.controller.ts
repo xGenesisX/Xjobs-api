@@ -1,18 +1,18 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 import { getToken } from "next-auth/jwt";
-import ChatController from "../services/conversation.service";
-import catchAsync from "../utils/catchAsync";
+
+import { CustomRequest } from "../middleware/authHandler";
 
 export const chatPostHandler = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
     let url = `${req.protocol}://${req.get("host")}/chat`;
-    if (!token) {
-      return res.status(httpStatus.UNAUTHORIZED);
+    if (!auth) {
+      return res.status(401).json({ message: "Unauthorized - Invalid token" });
     } else {
       const { sender, message, conversationID, userId } = req.body;
-      new ChatController(token, url).chatPostHandler(
+      new ChatController(auth.user_id, url).chatPostHandler(
         sender,
         message,
         conversationID,
@@ -23,28 +23,28 @@ export const chatPostHandler = catchAsync(
 );
 
 export const getChatHandler = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
     let url = `${req.protocol}://${req.get("host")}/chat`;
-    if (!token) {
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { id } = req.body;
-      new ChatController(token, url).getChatHandler(id);
+      new ChatController(auth.user_id, url).getChatHandler(id);
     }
   }
 );
 
 export const conversationPutHandler = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
     let url = `${req.protocol}://${req.get("host")}/chat`;
-    if (!token) {
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { id, lastMessage, unread } = req.body;
 
-      new ChatController(token, url).conversationPutHandler(
+      new ChatController(auth.user_id, url).conversationPutHandler(
         id,
         lastMessage,
         unread
@@ -54,10 +54,10 @@ export const conversationPutHandler = catchAsync(
 );
 
 export const convoPostHandler = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
     let url = `${req.protocol}://${req.get("host")}/chat`;
-    if (!token) {
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const {
@@ -70,7 +70,7 @@ export const convoPostHandler = catchAsync(
         proposalId,
       } = req.body;
 
-      new ChatController(token, url).convoPostHandler(
+      new ChatController(auth?.user_id, url).convoPostHandler(
         client,
         freelancer,
         sender,
@@ -97,81 +97,88 @@ export const convoPostHandler = catchAsync(
 );
 
 export const getConversationHandler = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
     let url = `${req.protocol}://${req.get("host")}/chat`;
-    if (!token) {
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { id } = req.body;
 
-      new ChatController(token, url).getConversationHandler(id);
+      new ChatController(auth.user_id, url).getConversationHandler(id);
     }
   }
 );
 
-export const getConvoById = catchAsync(async (req: Request, res: Response) => {
-  let token = getToken({ req });
-  let url = `${req.protocol}://${req.get("host")}/chat`;
-  if (!token) {
-    return res.status(httpStatus.UNAUTHORIZED);
-  } else {
-    const { id } = req.body;
+export const getConvoById = catchAsync(
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    let url = `${req.protocol}://${req.get("host")}/chat`;
+    if (!auth) {
+      return res.status(httpStatus.UNAUTHORIZED);
+    } else {
+      const { id } = req.body;
 
-    new ChatController(token, url).getConvoById(id);
+      new ChatController(auth.user_id, url).getConvoById(id);
+    }
   }
-});
+);
 
 export const addContractIdToConvo = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
     let url = `${req.protocol}://${req.get("host")}/chat`;
-    if (!token) {
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { id, contractId } = req.body;
 
-      new ChatController(token, url).addContractIdToConvo(id, contractId);
+      new ChatController(auth.user_id, url).addContractIdToConvo(
+        id,
+        contractId
+      );
     }
   }
 );
 
 export const getMostRecentConvo = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
     let url = `${req.protocol}://${req.get("host")}/chat`;
-    if (!token) {
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { id } = req.body;
 
-      new ChatController(token, url).getMostRecentConvo(id);
+      new ChatController(auth.user_id, url).getMostRecentConvo(id);
     }
   }
 );
 
-export const markAsRead = catchAsync(async (req: Request, res: Response) => {
-  let token = getToken({ req });
-  let url = `${req.protocol}://${req.get("host")}/chat`;
-  if (!token) {
-    return res.status(httpStatus.UNAUTHORIZED);
-  } else {
-    const { id } = req.body;
+export const markAsRead = catchAsync(
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    let url = `${req.protocol}://${req.get("host")}/chat`;
+    if (!auth) {
+      return res.status(httpStatus.UNAUTHORIZED);
+    } else {
+      const { id } = req.body;
 
-    new ChatController(token, url).markAsRead(id);
+      new ChatController(auth.user_id, url).markAsRead(id);
+    }
   }
-});
+);
 
 export const summaryPostHandler = catchAsync(
-  async (req: Request, res: Response) => {
-    let token = getToken({ req });
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
     let url = `${req.protocol}://${req.get("host")}/chat`;
-    if (!token) {
+    if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { conversationID, summaryText, sender } = req.body;
 
-      new ChatController(token, url).summaryPostHandler(
+      new ChatController(auth?.user_id, url).summaryPostHandler(
         conversationID,
         summaryText,
         sender
