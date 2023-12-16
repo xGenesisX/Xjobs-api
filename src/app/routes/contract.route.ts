@@ -14,8 +14,6 @@ import {
 
 import verifyToken from "../middleware/authHandler";
 
-// import { check } from "express-validator";
-
 function wrapAsync(fn: any) {
   return function (req: Request, res: Response, next: NextFunction) {
     fn(req, res, next).catch(next);

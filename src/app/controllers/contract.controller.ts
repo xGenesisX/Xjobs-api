@@ -39,23 +39,23 @@ export const hireFreelancer = catchAsync(
           );
 
         // add contract id to conversation
-        new ChatController(token, url).addContractIdToConvo(
-          conversationID,
-          contract._id
-        );
+        // new ChatController(token, url).addContractIdToConvo(
+        //   conversationID,
+        //   contract._id
+        // );
 
         // add summary
-        new ChatController(token, url).summaryPostHandler(
-          conversationID,
-          `funded escrow contract with ${
-            contract.gigId.currency === "solana"
-              ? "◎"
-              : contract.gigId.currency === "usd"
-              ? "$"
-              : "no currency"
-          }${amount}`,
-          clientId
-        );
+        // new ChatController(token, url).summaryPostHandler(
+        //   conversationID,
+        //   `funded escrow contract with ${
+        //     contract.gigId.currency === "solana"
+        //       ? "◎"
+        //       : contract.gigId.currency === "usd"
+        //       ? "$"
+        //       : "no currency"
+        //   }${amount}`,
+        //   clientId
+        // );
 
         res.send(contract);
       } catch (error) {
@@ -83,7 +83,6 @@ export const getUserContracts = catchAsync(
   }
 );
 
-
 export const approveRefund = catchAsync(
   async (req: CustomRequest, res: Response) => {
     let auth = req.currentUser;
@@ -99,11 +98,11 @@ export const approveRefund = catchAsync(
         gigId,
       } = req.body;
 
-      new ChatController(req, res).summaryPostHandler(
-        conversationID,
-        summaryText,
-        userId
-      );
+      // new ChatController(req, res).summaryPostHandler(
+      //   conversationID,
+      //   summaryText,
+      //   userId
+      // );
 
       try {
         let a = contractService.default.approveRefund(
@@ -120,7 +119,6 @@ export const approveRefund = catchAsync(
 );
 
 export const acceptContract = catchAsync(
-
   async (req: CustomRequest, res: Response) => {
     let auth = req.currentUser;
     if (!auth) {
@@ -128,11 +126,11 @@ export const acceptContract = catchAsync(
     } else {
       const { gigId, freelancerId, proposalId, conversationID } = req.body;
 
-      new ChatController(token, url).summaryPostHandler(
-        conversationID,
-        "accepted the offer for this project",
-        freelancerId
-      );
+      // new ChatController(token, url).summaryPostHandler(
+      //   conversationID,
+      //   "accepted the offer for this project",
+      //   freelancerId
+      // );
       try {
         const v = contractService.default.acceptContract(
           gigId,
@@ -148,7 +146,6 @@ export const acceptContract = catchAsync(
 );
 
 export const rejectContract = catchAsync(
-
   async (req: CustomRequest, res: Response) => {
     let auth = req.currentUser;
     if (!auth) {
@@ -156,11 +153,11 @@ export const rejectContract = catchAsync(
     } else {
       const { gigId, freelancerId, conversationID, contractId } = req.body;
 
-      new ChatController(token, url).summaryPostHandler(
-        conversationID,
-        "rejected the offer for this project",
-        freelancerId
-      );
+      // new ChatController(token, url).summaryPostHandler(
+      //   conversationID,
+      //   "rejected the offer for this project",
+      //   freelancerId
+      // );
 
       try {
         const a = contractService.default.rejectContract(
@@ -176,7 +173,6 @@ export const rejectContract = catchAsync(
   }
 );
 
-
 export const releaseFunds = catchAsync(
   async (req: CustomRequest, res: Response) => {
     let auth = req.currentUser;
@@ -185,11 +181,11 @@ export const releaseFunds = catchAsync(
     } else {
       const { conversationID, userId, gigId, contractID } = req.body;
 
-      new ChatController(req, res).summaryPostHandler(
-        conversationID,
-        "initiated release of funds",
-        userId
-      );
+      // new ChatController(req, res).summaryPostHandler(
+      //   conversationID,
+      //   "initiated release of funds",
+      //   userId
+      // );
 
       try {
         const cvs = contractService.default.releaseFunds(gigId, contractID);

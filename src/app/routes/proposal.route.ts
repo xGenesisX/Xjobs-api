@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
+import authenticate from "../middleware/authHandler";
 
 const router = express.Router();
 
@@ -13,7 +14,6 @@ import {
 } from "../controllers/proposal.controller";
 
 import verifyToken from "../middleware/authHandler";
-
 
 router
   .route("/update_proposal_convo_id")
@@ -92,3 +92,6 @@ router.put(
 );
 
 export default router;
+function wrapAsync(arg0: void) {
+  throw new Error("Function not implemented.");
+}

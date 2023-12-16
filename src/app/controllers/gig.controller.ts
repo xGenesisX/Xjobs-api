@@ -246,11 +246,11 @@ export const cancelGig = catchAsync(
         conversationID,
       } = req.body;
 
-      new ChatController(req, res).summaryPostHandler(
-        conversationID,
-        "requested a refund and to cancel this project",
-        clientId
-      );
+      // new ChatController(req, res).summaryPostHandler(
+      //   conversationID,
+      //   "requested a refund and to cancel this project",
+      //   clientId
+      // );
 
       try {
         await gigService.default.cancelGig(

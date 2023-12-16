@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import httpStatus from "http-status";
-import { getToken } from "next-auth/jwt";
-
 import { CustomRequest } from "../middleware/authHandler";
+import ChatController from "../services/conversation.service";
+import catchAsync from "../utils/catchAsync";
 
 export const chatPostHandler = catchAsync(
   async (req: CustomRequest, res: Response) => {
@@ -23,15 +23,15 @@ export const chatPostHandler = catchAsync(
 );
 
 export const getChatHandler = catchAsync(
-  async (req: CustomRequest, res: Response) => {
-    let auth = req.currentUser;
-    let url = `${req.protocol}://${req.get("host")}/chat`;
-    if (!auth) {
-      return res.status(httpStatus.UNAUTHORIZED);
-    } else {
-      const { id } = req.body;
-      new ChatController(auth.user_id, url).getChatHandler(id);
-    }
+  async (req: Request, res: Response) => {
+    // let auth = req.currentUser;
+    // let url = `${req.protocol}://${req.get("host")}/chat`;
+    // if (!auth) {
+    //   return res.status(httpStatus.UNAUTHORIZED);
+    // } else {
+    //   const { id } = req.body;
+    //   new ChatController(auth.user_id, url).getChatHandler(id);
+    // }
   }
 );
 
