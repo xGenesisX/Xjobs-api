@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import User, { TUser } from "../models/User";
 import { sendAccountCreated } from "./email.service";
-// import Joi from "@hapi/joi";
 import mongoose from "mongoose";
 import pointsService from "./points.service";
 import * as jwt from "jsonwebtoken";
