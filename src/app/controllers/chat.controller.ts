@@ -23,15 +23,15 @@ export const chatPostHandler = catchAsync(
 );
 
 export const getChatHandler = catchAsync(
-  async (req: Request, res: Response) => {
-    // let auth = req.currentUser;
-    // let url = `${req.protocol}://${req.get("host")}/chat`;
-    // if (!auth) {
-    //   return res.status(httpStatus.UNAUTHORIZED);
-    // } else {
-    //   const { id } = req.body;
-    //   new ChatController(auth.user_id, url).getChatHandler(id);
-    // }
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    let url = `${req.protocol}://${req.get("host")}/chat`;
+    if (!auth) {
+      return res.status(httpStatus.UNAUTHORIZED);
+    } else {
+      const { id } = req.body;
+      new ChatController(auth.user_id, url).getChatHandler(id);
+    }
   }
 );
 
@@ -70,7 +70,7 @@ export const convoPostHandler = catchAsync(
         proposalId,
       } = req.body;
 
-      new ChatController(auth?.user_id, url).convoPostHandler(
+      const a = new ChatController(auth?.user_id, url).convoPostHandler(
         client,
         freelancer,
         sender,
@@ -79,20 +79,26 @@ export const convoPostHandler = catchAsync(
         gigDetails,
         proposalId
       );
+
+      const chat = new ChatController(auth?.user_id, url).chatPostHandler(
+        client,
+        message,
+        sender,
+        sender
+      );
+
+      const MostRecentConvoId = new ChatController(
+        auth?.user_id,
+        url
+      ).getMostRecentConvo((await chat)._id);
+
+      // const finalConvo = new ChatController(
+      //   auth?.user_id,
+      //   url
+      // ).conversationPutHandler((await chat)._id, MostRecentConvoId, 0);
+
+      // return finalConvo;
     }
-
-    // const chat = await this.chatPostHandler(sender, message, a._id, freelancer);
-
-    // const chat = new ChatController().chatPostHandler(
-    //   client,
-    //   message,
-    //   "",
-    //   sender
-    // );
-
-    // const finalConvo = this.conversationPutHandler(a._id, chat, 0);
-
-    // return finalConvo;
   }
 );
 

@@ -69,7 +69,6 @@ router.get(
 
 router.get(
   "/get_contract",
-  verifyToken,
   (req: Request, res: Response, next: NextFunction) => {
     wrapAsync(releaseFunds(req, res, next));
   }

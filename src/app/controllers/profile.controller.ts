@@ -1,13 +1,11 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 import mongoose from "mongoose";
-import { getToken } from "next-auth/jwt";
+import { CustomRequest } from "../middleware/authHandler";
 import { TUser } from "../models/User";
 import ChatController from "../services/conversation.service";
 import userService from "../services/user.service";
 import catchAsync from "../utils/catchAsync";
-import * as jwt from "jsonwebtoken";
-import { CustomRequest } from "../middleware/authHandler";
 
 // @notice update a user profile, adds feedback
 export const addFeedbackToUserProfile = catchAsync(
@@ -92,14 +90,9 @@ export const getUserProfileWithAddress = catchAsync(
 
 // @notice create a new user profile
 export const createUserProfile = catchAsync(
-  async (req: Request, res: Response) => {
-    // console.log(req.body);
-
-    // let token = getToken({ req });
-    // if (!token) {
-    //   return res.status(httpStatus.UNAUTHORIZED);
-    // } else {
-    console.log(req.body);
+  async (req: CustomRequest, res: Response) => {
+    let auth = req.currentUser;
+    let url = `${req.protocol}://${req.get("host")}/chat`;
     const {
       profileId,
       isAdmin,
@@ -131,14 +124,15 @@ export const createUserProfile = catchAsync(
 
       if (user !== "error parsing request") {
         console.log("Reached Here");
-        // new ChatController(req, res).convoPostHandler(
-        //   new mongoose.Types.ObjectId("64073a3334365f04f6854e69"),
-        //   user._id,
-        //   new mongoose.Types.ObjectId("64073a3334365f04f6854e69"),
-        //   `Hey ${name},\nWelcome to XJobs! 👋\nHere you'll be able to send and receive messages about your projects on XJobs. In the sidebar to the right, you'll see next steps you'll need to take in order to move forward.\nWe're so happy you're here! 🚀`,
-        //   true
-        // ),
-        res.send(user);
+
+        new ChatController(auth?.user_id, url).convoPostHandler(
+          new mongoose.Types.ObjectId("64073a3334365f04f6854e69"),
+          user._id,
+          new mongoose.Types.ObjectId("64073a3334365f04f6854e69"),
+          `Hey ${name},\nWelcome to XJobs! 👋\nHere you'll be able to send and receive messages about your projects on XJobs. In the sidebar to the right, you'll see next steps you'll need to take in order to move forward.\nWe're so happy you're here! 🚀`,
+          true
+        ),
+          res.send(user);
       } else {
         console.log("Error 1");
         return res.status(400).json("internal server error");

@@ -1,9 +1,8 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import httpStatus from "http-status";
-import { getToken } from "next-auth/jwt";
+import { CustomRequest } from "../middleware/authHandler";
 import proposalService from "../services/proposal.service";
 import catchAsync from "../utils/catchAsync";
-import { CustomRequest } from "../middleware/authHandler";
 
 // @notice create a new proposal
 export const createNewProposal = catchAsync(

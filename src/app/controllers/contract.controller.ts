@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
-import { getToken } from "next-auth/jwt";
 import { IContract } from "../models/Contract";
 import * as contractService from "../services/contract.service";
 import ChatController from "../services/conversation.service";
@@ -21,6 +20,7 @@ export const getAllContracts = catchAsync(
 export const hireFreelancer = catchAsync(
   async (req: CustomRequest, res: Response) => {
     let auth = req.currentUser;
+    let url = `${req.protocol}://${req.get("host")}/chat`;
     if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
@@ -39,23 +39,23 @@ export const hireFreelancer = catchAsync(
           );
 
         // add contract id to conversation
-        // new ChatController(token, url).addContractIdToConvo(
-        //   conversationID,
-        //   contract._id
-        // );
+        new ChatController(auth?.user_id, url).addContractIdToConvo(
+          conversationID,
+          contract._id
+        );
 
         // add summary
-        // new ChatController(token, url).summaryPostHandler(
-        //   conversationID,
-        //   `funded escrow contract with ${
-        //     contract.gigId.currency === "solana"
-        //       ? "◎"
-        //       : contract.gigId.currency === "usd"
-        //       ? "$"
-        //       : "no currency"
-        //   }${amount}`,
-        //   clientId
-        // );
+        new ChatController(auth?.user_id, url).summaryPostHandler(
+          conversationID,
+          `funded escrow contract with ${
+            contract.gigId.currency === "solana"
+              ? "◎"
+              : contract.gigId.currency === "usd"
+              ? "$"
+              : "no currency"
+          }${amount}`,
+          clientId
+        );
 
         res.send(contract);
       } catch (error) {
@@ -72,7 +72,6 @@ export const getUserContracts = catchAsync(
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { role, id } = req.body;
-      // const { role, id } = req.query;
       try {
         let a = contractService.default.getUserContracts(role, id);
         res.send(a);
@@ -86,6 +85,7 @@ export const getUserContracts = catchAsync(
 export const approveRefund = catchAsync(
   async (req: CustomRequest, res: Response) => {
     let auth = req.currentUser;
+    let url = `${req.protocol}://${req.get("host")}/chat`;
     if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
@@ -98,11 +98,11 @@ export const approveRefund = catchAsync(
         gigId,
       } = req.body;
 
-      // new ChatController(req, res).summaryPostHandler(
-      //   conversationID,
-      //   summaryText,
-      //   userId
-      // );
+      new ChatController(auth?.user_id, url).summaryPostHandler(
+        conversationID,
+        summaryText,
+        userId
+      );
 
       try {
         let a = contractService.default.approveRefund(
@@ -121,16 +121,18 @@ export const approveRefund = catchAsync(
 export const acceptContract = catchAsync(
   async (req: CustomRequest, res: Response) => {
     let auth = req.currentUser;
+    let url = `${req.protocol}://${req.get("host")}/chat`;
     if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { gigId, freelancerId, proposalId, conversationID } = req.body;
 
-      // new ChatController(token, url).summaryPostHandler(
-      //   conversationID,
-      //   "accepted the offer for this project",
-      //   freelancerId
-      // );
+      new ChatController(auth?.user_id, url).summaryPostHandler(
+        conversationID,
+        "accepted the offer for this project",
+        freelancerId
+      );
+
       try {
         const v = contractService.default.acceptContract(
           gigId,
@@ -148,16 +150,17 @@ export const acceptContract = catchAsync(
 export const rejectContract = catchAsync(
   async (req: CustomRequest, res: Response) => {
     let auth = req.currentUser;
+    let url = `${req.protocol}://${req.get("host")}/chat`;
     if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { gigId, freelancerId, conversationID, contractId } = req.body;
 
-      // new ChatController(token, url).summaryPostHandler(
-      //   conversationID,
-      //   "rejected the offer for this project",
-      //   freelancerId
-      // );
+      new ChatController(auth?.user_id, url).summaryPostHandler(
+        conversationID,
+        "rejected the offer for this project",
+        freelancerId
+      );
 
       try {
         const a = contractService.default.rejectContract(
@@ -176,16 +179,17 @@ export const rejectContract = catchAsync(
 export const releaseFunds = catchAsync(
   async (req: CustomRequest, res: Response) => {
     let auth = req.currentUser;
+    let url = `${req.protocol}://${req.get("host")}/chat`;
     if (!auth) {
       return res.status(httpStatus.UNAUTHORIZED);
     } else {
       const { conversationID, userId, gigId, contractID } = req.body;
 
-      // new ChatController(req, res).summaryPostHandler(
-      //   conversationID,
-      //   "initiated release of funds",
-      //   userId
-      // );
+      new ChatController(auth?.user_id, url).summaryPostHandler(
+        conversationID,
+        "initiated release of funds",
+        userId
+      );
 
       try {
         const cvs = contractService.default.releaseFunds(gigId, contractID);

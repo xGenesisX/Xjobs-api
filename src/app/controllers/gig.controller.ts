@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
-import { getToken } from "next-auth/jwt";
 import ChatController from "../services/conversation.service";
 import * as gigService from "../services/gig.service";
 import catchAsync from "../utils/catchAsync";
@@ -246,11 +245,11 @@ export const cancelGig = catchAsync(
         conversationID,
       } = req.body;
 
-      // new ChatController(req, res).summaryPostHandler(
-      //   conversationID,
-      //   "requested a refund and to cancel this project",
-      //   clientId
-      // );
+      new ChatController("", "").summaryPostHandler(
+        conversationID,
+        "requested a refund and to cancel this project",
+        clientId
+      );
 
       try {
         await gigService.default.cancelGig(

@@ -85,7 +85,7 @@ class ChatController {
       .findOneAndUpdate(
         { _id: id },
         {
-          // unread: convoCurrentUnread.unread + unread,
+          // unread: convoCurrentUnread?.unread + unread,
           lastMessage: lastMessage,
         },
         {
